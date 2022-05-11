@@ -24,7 +24,7 @@ class TimeEntriesPage {
     await this.page.locator('label:has-text("to:")').fill(to);
   }
 
-  async addEntry(year, month, date, hours, description) {
+  async addEntry(year, month, date, hours, description, useEnter = false) {
     await this.page.locator('[placeholder="2022-01-01"]').click();
     await this.page
       .locator('[placeholder="2022-01-01"] + .picker >> select')
@@ -55,7 +55,11 @@ class TimeEntriesPage {
     await this.page
       .locator('[placeholder="Working the work…"]')
       .fill(description);
-    await this.page.locator("text=Save").click();
+    if (useEnter) {
+      await this.page.keyboard.press("Enter");
+    } else {
+      await this.page.locator("text=Save").click();
+    }
   }
 }
 
@@ -219,6 +223,31 @@ test.describe("Time entries", async () => {
       "17",
       "4:45",
       "a task"
+    );
+
+    await expect(page.locator("tr")).toHaveCount(3);
+
+    const firstRow = page.locator("tr >> nth=1");
+    await expect(firstRow.locator("td >> nth=0")).toHaveText("Mon 2022-01-17");
+    await expect(firstRow.locator("td >> nth=1")).toHaveText("4:45");
+    await expect(firstRow.locator("td >> nth=2")).toHaveText("a task");
+
+    const newEntryRow = page.locator("tr >> nth=-1");
+    await expect(newEntryRow.locator("td >> nth=0")).toBeEmpty();
+    await expect(newEntryRow.locator("td >> nth=1")).toBeEmpty();
+    await expect(newEntryRow.locator("td >> nth=2")).toBeEmpty();
+  });
+
+  test("add entry - with enter", async ({ page }) => {
+    await new LoginPage(page).logIn(correctUser, correctPassword);
+
+    await new TimeEntriesPage(page).addEntry(
+      "2022",
+      "January",
+      "17",
+      "4:45",
+      "a task",
+      true
     );
 
     await expect(page.locator("tr")).toHaveCount(3);

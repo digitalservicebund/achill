@@ -71,6 +71,12 @@
     dispatch("cancelEdit");
   };
 
+  let keydownHandler = (event) => {
+    if (event.key === "Enter") {
+      submitHandler();
+    }
+  };
+
   let generateHandler = () => {
     const randomChoice = (list) => {
       return list[Math.floor(list.length * Math.random())];
@@ -168,6 +174,7 @@
 
   <td class="px-2">
     <input
+      on:keydown={keydownHandler}
       bind:value={values.description}
       type="text"
       id="description"
