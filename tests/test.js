@@ -42,7 +42,11 @@ class TimeEntriesPage {
     await this.page
       .locator('[placeholder="Working the work…"]')
       .fill(description);
-    await this.page.locator("text=Add").click();
+    if (useEnter) {
+      await this.page.keyboard.press("Enter");
+    } else {
+      await this.page.locator("text=Add").click();
+    }
   }
 
   async editEntry(year, month, date, hours, description) {
@@ -55,11 +59,7 @@ class TimeEntriesPage {
     await this.page
       .locator('[placeholder="Working the work…"]')
       .fill(description);
-    if (useEnter) {
-      await this.page.keyboard.press("Enter");
-    } else {
-      await this.page.locator("text=Save").click();
-    }
+    await this.page.locator("text=Save").click();
   }
 }
 
