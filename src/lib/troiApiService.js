@@ -73,14 +73,16 @@ export default class TroiApiService {
         endDate: endDate,
       },
     });
-    return timeEntries.map((obj) => {
-      return {
-        id: obj.id,
-        date: obj.Date,
-        hours: obj.Quantity,
-        description: obj.Remark,
-      };
-    });
+    return timeEntries
+      .map((obj) => {
+        return {
+          id: obj.id,
+          date: obj.Date,
+          hours: obj.Quantity,
+          description: obj.Remark,
+        };
+      })
+      .sort((a, b) => (a.date > b.date ? 1 : -1));
   }
 
   async postTimeEntry(calculationPositionId, date, hours, description) {
