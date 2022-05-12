@@ -73,7 +73,11 @@
 
   let keydownHandler = (event) => {
     if (event.key === "Enter") {
-      submitHandler();
+      if (editMode) {
+        editSubmitHandler();
+      } else {
+        submitHandler();
+      }
     }
   };
 
@@ -161,6 +165,7 @@
   <td class="px-2">
     <input
       bind:value={values.hours}
+      on:keydown={keydownHandler}
       type="text"
       id="hours"
       class={`w-full px-0 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
