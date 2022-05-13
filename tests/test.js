@@ -336,30 +336,30 @@ test.describe("Time entries", async () => {
     await new LoginPage(page).logIn(correctUser, correctPassword);
     await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
     await new TimeEntriesPage(page).addEntry(
-        "2022",
-        "January",
-        "17",
-        "1:00",
-        "a task"
+      "2022",
+      "January",
+      "17",
+      "1:00",
+      "a task"
     );
     await new TimeEntriesPage(page).editEntry(
-        "2022",
-        "January",
-        "17",
-        "4:5t",
-        ""
+      "2022",
+      "January",
+      "17",
+      "4:5t",
+      ""
     );
 
     await expect(page.locator("tr")).toHaveCount(2);
 
     const editEntryRow = page.locator("tr >> nth=-1");
     await expect(editEntryRow.locator("td >> nth=1 >> input")).toHaveCSS(
-        "border-color",
-        "rgb(239, 68, 68)"
+      "border-color",
+      "rgb(239, 68, 68)"
     );
     await expect(editEntryRow.locator("td >> nth=2 >> input")).toHaveCSS(
-        "border-color",
-        "rgb(239, 68, 68)"
+      "border-color",
+      "rgb(239, 68, 68)"
     );
   });
 
@@ -368,21 +368,20 @@ test.describe("Time entries", async () => {
 
     await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
     await new TimeEntriesPage(page).addEntry(
-        "2022",
-        "January",
-        "17",
-        "4:45",
-        "a task"
+      "2022",
+      "January",
+      "17",
+      "4:45",
+      "a task"
     );
     await new TimeEntriesPage(page).editEntry(
-        "2022",
-        "January",
-        "18",
-        "2:00",
-        "a task - edited",
-        true
+      "2022",
+      "January",
+      "18",
+      "2:00",
+      "a task - edited",
+      true
     );
-
 
     await expect(page.locator("tr")).toHaveCount(3);
 
