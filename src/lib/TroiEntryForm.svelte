@@ -59,6 +59,10 @@
       dispatch("submit");
       values.hours = "";
       values.description = "";
+      let nextDate = new Date(values.date.getTime());
+      // 5 = Friday, then jump over the weekend
+      nextDate.setDate(nextDate.getDate() + (nextDate.getDay() === 5 ? 3 : 1));
+      values.date = nextDate;
     }
   };
 
