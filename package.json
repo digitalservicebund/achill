@@ -13,25 +13,25 @@
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. ."
   },
   "devDependencies": {
-    "@playwright/test": "^1.22.1",
+    "@playwright/test": "^1.23.4",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
-    "@tailwindcss/forms": "^0.5.1",
+    "@tailwindcss/forms": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "date-picker-svelte": "^2.0.0",
-    "eslint": "^8.15.0",
+    "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "postcss": "^8.4.13",
-    "prettier": "^2.5.1",
-    "prettier-plugin-tailwindcss": "^0.1.11",
-    "svelte": "^3.48.0",
-    "tailwindcss": "^3.0.24"
+    "postcss": "^8.4.14",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.12",
+    "svelte": "^3.49.0",
+    "tailwindcss": "^3.1.6"
   },
   "dependencies": {
-    "@sveltejs/adapter-node": "^1.0.0-next.73",
-    "moment": "^2.29.3",
-    "troi-library": "^0.0.8",
+    "@sveltejs/adapter-node": "^1.0.0-next.82",
+    "moment": "^2.29.4",
+    "troi-library": "^1.0.1",
     "yup": "^0.32.11"
   },
   "type": "module"

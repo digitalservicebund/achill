@@ -10,7 +10,7 @@
   export let calculationPositionId;
   export let entry;
   export let editMode;
-  export let deleteEntryCallback;
+  export let updateEntryCallback;
   export let disabled;
 
   const dispatch = createEventDispatcher();
@@ -31,7 +31,7 @@
   };
   let errors = {};
 
-  let submitHandler = async () => {
+  let handleSubmit = async (update = false, billingId = null) => {
     values.hours = formatHours(values.hours);
     try {
       // `abortEarly: false` to get all the errors
@@ -48,12 +48,22 @@
         const [hoursStr, minutesStr] = values.hours.split(":");
         values.hours = parseInt(hoursStr) + parseInt(minutesStr) / 60;
       }
-      await $troiApi.postTimeEntry(
-        calculationPositionId,
-        moment(values.date).format("YYYY-MM-DD"),
-        values.hours,
-        values.description
-      );
+      if (update) {
+        await $troiApi.updateTimeEntry(
+          calculationPositionId,
+          moment(values.date).format("YYYY-MM-DD"),
+          values.hours,
+          values.description,
+          billingId
+        );
+      } else {
+        await $troiApi.postTimeEntry(
+          calculationPositionId,
+          moment(values.date).format("YYYY-MM-DD"),
+          values.hours,
+          values.description
+        );
+      }
 
       values.hours = formatHours(values.hours);
       dispatch("submit");
@@ -67,11 +77,15 @@
   };
 
   let editSubmitHandler = async () => {
-    await submitHandler();
+    await handleSubmit(true, entry.id);
     if (Object.keys(errors).length === 0) {
-      deleteEntryCallback(entry.id);
+      await updateEntryCallback();
       cancelEditHandler();
     }
+  };
+
+  let submitHandler = async () => {
+    await handleSubmit(false, null);
   };
 
   let cancelEditHandler = () => {
@@ -216,6 +230,7 @@
           {#if !editMode}
             <button
               on:click={submitHandler}
+              data-test="add-button"
               class="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
             >
               Add

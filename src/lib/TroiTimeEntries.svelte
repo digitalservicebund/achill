@@ -9,6 +9,7 @@
 
   let entriesPromise;
   let editEntryIndex;
+  let dateHeaders = [];
 
   $: {
     cancelEdit();
@@ -25,6 +26,7 @@
       startDate,
       endDate
     );
+    dateHeaders = [];
   }
 
   async function deleteEntry(id) {
@@ -43,6 +45,28 @@
   function getWeekday(dayIndex) {
     const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     return weekdays[dayIndex];
+  }
+
+  function getSumByDay(entries, entry) {
+    const summedEntries = entries
+      .filter((e) => e.date === entry.date)
+      .reduce(
+        (previous, current) => {
+          console.log(previous.hours, current.hours);
+          return { hours: previous.hours + current.hours };
+        },
+        { hours: 0 }
+      );
+    return summedEntries.hours;
+  }
+
+  function getDateHeader(entry) {
+    if (dateHeaders.indexOf(entry.date) === -1) {
+      dateHeaders.push(entry.date);
+      return moment(entry.date).format("MMM DD");
+    } else {
+      return null;
+    }
   }
 </script>
 
@@ -63,8 +87,18 @@
           {calculationPositionId}
           {entry}
           editMode={true}
-          deleteEntryCallback={deleteEntry}
+          updateEntryCallback={refresh}
         />{:else}
+        {#if getDateHeader(entry)}
+          <h1 class="font-medium leading-tight text-lg mt-2 ml-2 text-blue-600">
+            {moment(entry.date).format("DD.MM.YYYY")}
+            <span class="font-normal ml-2">
+              {moment
+                .duration({ hours: getSumByDay(entries, entry) })
+                .asHours()} hours</span
+            >
+          </h1>
+        {/if}
         <div data-test="entry-card" class="flex justify-center my-2">
           <div class="block p-4 rounded-lg shadow-lg bg-white w-full">
             <div class="flex flex-row">

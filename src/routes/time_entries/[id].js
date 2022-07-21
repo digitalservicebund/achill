@@ -6,7 +6,12 @@ export async function del({ params, request }) {
   const id = params.id;
   const userName = request.headers.get("x-troi-username");
   const password = request.headers.get("x-troi-password");
-  const troi = new TroiApiService(troiBaseUrl, userName, password);
+  const troi = new TroiApiService({
+    baseUrl: troiBaseUrl,
+    clientName: "DigitalService GmbH des Bundes",
+    username: userName,
+    password,
+  });
   await troi.deleteTimeEntry(id);
   return {
     body: params.id,

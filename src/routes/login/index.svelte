@@ -15,7 +15,12 @@
 
   async function handleSubmit() {
     failed = false;
-    $troiApi = new TroiApiService(troiBaseUrl, userName, password);
+    $troiApi = new TroiApiService({
+      baseUrl: troiBaseUrl,
+      clientName: "DigitalService GmbH des Bundes",
+      username: userName,
+      password,
+    });
     try {
       await $troiApi.initialize();
       login(userName, password);

@@ -45,7 +45,7 @@ class TimeEntriesPage {
     if (useEnter) {
       await this.page.keyboard.press("Enter");
     } else {
-      await this.page.locator("button >> text=Add").click();
+      await this.page.locator("button >> text=ADD").click();
     }
   }
 
@@ -63,7 +63,7 @@ class TimeEntriesPage {
     if (useEnter) {
       await this.page.keyboard.press("Enter");
     } else {
-      await this.page.locator("text=Save").click();
+      await this.page.locator("button >> text=Save").click();
     }
   }
 }
@@ -73,7 +73,7 @@ const correctPassword = "s3cr3t";
 
 const mockData = {
   client: {
-    Name: "DigitalService4Germany GmbH",
+    Name: "DigitalService GmbH des Bundes",
     Id: 123,
   },
   employee: {
@@ -100,6 +100,15 @@ class TroiApiStub {
 
   deleteEntry(id) {
     this.entries = this.entries.filter((entry) => entry.id !== id);
+  }
+
+  updateEntry(id, data) {
+    this.entries = this.entries.map((entry) => {
+      if (entry.id === id) {
+        return data;
+      }
+      return entry;
+    });
   }
 
   isAuthorized(authnHeader) {
@@ -144,6 +153,16 @@ class TroiApiStub {
         Remark: postData.Remark,
       });
       return this._response({});
+    } else if (method === "PUT" && pathname.indexOf("/billings/hours") > -1) {
+      const splittedPath = pathname.split("/");
+      const id = parseInt(splittedPath[splittedPath.length - 1], 10);
+      this.updateEntry(id, {
+        id,
+        Date: postData.Date,
+        Quantity: postData.Quantity,
+        Remark: postData.Remark,
+      });
+      return this._response({});
     } else {
       return null;
     }
@@ -180,6 +199,7 @@ test.beforeEach(async ({ context }) => {
       if (matchedResponse !== null) {
         route.fulfill(matchedResponse);
       } else {
+        console.log({ matchedResponse, method, pathname, params, postData });
         route.abort();
       }
     }
@@ -227,7 +247,8 @@ test.describe("Time entries", async () => {
       "January",
       "17",
       "4:45",
-      "a task"
+      "a task",
+      false
     );
 
     await expect(page.locator("data-test=entry-card")).toHaveCount(1);
