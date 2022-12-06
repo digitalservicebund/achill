@@ -23,7 +23,10 @@
 </script>
 
 <section>
-  <WeekView />
+  <WeekView
+    dates={[23, 24, 25, 26, 27, 28, 29]}
+    times={[6.5, 7, 8, 8, 0, 0, 0]}
+  />
   <div class="flex gap-4">
     <div class="py-4">
       <!-- svelte-ignore a11y-label-has-associated-control -->
