@@ -6,6 +6,8 @@
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
+  import WeekView from "./weekView.svelte";
+
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
@@ -21,6 +23,7 @@
 </script>
 
 <section>
+  <WeekView />
   <div class="flex gap-4">
     <div class="py-4">
       <!-- svelte-ignore a11y-label-has-associated-control -->
