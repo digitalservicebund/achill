@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.83",
+    "calendar": "^0.1.1",
     "moment": "^2.29.4",
     "troi-library": "^1.0.1",
     "yup": "^0.32.11"
