@@ -22,11 +22,13 @@
   });
 </script>
 
+<!-- new Date().getDate() -->
+<!-- Mon Nov 28 2022 00:00:00 GMT+0100 (Central European Standard Time) -->
+
 <section>
   <WeekView
-    dates={[23, 24, 25, 26, 27, 28, 29]}
-    times={[6.5, 7, 8, 8, 0, 0, 0]}
-    selectedDay={26}
+    times={["0", "10:00", "4:23", "0:25", "8:00", "1:50", "0"]}
+    selectedDate={new Date()}
   />
   <div class="flex gap-4">
     <div class="py-4">
