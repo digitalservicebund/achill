@@ -2,6 +2,7 @@
   import c from "calendar";
   export let times;
   export let selectedDate;
+  let selectedWeekNumber;
   let selectedWeek;
   let selectedMonth;
   let selectedYear;
@@ -31,9 +32,22 @@
     return date.getDate();
   }
 
+  function getWeekNumber() {
+    // TODO change to ISO week-numbering year
+    
+    // let firstDateOfYear = new Date(selectedDate.getFullYear(), 0, 1)
+    // const diffTime = Math.abs(selectedDate - firstDateOfYear);
+    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    // console.log(firstDateOfYear);
+    // console.log(selectedDate);
+    
+    // return Math.ceil(diffDays/7) + 1
+  }
+
   function setMonthAndYear() {
     selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
     selectedYear = selectedDate.getFullYear();
+    selectedWeekNumber = getWeekNumber();
   }
 
   function setWeeksForSelectedDate() {
@@ -63,7 +77,7 @@
         <span
           tabindex="0"
           class="text-base  font-bold text-gray-800 focus:outline-none dark:text-gray-100"
-          >{selectedMonth}, {selectedYear}</span
+          >{selectedMonth}, {selectedYear}, {selectedWeekNumber}</span
         >
         <div class="flex items-center">
           <button
