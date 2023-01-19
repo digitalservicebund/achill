@@ -1,7 +1,14 @@
 <script>
+  // @ts-nocheck
+
+  import weekday from "./weekday.svelte";
+
   import c from "calendar";
+  import Weekday from "./weekday.svelte";
   export let times;
   export let selectedDate;
+  const today = new Date();
+  let selectedWeekday;
   let selectedWeekNumber;
   let selectedWeek;
   let selectedMonth;
@@ -9,16 +16,6 @@
   const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
   let cal = new c.Calendar(1); // pass 1 to start week at Monday
   setWeeksForSelectedDate();
-
-  function addDays(days) {
-    selectedDate.setDate(selectedDate.getDate() + days);
-    setWeeksForSelectedDate();
-  }
-
-  function changeSelectedDate(date) {
-    selectedDate = date;
-    setMonthAndYear();
-  }
 
   function datesEqual(date1, date2) {
     return (
@@ -32,22 +29,19 @@
     return date.getDate();
   }
 
+  /**
+   * ISO-8601 week number
+   */
   function getWeekNumber() {
-    // TODO change to ISO week-numbering year
-    
-    // let firstDateOfYear = new Date(selectedDate.getFullYear(), 0, 1)
-    // const diffTime = Math.abs(selectedDate - firstDateOfYear);
-    // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-    // console.log(firstDateOfYear);
-    // console.log(selectedDate);
-    
-    // return Math.ceil(diffDays/7) + 1
-  }
-
-  function setMonthAndYear() {
-    selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
-    selectedYear = selectedDate.getFullYear();
-    selectedWeekNumber = getWeekNumber();
+    var tdt = new Date(selectedDate.valueOf());
+    var dayn = (selectedDate.getDay() + 6) % 7;
+    tdt.setDate(tdt.getDate() - dayn + 3);
+    var firstThursday = tdt.valueOf();
+    tdt.setMonth(0, 1);
+    if (tdt.getDay() !== 4) {
+      tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
+    }
+    return 1 + Math.ceil((firstThursday - tdt) / 604800000);
   }
 
   function setWeeksForSelectedDate() {
@@ -65,8 +59,29 @@
       }
     }
 
-    setMonthAndYear();
+    selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
+    selectedYear = selectedDate.getFullYear();
+    selectedWeekNumber = getWeekNumber();
+    selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
+      weekday: "long",
+    });
     console.log(weeks);
+  }
+
+  /**
+   * Clicking arrow to change week
+   */
+  function addDays(days) {
+    selectedDate.setDate(selectedDate.getDate() + days);
+    setWeeksForSelectedDate();
+  }
+
+  /**
+   * Clicking date
+   */
+  function changeSelectedDate(date) {
+    selectedDate = date;
+    setWeeksForSelectedDate();
   }
 </script>
 
@@ -77,7 +92,7 @@
         <span
           tabindex="0"
           class="text-base  font-bold text-gray-800 focus:outline-none dark:text-gray-100"
-          >{selectedMonth}, {selectedYear}, {selectedWeekNumber}</span
+          >{selectedMonth}, {selectedYear}, {selectedWeekNumber}, {selectedWeekday}</span
         >
         <div class="flex items-center">
           <button
@@ -150,15 +165,19 @@
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full"
                       >
-                        <!-- svelte-ignore a11y-missing-attribute -->
-                        <!-- svelte-ignore a11y-no-redundant-roles -->
-                        <a
-                          role="link"
-                          tabindex="0"
-                          class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-base font-medium text-white hover:bg-indigo-500 focus:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2"
-                          >{getDayOf(date)}</a
-                        >
+                        <Weekday normal={false} text={getDayOf(date)} />
                       </div>
+                    </div>
+                  {:else if datesEqual(date, today)}
+                    <div
+                      class="flex w-full cursor-pointer justify-center px-2 py-2"
+                      on:click={() => changeSelectedDate(date)}
+                    >
+                      <p
+                        class="flex h-8 w-8 items-center justify-center rounded-full text-base font-medium text-gray-500 outline-none ring-2 ring-gray-500  dark:text-gray-100"
+                      >
+                        {getDayOf(date)}
+                      </p>
                     </div>
                   {:else}
                     <div

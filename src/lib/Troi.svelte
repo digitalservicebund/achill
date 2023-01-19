@@ -6,7 +6,7 @@
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
-  import WeekView from "./weekView.svelte";
+  import WeekView from "./weekview/weekView.svelte";
 
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
