@@ -11,7 +11,7 @@
   let selectedWeek;
   let selectedMonth;
   let selectedYear;
-  const weekdays = ["M", "T", "W", "T", "F", "S", "S"];
+  const weekdays = ["M", "T", "W", "T", "F"];
   let cal = new c.Calendar(1); // pass 1 to start week at Monday
   setWeeksForSelectedDate();
 
@@ -52,7 +52,7 @@
     for (const week of weeks) {
       const lastDateOfWeek = new Date(week[6]);
       if (selectedDate <= lastDateOfWeek) {
-        selectedWeek = week;
+        selectedWeek = week.slice(0, 5);
         break;
       }
     }

@@ -27,7 +27,7 @@
 
 <section>
   <WeekView
-    times={["0", "10:00", "4:23", "0:25", "8:00", "1:50", "0"]}
+    times={["0", "10:00", "4:23", "0:25", "8:00"]}
     selectedDate={new Date()}
   />
   <div class="flex gap-4">
