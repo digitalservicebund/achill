@@ -160,24 +160,81 @@
             <tr>
               {#each selectedWeek as date}
                 <td>
-                  {#if datesEqual(date, selectedDate)}
-                    <div class="h-full w-full">
-                      <div
-                        class="flex w-full cursor-pointer items-center justify-center rounded-full"
-                      >
-                        <Weekday normal={false} text={getDayOf(date)} />
+                  <div
+                    class="h-full w-full "
+                    on:click={() => changeSelectedDate(date)}
+                  >
+                    <div class="flex cursor-pointer items-center justify-center rounded-full w-full px-2 py-2">
+                    <!-- SELECTED TODAY -->
+                    {#if datesEqual(date, today) && datesEqual(date, selectedDate)}
+                          <a
+                            role="link"
+                            tabindex="0"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 bg-indigo-500 text-base font-medium text-white outline-none ring-2 ring-indigo-700 ring-offset-2 hover:bg-indigo-500"
+                            >{getDayOf(date)}</a
+                          >
+
+                      <!-- UNSELECTED TODAY -->
+                    {:else if datesEqual(date, today)}
+                          <a
+                            role="link"
+                            tabindex="0"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full text-base font-medium text-gray-500 outline-none ring-2 ring-indigo-700 ring-offset-2 dark:text-gray-100"
+                            >{getDayOf(date)}</a
+                          >
+                      <!-- SELECTED -->
+                    {:else if datesEqual(date, selectedDate)}
+                          <p
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-base font-medium text-white hover:bg-indigo-500 focus:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2"
+                          >
+                            {getDayOf(date)}
+                          </p>
+                      <!-- UNSELECTED -->
+                    {:else}
+                        <p
+                          class="text-base font-medium text-gray-500 dark:text-gray-100"
+                        >
+                          {getDayOf(date)}
+                        </p>
+                    {/if}
+                      
+                  </div>
+                  </div>
+
+                  <!-- <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
+                    <Weekday isToday={false} isSelected={false} dayNumber={getDayOf(date)} />
+                  </div> -->
+
+                  <!-- 
+                    // NOTHING
+                    <td>
+                      <div class="px-2 py-2 cursor-pointer flex w-full justify-center">
+                          <p class="text-base text-gray-500 dark:text-gray-100 font-medium">7</p>
                       </div>
-                    </div>
-                  {:else if datesEqual(date, today)}
+
+                    </td>
+
+                    // SELECTED
+                    <td>
+                        <div class="w-full h-full">
+                            <div class="flex items-center justify-center w-full rounded-full cursor-pointer">
+                                <a  role="link" tabindex="0" class="focus:outline-none  focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 focus:bg-indigo-500 hover:bg-indigo-500 text-base w-8 h-8 flex items-center justify-center font-medium text-white bg-indigo-700 rounded-full">8</a>
+                            </div>
+                        </div>
+                    </td> 
+                    -->
+
+                  <!-- {#if datesEqual(date, selectedDate)} -->
+                  <!-- <div
+                        class="flex w-full cursor-pointer items-center justify-center rounded-full"
+                      > -->
+                  <!-- </div> -->
+                  <!-- {:else if datesEqual(date, today)}
                     <div
                       class="flex w-full cursor-pointer justify-center px-2 py-2"
                       on:click={() => changeSelectedDate(date)}
                     >
-                      <p
-                        class="flex h-8 w-8 items-center justify-center rounded-full text-base font-medium text-gray-500 outline-none ring-2 ring-gray-500  dark:text-gray-100"
-                      >
-                        {getDayOf(date)}
-                      </p>
+                    <Weekday isSelected={false} dayNumber={getDayOf(date)} isToday={true} />
                     </div>
                   {:else}
                     <div
@@ -189,8 +246,8 @@
                       >
                         {getDayOf(date)}
                       </p>
-                    </div>
-                  {/if}
+                    </div> -->
+                  <!-- {/if} -->
                 </td>
               {/each}
             </tr>
