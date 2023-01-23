@@ -1,10 +1,8 @@
 <script>
   // @ts-nocheck
 
-  import weekday from "./weekday.svelte";
 
   import c from "calendar";
-  import Weekday from "./weekday.svelte";
   export let times;
   export let selectedDate;
   const today = new Date();
