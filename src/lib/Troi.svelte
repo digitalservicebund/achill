@@ -14,6 +14,8 @@
   let projects = [];
 
   const reload = async () => {
+    if($troiApi == undefined) { return }
+
     const projectDatas = await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte")
     projects = await $troiApi.getCalculationPositions()
     
