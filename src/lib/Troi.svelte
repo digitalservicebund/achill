@@ -6,6 +6,12 @@
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
+  import api from "./nocodbClient"
+
+  // api.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte").then(data => {
+  //   console.log(data)
+  // })
+
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
