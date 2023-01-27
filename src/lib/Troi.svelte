@@ -6,11 +6,7 @@
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
-  import api from "./nocodbClient"
-
-  // api.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte").then(data => {
-  //   console.log(data)
-  // })
+  import nocodbApi from "./nocodbClient"
 
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
@@ -18,8 +14,38 @@
   let projects = [];
 
   const reload = async () => {
-    projects = await $troiApi.getCalculationPositions();
+    const projectDatas = await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte")
+    projects = await $troiApi.getCalculationPositions()
+    
+    let favorisedProjects = []
+
+    projects.forEach(project => {
+      const projectData = projectDatas.list.find(data => project.name.includes(data["Troi Name"]))
+      favorisedProjects.push(projectData)
+    })
+
+    let keyWords = await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Task")
+    let phasenKeyWords = keyWords.list.filter(keyword => keyword.type == "PHASE")
+    let recurringTask = keyWords.list.filter(keyword => keyword.type == "RECURRING")
+
+    let componentModel = {
+      recurringTask: recurringTask,
+      phasenKeyWords: phasenKeyWords,
+      projects: []
+    }
+
+    for(const favorisedProject of favorisedProjects) {
+      componentModel.projects.push({
+        phasen: await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Phase", { where: `(project id,eq,${favorisedProject.Id})`}),
+        projectName: favorisedProject["Troi Name"]
+      })
+    }
+      
+    console.log(componentModel)
+
+
   };
+
 
   onMount(() => {
     reload();
