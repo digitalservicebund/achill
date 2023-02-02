@@ -1,5 +1,3 @@
-
-<!-- svelte-ignore a11y-no-redundant-roles -->
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
   // @ts-nocheck
@@ -85,88 +83,88 @@
   }
 </script>
 
-<div class="flex items-center justify-center py-8 px-4">
-  <div class="w-full max-w-md shadow-lg">
-    <div class="rounded-t bg-white p-5 dark:bg-gray-800 md:p-8">
-      <div class="flex items-center justify-between px-4">
-        <span
-          tabindex="0"
-          class="text-base  font-bold text-gray-800 focus:outline-none dark:text-gray-100"
-          >{selectedMonth}, {selectedYear}, {selectedWeekNumber}, {selectedWeekday}</span
-        >
+<!-- svelte-ignore a11y-no-redundant-roles -->
+
+<svelte:head>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
+</svelte:head>
+
+<div class="flex py-8">
+  <div class="w-full">
+    <div class="pb-8">
+      <a
+        class="angie-link pb-8"
+        href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
+        >Read about how to track your time in confluence</a
+      >
+    </div>
+    <div class="flex gap-8">
+      <div>
         <div class="flex items-center">
           <button
             aria-label="calendar backward"
-            class="text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
+            class="-ml-1.5 flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
             on:click={() => addDays(-7)}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-tabler icon-tabler-chevron-left"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <polyline points="15 6 9 12 15 18" />
-            </svg>
+            <span class="material-symbols-outlined"> chevron_left </span>
           </button>
+          <div
+            tabindex="0"
+            class="px-2 text-sm text-gray-800 focus:outline-none dark:text-gray-100"
+          >
+            Week {selectedWeekNumber}
+          </div>
           <button
             aria-label="calendar forward"
-            class="ml-3 text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
+            class="flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
             on:click={() => addDays(7)}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-tabler  icon-tabler-chevron-right"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <polyline points="9 6 15 12 9 18" />
-            </svg>
+            <span class="material-symbols-outlined"> chevron_right </span>
           </button>
         </div>
+        <div
+          tabindex="0"
+          class="text-base font-bold text-gray-800 focus:outline-none dark:text-gray-100"
+        >
+          {selectedMonth}, {selectedYear}, {selectedWeekNumber}, {selectedWeekday}
+        </div>
       </div>
-      <div class="flex items-center justify-between overflow-x-auto pt-12">
-        <table class="w-full">
-          <thead>
-            <tr>
-              {#each weekdays as weekday}
-                <th>
-                  <div class="flex w-full justify-center">
-                    <p
-                      class="text-center text-base font-medium text-gray-800 dark:text-gray-100"
+
+      <!-- Calendar -->
+      <div class="rounded-t bg-white dark:bg-gray-800">
+        <div class="flex items-center justify-between overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr>
+                {#each weekdays as weekday}
+                  <th>
+                    <div class="flex w-full justify-center">
+                      <p
+                        class="text-center text-base font-medium text-gray-800 dark:text-gray-100"
+                      >
+                        {weekday}
+                      </p>
+                    </div>
+                  </th>
+                {/each}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {#each selectedWeek as date}
+                  <td>
+                    <div
+                      class="h-full w-full "
+                      on:click={() => changeSelectedDate(date)}
                     >
-                      {weekday}
-                    </p>
-                  </div>
-                </th>
-              {/each}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {#each selectedWeek as date}
-                <td>
-                  <div
-                    class="h-full w-full "
-                    on:click={() => changeSelectedDate(date)}
-                  >
-                    <div class="flex cursor-pointer items-center justify-center rounded-full w-full px-2 py-2 text-base font-medium">
-                    <!-- SELECTED TODAY -->
-                    {#if datesEqual(date, today) && datesEqual(date, selectedDate)}
+                      <div
+                        class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
+                      >
+                        <!-- SELECTED TODAY -->
+                        {#if datesEqual(date, today) && datesEqual(date, selectedDate)}
                           <a
                             role="link"
                             tabindex="0"
@@ -174,50 +172,48 @@
                             >{getDayOf(date)}</a
                           >
 
-                      <!-- UNSELECTED TODAY -->
-                    {:else if datesEqual(date, today)}
+                          <!-- UNSELECTED TODAY -->
+                        {:else if datesEqual(date, today)}
                           <a
                             role="link"
                             tabindex="0"
                             class="flex  h-8 w-8 items-center justify-center rounded-full text-gray-500 outline-none ring-2 ring-gray-700 ring-offset-2 dark:text-gray-100"
                             >{getDayOf(date)}</a
                           >
-                      <!-- SELECTED -->
-                    {:else if datesEqual(date, selectedDate)}
+                          <!-- SELECTED -->
+                        {:else if datesEqual(date, selectedDate)}
                           <p
                             class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-white hover:bg-indigo-500 focus:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2"
                           >
                             {getDayOf(date)}
                           </p>
-                      <!-- UNSELECTED -->
-                    {:else}
-                        <p
-                          class="flex text-gray-500 dark:text-gray-100"
-                        >
-                          {getDayOf(date)}
-                        </p>
-                    {/if}
-                      
-                  </div>
-                  </div>
-                </td>
-              {/each}
-            </tr>
-            <tr>
-              {#each times as time}
-                <td>
-                  <div class="flex w-full justify-center px-2 py-2">
-                    <p
-                      class="text-base font-medium text-gray-500 dark:text-gray-100"
-                    >
-                      {time}
-                    </p>
-                  </div>
-                </td>
-              {/each}
-            </tr>
-          </tbody>
-        </table>
+                          <!-- UNSELECTED -->
+                        {:else}
+                          <p class="flex text-gray-500 dark:text-gray-100">
+                            {getDayOf(date)}
+                          </p>
+                        {/if}
+                      </div>
+                    </div>
+                  </td>
+                {/each}
+              </tr>
+              <tr>
+                {#each times as time}
+                  <td>
+                    <div class="flex w-full justify-center px-2 py-2">
+                      <p
+                        class="text-base font-medium text-gray-500 dark:text-gray-100"
+                      >
+                        {time}
+                      </p>
+                    </div>
+                  </td>
+                {/each}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
