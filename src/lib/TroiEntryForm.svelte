@@ -8,6 +8,7 @@
   import { formatHours } from "./formatHours.js";
 
   export let calculationPositionId;
+  export let componentModel;
   export let entry;
   export let editMode;
   export let updateEntryCallback;
@@ -100,6 +101,17 @@
         submitHandler();
       }
     }
+  };
+
+  let chips = [];
+
+  let onRecurringTaskChange = (event) => {
+    if (event.target.checked) {
+      chips.push(event.target.id);
+    } else {
+      chips = chips.filter((entry) => entry !== event.target.id);
+    }
+    chips = chips;
   };
 
   let generateHandler = () => {
@@ -210,11 +222,45 @@
           />
         </div>
         <div class="my-1 flex place-items-center justify-start">
-          <label for="description" class="basis-1/4">What</label>
+          <label for="hours" class="basis-1/4">Recurring Tasks</label>
+          {#if componentModel.recurringTask}
+            {#each componentModel.recurringTask as entry}
+              <input
+                id={entry.name}
+                type="checkbox"
+                on:change={onRecurringTaskChange}
+              />
+              <label>{entry.name}</label>
+            {/each}
+          {:else}
+            Loading ...
+          {/if}
+        </div>
+        <div>
+          {#if componentModel.projects}
+            {#each componentModel.projects.filter((project) => {
+              project.projectId == calculationPositionId.toString();
+            }) as project}
+              {project.projectName}
+            {/each}
+            <details>
+              <summary>
+                TBD: Phase
+                <span class="icon">👇</span>
+              </summary>
+              <p>TBD: Tasks for each phase</p>
+            </details>
+          {/if}
+        </div>
+        <div class="my-1 flex place-items-center justify-start">
+          <div>
+            {#each chips as entry}
+              {entry}
+            {/each}
+          </div>
           <textarea
             on:keydown={keydownHandler}
             bind:value={values.description}
-            type="text"
             id="description"
             class={`w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
               errors.description

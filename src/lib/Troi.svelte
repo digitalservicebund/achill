@@ -12,12 +12,13 @@
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
   let projects = [];
+  let componentModel = {}
 
   const reload = async () => {
     if($troiApi == undefined) { return }
 
-    const projectDatas = await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte")
     projects = await $troiApi.getCalculationPositions()
+    const projectDatas = await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Projekte")
     
     let favorisedProjects = []
 
@@ -30,7 +31,7 @@
     let phasenKeyWords = keyWords.list.filter(keyword => keyword.type == "PHASE")
     let recurringTask = keyWords.list.filter(keyword => keyword.type == "RECURRING")
 
-    let componentModel = {
+    componentModel = {
       recurringTask: recurringTask,
       phasenKeyWords: phasenKeyWords,
       projects: []
@@ -39,13 +40,14 @@
     for(const favorisedProject of favorisedProjects) {
       componentModel.projects.push({
         phasen: await nocodbApi.dbTableRow.list("v1", "ds4g-data", "Tracky-Phase", { where: `(project id,eq,${favorisedProject.Id})`}),
-        projectName: favorisedProject["Troi Name"]
+        projectName: favorisedProject["Troi Name"],
+        projectId: favorisedProject["Troi ID"]
       })
+      console.log(favorisedProject)
     }
+
       
     console.log(componentModel)
-
-
   };
 
 
@@ -116,6 +118,7 @@
       </h2>
       <TroiTimeEntries
         calculationPositionId={project.id}
+        componentModel={componentModel}
         startDate={moment(startDate).format("YYYYMMDD")}
         endDate={moment(endDate).format("YYYYMMDD")}
       />

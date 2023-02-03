@@ -4,6 +4,7 @@
   import TroiEntryForm from "./TroiEntryForm.svelte";
 
   export let calculationPositionId;
+  export let componentModel;
   export let startDate;
   export let endDate;
 
@@ -74,6 +75,7 @@
     disabled={editEntryIndex != null}
     on:submit={refresh}
     {calculationPositionId}
+    {componentModel}
   />
   {#await entriesPromise}
     <p>Loading…</p>
@@ -84,6 +86,7 @@
           on:submit={refresh}
           on:cancelEdit={cancelEdit}
           {calculationPositionId}
+          {componentModel}
           {entry}
           editMode={true}
           updateEntryCallback={refresh}
