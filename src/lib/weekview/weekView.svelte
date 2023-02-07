@@ -3,9 +3,18 @@
   // @ts-nocheck
 
   import c from "calendar";
+  import { troiApi } from "../troiApiService";
+  import moment from "moment";
+  import { onMount } from "svelte";
+
+  export let calculationPositionId;
+  export let startDate;
+  export let endDate;
+
   export let times;
   export let selectedDate;
   const today = new Date();
+  let projects;
   let selectedWeekday;
   let selectedWeekNumber;
   let selectedWeek;
@@ -14,6 +23,20 @@
   const weekdays = ["M", "T", "W", "T", "F"];
   let cal = new c.Calendar(1); // pass 1 to start week at Monday
   setWeeksForSelectedDate();
+
+  const reload = async () => {
+    projects = await $troiApi.getCalculationPositions();
+    console.log(projects);
+  };
+
+  onMount(() => {
+    reload();
+    $troiApi
+      .getTimeEntries(calculationPositionId, startDate, endDate)
+      .then((entries) => {
+        console.log(entries);
+      });
+  });
 
   function datesEqual(date1, date2) {
     return (
@@ -102,24 +125,25 @@
       >
     </div>
     <div class="flex gap-8">
-      <div>
-        <div class="flex items-center">
+      <!-- Date Label Box -->
+      <div class="min-w-[30ch]">
+        <div class="mb-3 flex items-center">
           <button
             aria-label="calendar backward"
-            class="-ml-1.5 flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
+            class="-ml-1.5 flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
             on:click={() => addDays(-7)}
           >
             <span class="material-symbols-outlined"> chevron_left </span>
           </button>
           <div
             tabindex="0"
-            class="px-2 text-sm text-gray-800 focus:outline-none dark:text-gray-100"
+            class="px-2 text-sm text-gray-800 focus:outline-none"
           >
             Week {selectedWeekNumber}
           </div>
           <button
             aria-label="calendar forward"
-            class="flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400 dark:text-gray-100"
+            class="flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
             on:click={() => addDays(7)}
           >
             <span class="material-symbols-outlined"> chevron_right </span>
@@ -127,14 +151,14 @@
         </div>
         <div
           tabindex="0"
-          class="text-base font-bold text-gray-800 focus:outline-none dark:text-gray-100"
+          class="text-base font-bold text-gray-800 focus:outline-none"
         >
           {selectedMonth}, {selectedYear}, {selectedWeekNumber}, {selectedWeekday}
         </div>
       </div>
 
       <!-- Calendar -->
-      <div class="rounded-t bg-white dark:bg-gray-800">
+      <div class="rounded-t bg-white">
         <div class="flex items-center justify-between overflow-x-auto">
           <table class="w-full">
             <thead>
@@ -143,7 +167,7 @@
                   <th>
                     <div class="flex w-full justify-center">
                       <p
-                        class="text-center text-base font-medium text-gray-800 dark:text-gray-100"
+                        class="text-center text-base font-medium text-gray-800"
                       >
                         {weekday}
                       </p>
@@ -157,39 +181,43 @@
                 {#each selectedWeek as date}
                   <td>
                     <div
-                      class="h-full w-full "
+                      class="h-full w-full"
                       on:click={() => changeSelectedDate(date)}
                     >
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
                       >
-                        <!-- SELECTED TODAY -->
+                        <!-- SELECTED && TODAY -->
                         {#if datesEqual(date, today) && datesEqual(date, selectedDate)}
+                          <!-- svelte-ignore a11y-no-redundant-roles -->
+                          <!-- svelte-ignore a11y-missing-attribute -->
                           <a
                             role="link"
                             tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-white outline-none ring-2 ring-gray-700 ring-offset-2 hover:bg-indigo-500"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-[#004B76] text-white outline-none ring-2 ring-black ring-offset-2"
                             >{getDayOf(date)}</a
                           >
 
-                          <!-- UNSELECTED TODAY -->
+                          <!-- UNSELECTED && TODAY -->
                         {:else if datesEqual(date, today)}
+                          <!-- svelte-ignore a11y-no-redundant-roles -->
+                          <!-- svelte-ignore a11y-missing-attribute -->
                           <a
                             role="link"
                             tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full text-gray-500 outline-none ring-2 ring-gray-700 ring-offset-2 dark:text-gray-100"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-white text-gray-500 outline-none ring-2 ring-black ring-offset-2"
                             >{getDayOf(date)}</a
                           >
                           <!-- SELECTED -->
                         {:else if datesEqual(date, selectedDate)}
                           <p
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-white hover:bg-indigo-500 focus:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2"
+                            class="flex h-8 w-8 items-center justify-center rounded-full bg-[#004B76] text-white"
                           >
                             {getDayOf(date)}
                           </p>
                           <!-- UNSELECTED -->
                         {:else}
-                          <p class="flex text-gray-500 dark:text-gray-100">
+                          <p class="flex text-gray-500">
                             {getDayOf(date)}
                           </p>
                         {/if}
@@ -201,10 +229,8 @@
               <tr>
                 {#each times as time}
                   <td>
-                    <div class="flex w-full justify-center px-2 py-2">
-                      <p
-                        class="text-base font-medium text-gray-500 dark:text-gray-100"
-                      >
+                    <div class="flex min-w-[6ch] justify-center px-2 py-2">
+                      <p class="text-base font-medium text-gray-500">
                         {time}
                       </p>
                     </div>

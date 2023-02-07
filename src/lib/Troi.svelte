@@ -27,8 +27,11 @@
 
 <section>
   <WeekView
-    times={["0", "10:00", "4:23", "0:25", "8:00"]}
+    times={["0", "0", "4:23", "0:25", "8:00"]}
     selectedDate={new Date()}
+    calculationPositionId={693}
+    startDate={moment(startDate).format("YYYYMMDD")}
+    endDate={moment(endDate).format("YYYYMMDD")}
   />
   <div class="flex gap-4">
     <div class="py-4">
@@ -80,6 +83,7 @@
 </section>
 
 {#each projects as project}
+  {console.log(project.id)}
   <!-- TODO: make into single component Project -->
   <section class="bg-white">
     <div class="container mx-auto pt-4 pb-2">
