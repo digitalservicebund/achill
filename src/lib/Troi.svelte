@@ -1,4 +1,5 @@
 <script>
+  import c from "calendar";
   import { DateInput } from "date-picker-svelte";
   import moment from "moment";
   import { onMount } from "svelte";
@@ -8,30 +9,64 @@
 
   import WeekView from "./weekview/weekView.svelte";
 
+  const cal = new c.Calendar(1); // pass 1 to start week at Monday
+  let selectedDate = new Date();
+  let selectedWeek = [];
+  let projects = [];
+  let hours = ["0", "0", "4:23", "0:25", "8:00"];
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-
-  let projects = [];
+  // startDate={moment(startDate).format("YYYYMMDD")}
+  // endDate={moment(endDate).format("YYYYMMDD")}
 
   const reload = async () => {
+    calculateWeek();
+
     projects = await $troiApi.getCalculationPositions();
+    console.log("projects", projects);
+
+    // maybe loop for all days
+    $troiApi.getTimeEntries(680, startDate, endDate).then((entries) => {
+      console.log("entries", entries);
+    });
   };
 
   onMount(() => {
     reload();
   });
-</script>
 
-<!-- new Date().getDate() -->
-<!-- Mon Nov 28 2022 00:00:00 GMT+0100 (Central European Standard Time) -->
+  const calculateWeek = () => {
+    let weeks = cal.monthDates(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth()
+    );
+    for (const week of weeks) {
+      const lastDateOfWeek = new Date(week[6]);
+      if (selectedDate <= lastDateOfWeek) {
+        selectedWeek = week.slice(0, 5);
+        break;
+      }
+    }
+  };
+
+  const weekChanged = (days) => {
+    console.log("clicked", days);
+    selectedDate.setDate(selectedDate.getDate() + days);
+    calculateWeek();
+  };
+
+  const selectedDateChanged = (date) => {
+    selectedDate = date;
+  };
+</script>
 
 <section>
   <WeekView
-    times={["0", "0", "4:23", "0:25", "8:00"]}
-    selectedDate={new Date()}
-    calculationPositionId={693}
-    startDate={moment(startDate).format("YYYYMMDD")}
-    endDate={moment(endDate).format("YYYYMMDD")}
+    {selectedWeek}
+    {hours}
+    {selectedDate}
+    {selectedDateChanged}
+    {weekChanged}
   />
   <div class="flex gap-4">
     <div class="py-4">

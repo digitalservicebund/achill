@@ -1,41 +1,25 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
+  import { clear_loops } from "svelte/internal";
+  import { beforeUpdate } from "svelte";
+
   // @ts-nocheck
 
-  import c from "calendar";
-  import { troiApi } from "../troiApiService";
-  import moment from "moment";
-  import { onMount } from "svelte";
-
-  export let calculationPositionId;
-  export let startDate;
-  export let endDate;
-
-  export let times;
+  export let selectedWeek;
+  export let hours;
   export let selectedDate;
+  export let selectedDateChanged;
+  export let weekChanged;
+
   const today = new Date();
-  let projects;
   let selectedWeekday;
   let selectedWeekNumber;
-  let selectedWeek;
   let selectedMonth;
   let selectedYear;
   const weekdays = ["M", "T", "W", "T", "F"];
-  let cal = new c.Calendar(1); // pass 1 to start week at Monday
-  setWeeksForSelectedDate();
 
-  const reload = async () => {
-    projects = await $troiApi.getCalculationPositions();
-    console.log(projects);
-  };
-
-  onMount(() => {
-    reload();
-    $troiApi
-      .getTimeEntries(calculationPositionId, startDate, endDate)
-      .then((entries) => {
-        console.log(entries);
-      });
+  beforeUpdate(() => {
+    updateComponent();
   });
 
   function datesEqual(date1, date2) {
@@ -65,44 +49,13 @@
     return 1 + Math.ceil((firstThursday - tdt) / 604800000);
   }
 
-  function setWeeksForSelectedDate() {
-    console.log(selectedDate);
-
-    let weeks = cal.monthDates(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth()
-    );
-    for (const week of weeks) {
-      const lastDateOfWeek = new Date(week[6]);
-      if (selectedDate <= lastDateOfWeek) {
-        selectedWeek = week.slice(0, 5);
-        break;
-      }
-    }
-
+  export function updateComponent() {
     selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
     selectedYear = selectedDate.getFullYear();
     selectedWeekNumber = getWeekNumber();
     selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
       weekday: "long",
     });
-    console.log(weeks);
-  }
-
-  /**
-   * Clicking arrow to change week
-   */
-  function addDays(days) {
-    selectedDate.setDate(selectedDate.getDate() + days);
-    setWeeksForSelectedDate();
-  }
-
-  /**
-   * Clicking date
-   */
-  function changeSelectedDate(date) {
-    selectedDate = date;
-    setWeeksForSelectedDate();
   }
 </script>
 
@@ -131,7 +84,7 @@
           <button
             aria-label="calendar backward"
             class="-ml-1.5 flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
-            on:click={() => addDays(-7)}
+            on:click={() => weekChanged(-7)}
           >
             <span class="material-symbols-outlined"> chevron_left </span>
           </button>
@@ -144,7 +97,7 @@
           <button
             aria-label="calendar forward"
             class="flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
-            on:click={() => addDays(7)}
+            on:click={() => weekChanged(7)}
           >
             <span class="material-symbols-outlined"> chevron_right </span>
           </button>
@@ -182,7 +135,7 @@
                   <td>
                     <div
                       class="h-full w-full"
-                      on:click={() => changeSelectedDate(date)}
+                      on:click={() => selectedDateChanged(date)}
                     >
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
@@ -227,7 +180,7 @@
                 {/each}
               </tr>
               <tr>
-                {#each times as time}
+                {#each hours as time}
                   <td>
                     <div class="flex min-w-[6ch] justify-center px-2 py-2">
                       <p class="text-base font-medium text-gray-500">
