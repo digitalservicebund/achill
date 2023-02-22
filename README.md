@@ -6,8 +6,9 @@ Web app to help you fill out Troi. Uses the [Svelte](https://svelte.dev/) framew
 
 ## Setup Troi
 
-Two things need to happen in your Troi account (it might already be set up correctly):
+Three things need to happen in your Troi account (it might already be set up correctly):
 
+- If your Troi user was created after the 15th of February OR if you have change your Troi password after this date, you will only be able to login with the API v2 token, which will need to be re-generated: "Troi --> Menü --> Mitarbeiter --> Sicherheitscenter --> Persönliche Zugrifftokens --> API v2 / Troi App --> Erneuern"
 - your account needs write-access to the Troi-API, Lisa S. can make that happen as a Troi admin (test: if you can log into this web app you're good)
 - you need to mark your project(s) as favourite, only those will be accessible within Achill and BleibTroy:
 
