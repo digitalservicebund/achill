@@ -83,20 +83,20 @@
         <div class="mb-3 flex items-center">
           <button
             aria-label="calendar backward"
-            class="-ml-1.5 flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
+            class="-ml-1.5 flex items-center justify-center text-gray-600 hover:text-gray-400"
             on:click={() => weekChanged(-7)}
           >
             <span class="material-symbols-outlined"> chevron_left </span>
           </button>
           <div
             tabindex="0"
-            class="px-2 text-sm text-gray-800 focus:outline-none"
+            class="px-2 text-sm text-gray-600 focus:outline-none"
           >
             Week {selectedWeekNumber}
           </div>
           <button
             aria-label="calendar forward"
-            class="flex items-center justify-center text-gray-800 hover:text-gray-400 focus:text-gray-400"
+            class="flex items-center justify-center text-gray-600 hover:text-gray-400"
             on:click={() => weekChanged(7)}
           >
             <span class="material-symbols-outlined"> chevron_right </span>
@@ -125,7 +125,7 @@
                   <th>
                     <div class="flex w-full justify-center">
                       <p
-                        class="text-center text-base font-medium text-gray-800"
+                        class="text-center text-base font-medium text-gray-600"
                       >
                         {weekday}
                       </p>
@@ -152,7 +152,7 @@
                           <a
                             role="link"
                             tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-[#004B76] text-white outline-none ring-2 ring-black ring-offset-2"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white outline-none ring-2 ring-black ring-offset-2 hover:bg-blue-700"
                             >{getDayOf(date)}</a
                           >
 
@@ -163,19 +163,21 @@
                           <a
                             role="link"
                             tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-white text-gray-500 outline-none ring-2 ring-black ring-offset-2"
+                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-white text-black outline-none ring-2 ring-black ring-offset-2 hover:bg-[#B8BDC3]"
                             >{getDayOf(date)}</a
                           >
                           <!-- SELECTED -->
                         {:else if datesEqual(date, selectedDate)}
                           <p
-                            class="flex h-8 w-8 items-center justify-center rounded-full bg-[#004B76] text-white"
+                            class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
                           >
                             {getDayOf(date)}
                           </p>
                           <!-- UNSELECTED -->
                         {:else}
-                          <p class="flex text-gray-500">
+                          <p
+                            class="flex h-8 w-8 items-center justify-center rounded-full text-black hover:bg-[#B8BDC3]"
+                          >
                             {getDayOf(date)}
                           </p>
                         {/if}
@@ -188,9 +190,15 @@
                 {#each hours as time}
                   <td>
                     <div class="flex min-w-[6ch] justify-center px-2 py-2">
-                      <p class="text-base font-medium text-gray-500">
-                        {time}
-                      </p>
+                      {#if time == 0}
+                        <p class="text-base font-medium text-gray-500">
+                          {time}
+                        </p>
+                      {:else}
+                        <p class="text-base font-medium text-blue-600">
+                          {time}
+                        </p>
+                      {/if}
                     </div>
                   </td>
                 {/each}
