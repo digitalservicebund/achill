@@ -14,21 +14,24 @@
   let selectedWeek = [];
   let projects = [];
   let hours = ["0", "0", "4:23", "0:25", "8:00"];
-  let endDate = new Date();
-  let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-  // startDate={moment(startDate).format("YYYYMMDD")}
-  // endDate={moment(endDate).format("YYYYMMDD")}
+  $: startDate = selectedWeek[0];
+  $: endDate = selectedWeek[4];
 
   const reload = async () => {
     calculateWeek();
 
     projects = await $troiApi.getCalculationPositions();
-    console.log("projects", projects);
 
     // maybe loop for all days
-    $troiApi.getTimeEntries(680, startDate, endDate).then((entries) => {
-      console.log("entries", entries);
-    });
+    $troiApi
+      .getTimeEntries(
+        515,
+        moment(startDate).format("YYYYMMDD"),
+        moment(endDate).format("YYYYMMDD")
+      )
+      .then((entries) => {
+        console.log("entries", entries);
+      });
   };
 
   onMount(() => {
@@ -51,7 +54,10 @@
 
   const weekChanged = (days) => {
     console.log("clicked", days);
-    selectedDate.setDate(selectedDate.getDate() + days);
+    // has to be reassigned for the component to rerender
+    let selectedDateCopy = new Date(selectedDate);
+    selectedDateCopy.setDate(selectedDateCopy.getDate() + days);
+    selectedDate = selectedDateCopy;
     calculateWeek();
   };
 

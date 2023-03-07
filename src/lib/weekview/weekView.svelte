@@ -106,7 +106,12 @@
           tabindex="0"
           class="text-base font-bold text-gray-800 focus:outline-none"
         >
-          {selectedMonth}, {selectedYear}, {selectedWeekNumber}, {selectedWeekday}
+          {selectedDate.toLocaleDateString("de-DE", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </div>
       </div>
 
