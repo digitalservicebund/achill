@@ -90,7 +90,7 @@
           </button>
           <div
             tabindex="0"
-            class="px-2 text-sm text-gray-600 focus:outline-none"
+            class="min-w-[9ch] px-2 text-center text-sm text-gray-600 focus:outline-none"
           >
             Week {selectedWeekNumber}
           </div>
