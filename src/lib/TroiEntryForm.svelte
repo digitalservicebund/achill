@@ -30,6 +30,7 @@
     description: entry?.description ? entry.description : "",
     hours: entry?.hours ? entry.hours : "",
   };
+
   let errors = {};
 
   let handleSubmit = async (update = false, billingId = null) => {
@@ -223,8 +224,8 @@
         </div>
         <div class="my-1 flex place-items-center justify-start">
           <label for="hours" class="basis-1/4">Recurring Tasks</label>
-          {#if componentModel.recurringTask}
-            {#each componentModel.recurringTask as entry}
+          {#if componentModel.recurringTasks}
+            {#each componentModel.recurringTasks as entry}
               <input
                 id={entry.name}
                 type="checkbox"
@@ -237,19 +238,24 @@
           {/if}
         </div>
         <div>
-          {#if componentModel.projects}
-            {#each componentModel.projects.filter((project) => {
-              project.projectId == calculationPositionId.toString();
-            }) as project}
-              {project.projectName}
+          {#if componentModel.positions}
+            {#each componentModel.positions as position}
+              {#if position.id === calculationPositionId && position.phases}
+                {#each position.phases as phase}
+                  <details>
+                    <summary>
+                      {phase}
+                      <span class="icon">👇</span>
+                    </summary>
+                    {#if componentModel.phaseTasks}
+                      {#each componentModel.phaseTasks as task}
+                        <p>{task.name}</p>
+                      {/each}
+                    {/if}
+                  </details>
+                {/each}
+              {/if}
             {/each}
-            <details>
-              <summary>
-                TBD: Phase
-                <span class="icon">👇</span>
-              </summary>
-              <p>TBD: Tasks for each phase</p>
-            </details>
           {/if}
         </div>
         <div class="my-1 flex place-items-center justify-start">
