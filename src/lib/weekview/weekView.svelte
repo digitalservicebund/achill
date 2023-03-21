@@ -6,7 +6,7 @@
   // @ts-nocheck
 
   export let selectedWeek;
-  export let hours;
+  export let times;
   export let selectedDate;
   export let selectedDateChanged;
   export let weekChanged;
@@ -16,6 +16,7 @@
   let selectedWeekNumber;
   let selectedMonth;
   let selectedYear;
+  let displayHours = [];
   const weekdays = ["M", "T", "W", "T", "F"];
 
   beforeUpdate(() => {
@@ -46,6 +47,7 @@
     if (tdt.getDay() !== 4) {
       tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
     }
+    // @ts-ignore
     return 1 + Math.ceil((firstThursday - tdt) / 604800000);
   }
 
@@ -55,6 +57,15 @@
     selectedWeekNumber = getWeekNumber();
     selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
       weekday: "long",
+    });
+    // parse hours to correct format
+    // they are inputted as float values and 2.25 corresponds to 2:15h
+    displayHours = [];
+    times.forEach((time) => {
+      const minutesFloat = time % 1;
+      const displayMinutes = (+minutesFloat * 60).toFixed(0);
+      console.log(time, minutesFloat, displayMinutes);
+      displayHours.push(`${Math.floor(time)}:${displayMinutes}`);
     });
   }
 </script>
@@ -187,7 +198,7 @@
                 {/each}
               </tr>
               <tr>
-                {#each hours as time}
+                {#each displayHours as time}
                   <td>
                     <div class="flex min-w-[6ch] justify-center px-2 py-2">
                       {#if time == 0}

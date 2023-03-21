@@ -1,6 +1,5 @@
 <script>
   import c from "calendar";
-  import { DateInput } from "date-picker-svelte";
   import moment from "moment";
   import { onMount } from "svelte";
 
@@ -13,25 +12,49 @@
   let selectedDate = new Date();
   let selectedWeek = [];
   let projects = [];
-  let hours = ["0", "0", "4:23", "0:25", "8:00"];
+  let hoursPerDay = {};
+  /*
+    hoursPerDay as object, key is the date and value is the sum of hours for that day
+    {
+      Montag: 4,
+      Dienstag: 5.6,
+      ...
+    }
+    troi api returns hours as float value
+  */
+  let times = [];
   $: startDate = selectedWeek[0];
   $: endDate = selectedWeek[4];
 
   const reload = async () => {
     calculateWeek();
+    initHoursPerDay();
+    console.log(hoursPerDay);
 
     projects = await $troiApi.getCalculationPositions();
+    console.log(projects);
+    /*
+      projects as array
+      0: 
+        id: 515
+        name: "DigitalService / MK_22_0009 / Musterprojekt / Unterprojekt 1 / Regular Engineering"
+      1: 
+      ...
+    */
 
-    // maybe loop for all days
-    $troiApi
-      .getTimeEntries(
-        515,
-        moment(startDate).format("YYYYMMDD"),
-        moment(endDate).format("YYYYMMDD")
-      )
-      .then((entries) => {
-        console.log("entries", entries);
-      });
+    projects.forEach((project) => {
+      $troiApi
+        .getTimeEntries(
+          project.id,
+          moment(startDate).format("YYYYMMDD"),
+          moment(endDate).format("YYYYMMDD")
+        )
+        .then((entries) => {
+          console.log(project.id, "entries", entries);
+          addToHoursPerDay(entries);
+          times = Object.values(hoursPerDay);
+        });
+    });
   };
 
   onMount(() => {
@@ -52,13 +75,42 @@
     }
   };
 
+  const initHoursPerDay = () => {
+    hoursPerDay = {
+      Montag: 0,
+      Dienstag: 0,
+      Mittwoch: 0,
+      Donnerstag: 0,
+      Freitag: 0,
+    };
+  };
+
+  const getWeekdayName = (date) => {
+    return date.toLocaleDateString("de-DE", {
+      weekday: "long",
+    });
+  };
+
+  const addToHoursPerDay = (entries) => {
+    /*
+      entries as array
+        0: {id: 14696, date: '2023-03-13', hours: 2.1666666667, description: ''}
+        1: {id: 14695, date: '2023-03-16', hours: 2.25, description: ''}
+    */
+    entries.forEach((entry) => {
+      const weekday = getWeekdayName(new Date(entry.date));
+      hoursPerDay[weekday] += entry.hours;
+    });
+    console.log(hoursPerDay);
+  };
+
   const weekChanged = (days) => {
-    console.log("clicked", days);
     // has to be reassigned for the component to rerender
     let selectedDateCopy = new Date(selectedDate);
     selectedDateCopy.setDate(selectedDateCopy.getDate() + days);
     selectedDate = selectedDateCopy;
     calculateWeek();
+    reload();
   };
 
   const selectedDateChanged = (date) => {
@@ -69,7 +121,7 @@
 <section>
   <WeekView
     {selectedWeek}
-    {hours}
+    {times}
     {selectedDate}
     {selectedDateChanged}
     {weekChanged}
