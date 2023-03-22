@@ -51,21 +51,28 @@
     return 1 + Math.ceil((firstThursday - tdt) / 604800000);
   }
 
-  export function updateComponent() {
+  function padLeadingZeros(num, size) {
+    var s = "0" + num;
+    return s.substring(s.length - size);
+  }
+
+  function formatToUiTime(time) {
+    // times are float input and we need to parse them to "H:MM", e.g 2.25 -> 2:15
+    const minutes = time % 1; //extract 0.25 from 2.25
+    const displayMinutes = (+minutes * 60).toFixed(0);
+    return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
+  }
+
+  function updateComponent() {
     selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
     selectedYear = selectedDate.getFullYear();
     selectedWeekNumber = getWeekNumber();
     selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
       weekday: "long",
     });
-    // parse hours to correct format
-    // they are inputted as float values and 2.25 corresponds to 2:15h
     displayHours = [];
     times.forEach((time) => {
-      const minutesFloat = time % 1;
-      const displayMinutes = (+minutesFloat * 60).toFixed(0);
-      console.log(time, minutesFloat, displayMinutes);
-      displayHours.push(`${Math.floor(time)}:${displayMinutes}`);
+      displayHours.push(formatToUiTime(time));
     });
   }
 </script>
@@ -81,14 +88,14 @@
 
 <div class="flex py-8">
   <div class="w-full">
-    <div class="pb-8">
+    <div>
       <a
         class="angie-link pb-8"
         href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
         >Read about how to track your time in confluence</a
       >
     </div>
-    <div class="flex gap-8">
+    <div class="mt-8 flex gap-8">
       <!-- Date Label Box -->
       <div class="min-w-[30ch]">
         <div class="mb-3 flex items-center">

@@ -29,35 +29,37 @@
   const reload = async () => {
     calculateWeek();
     initHoursPerDay();
+    console.log(selectedWeek);
     console.log(hoursPerDay);
 
+    // No clue why I need to call that here, but without it, fetching the time entries does not work
+    await $troiApi;
+
+    projects.forEach(async (project) => {
+      const entries = await $troiApi.getTimeEntries(
+        project.id,
+        moment(startDate).format("YYYYMMDD"),
+        moment(endDate).format("YYYYMMDD")
+      );
+      console.log(project.id, "entries", entries);
+      if (entries.length > 0) {
+        addHoursToDay(entries);
+      }
+      times = Object.values(hoursPerDay);
+    });
+  };
+
+  onMount(async () => {
     projects = await $troiApi.getCalculationPositions();
     console.log(projects);
     /*
-      projects as array
+      projects returned as array
       0: 
         id: 515
         name: "DigitalService / MK_22_0009 / Musterprojekt / Unterprojekt 1 / Regular Engineering"
       1: 
       ...
     */
-
-    projects.forEach((project) => {
-      $troiApi
-        .getTimeEntries(
-          project.id,
-          moment(startDate).format("YYYYMMDD"),
-          moment(endDate).format("YYYYMMDD")
-        )
-        .then((entries) => {
-          console.log(project.id, "entries", entries);
-          addToHoursPerDay(entries);
-          times = Object.values(hoursPerDay);
-        });
-    });
-  };
-
-  onMount(() => {
     reload();
   });
 
@@ -91,15 +93,23 @@
     });
   };
 
-  const addToHoursPerDay = (entries) => {
+  const addHoursToDay = (entries) => {
     /*
       entries as array
         0: {id: 14696, date: '2023-03-13', hours: 2.1666666667, description: ''}
         1: {id: 14695, date: '2023-03-16', hours: 2.25, description: ''}
     */
     entries.forEach((entry) => {
-      const weekday = getWeekdayName(new Date(entry.date));
-      hoursPerDay[weekday] += entry.hours;
+      const refDate = new Date(entry.date);
+      refDate.setHours(0, 0, 0, 0); // troi api returns date with 01:00:00 GMT+0100, set to zero for comparison
+      // if user quickly goes through calender we need to ignore dates that are not within the desired selectedWeek
+      if (refDate >= selectedWeek[0] && refDate <= selectedWeek[4]) {
+        const weekdayName = getWeekdayName(new Date(entry.date));
+        hoursPerDay[weekdayName] += entry.hours;
+        console.log(refDate, "✅ range");
+      } else {
+        console.log(refDate, "❌ range");
+      }
     });
     console.log(hoursPerDay);
   };
@@ -129,7 +139,6 @@
 </section>
 
 {#each projects as project}
-  {console.log(project.id)}
   <!-- TODO: make into single component Project -->
   <section class="bg-white">
     <div class="container mx-auto pt-4 pb-2">
