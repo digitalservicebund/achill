@@ -26,21 +26,21 @@
           "noco",
           "ds4g-data",
           "Tracky-Position-Phase",
-          "Tracky-Position-Phase",
-          {
-            where: `(Position ID,like,%${position["id"]}%)`,
-          }
+          "Tracky-Position-Phase"
         )
-        .then(function (data) {
-          data.list.forEach((relation) => {
+        .then(function (positionPhaseData) {
+          positionPhaseData.list.forEach((relation) => {
             nocodbApi.dbViewRow
               .list("noco", "ds4g-data", "Tracky-Phase", "Phase", {
                 where: `(Id,eq,${relation["Phase ID"]})`,
               })
               .then(function (data) {
                 data.list.forEach((phase) => {
-                  if (!("phases" in position)) position.phases = [];
-                  position.phases.push(phase.name);
+                  if((relation["Position ID"] == position.id) || 
+                    (!relation["Position ID"] && position.name.includes(relation["Position Name"]))) {
+                    if (!("phases" in position)) position.phases = [];
+                    position.phases.push(phase.name);
+                  }
                 });
               })
               .catch(function (error) {
