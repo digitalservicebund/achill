@@ -16,8 +16,8 @@
   /*
     hoursPerDay as object, key is the date and value is the sum of hours for that day
     {
-      Montag: 4,
-      Dienstag: 5.6,
+      "2023-03-27": 4,
+      "2023-03-28": 5.6,
       ...
     }
     troi api returns hours as float value
@@ -49,6 +49,14 @@
     });
   };
 
+  function initHoursPerDay() {
+    hoursPerDay = {};
+    selectedWeek.forEach((day) => {
+      day.setHours(0, 0, 0, 0); // troi api returns date with 01:00:00 GMT+0100, set to zero for comparison
+      hoursPerDay[day] = 0;
+    });
+  }
+
   onMount(async () => {
     projects = await $troiApi.getCalculationPositions();
     console.log(projects);
@@ -77,22 +85,6 @@
     }
   };
 
-  const initHoursPerDay = () => {
-    hoursPerDay = {
-      Montag: 0,
-      Dienstag: 0,
-      Mittwoch: 0,
-      Donnerstag: 0,
-      Freitag: 0,
-    };
-  };
-
-  const getWeekdayName = (date) => {
-    return date.toLocaleDateString("de-DE", {
-      weekday: "long",
-    });
-  };
-
   const addHoursToDay = (entries) => {
     /*
       entries as array
@@ -100,15 +92,14 @@
         1: {id: 14695, date: '2023-03-16', hours: 2.25, description: ''}
     */
     entries.forEach((entry) => {
-      const refDate = new Date(entry.date);
-      refDate.setHours(0, 0, 0, 0); // troi api returns date with 01:00:00 GMT+0100, set to zero for comparison
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0); // troi api returns date with 01:00:00 GMT+0100, set to zero for comparison
       // if user quickly goes through calender we need to ignore dates that are not within the desired selectedWeek
-      if (refDate >= selectedWeek[0] && refDate <= selectedWeek[4]) {
-        const weekdayName = getWeekdayName(new Date(entry.date));
-        hoursPerDay[weekdayName] += entry.hours;
-        console.log(refDate, "✅ range");
+      if (entryDate >= selectedWeek[0] && entryDate <= selectedWeek[4]) {
+        hoursPerDay[entryDate] += entry.hours;
+        console.log(entryDate, "✅ range");
       } else {
-        console.log(refDate, "❌ range");
+        console.log(entryDate, "❌ range");
       }
     });
     console.log(hoursPerDay);
