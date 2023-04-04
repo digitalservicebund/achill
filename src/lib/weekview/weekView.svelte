@@ -120,6 +120,16 @@
           >
             <span class="material-symbols-outlined"> chevron_right </span>
           </button>
+          <button
+            aria-label="today"
+            class="min-w-[7ch] text-center font-bold text-blue-600 hover:text-blue-700"
+            on:click={() => {
+              selectedDateChanged(new Date());
+              weekChanged(0);
+            }}
+          >
+            Today
+          </button>
         </div>
         <div
           tabindex="0"
