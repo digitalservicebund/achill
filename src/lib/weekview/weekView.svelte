@@ -9,7 +9,9 @@
   export let times;
   export let selectedDate;
   export let selectedDateChanged;
-  export let weekChanged;
+  export let reduceWeekClicked;
+  export let increaseWeekClicked;
+  export let todayClicked;
 
   const today = new Date();
   let selectedWeekday;
@@ -103,7 +105,7 @@
           <button
             aria-label="calendar backward"
             class="-ml-1.5 flex items-center justify-center text-gray-600 hover:text-gray-400"
-            on:click={() => weekChanged(-7)}
+            on:click={() => reduceWeekClicked()}
           >
             <span class="material-symbols-outlined"> chevron_left </span>
           </button>
@@ -116,7 +118,7 @@
           <button
             aria-label="calendar forward"
             class="flex items-center justify-center text-gray-600 hover:text-gray-400"
-            on:click={() => weekChanged(7)}
+            on:click={() => increaseWeekClicked()}
           >
             <span class="material-symbols-outlined"> chevron_right </span>
           </button>
@@ -124,8 +126,7 @@
             aria-label="today"
             class="min-w-[7ch] text-center font-bold text-blue-600 hover:text-blue-700"
             on:click={() => {
-              selectedDateChanged(new Date());
-              weekChanged(0);
+              todayClicked();
             }}
           >
             Today
