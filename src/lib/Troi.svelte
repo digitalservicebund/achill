@@ -23,11 +23,12 @@
     troi api returns hours as float value
   */
   let times = [];
-  $: startDate = selectedWeek[0];
-  $: endDate = selectedWeek[4];
+  let startDate = "";
+  let endDate = "";
 
   const reload = async () => {
     calculateWeek();
+    setCacheInterval();
     initHoursPerDay();
     console.log(selectedWeek);
     console.log(hoursPerDay);
@@ -45,9 +46,17 @@
       if (entries.length > 0) {
         addHoursToDay(entries);
       }
-      times = Object.values(hoursPerDay);
+      times = extractSelectedWeekEntries();
     });
   };
+
+  function extractSelectedWeekEntries() {
+    let entries = {};
+    for (let date in selectedWeek) {
+      entries[date] = hoursPerDay[date];
+    }
+    return Object.values(entries);
+  }
 
   function initHoursPerDay() {
     hoursPerDay = {};
@@ -76,14 +85,26 @@
       selectedDate.getFullYear(),
       selectedDate.getMonth()
     );
+    console.log("-----");
+    console.log(weeks);
     for (const week of weeks) {
       const lastDateOfWeek = new Date(week[6]);
       if (selectedDate <= lastDateOfWeek) {
         selectedWeek = week.slice(0, 5);
+        console.log("-----");
+        console.log(selectedWeek);
+
         break;
       }
     }
   };
+
+  function setCacheInterval() {
+    startDate = addDaysToDate(selectedWeek[0], -35);
+    endDate = addDaysToDate(selectedWeek[4], 7);
+    console.log(startDate);
+    console.log(endDate);
+  }
 
   const addHoursToDay = (entries) => {
     /*
@@ -96,8 +117,8 @@
       entryDate.setHours(0, 0, 0, 0); // troi api returns date with 01:00:00 GMT+0100, set to zero for comparison
       // if user quickly goes through calender we need to ignore dates that are not within the desired selectedWeek
       if (entryDate >= selectedWeek[0] && entryDate <= selectedWeek[4]) {
-        hoursPerDay[entryDate] += entry.hours;
         console.log(entryDate, "✅ range");
+        hoursPerDay[entryDate] += entry.hours;
       } else {
         console.log(entryDate, "❌ range");
       }
@@ -106,16 +127,18 @@
   };
 
   const weekChanged = (days) => {
-    // has to be reassigned for the component to rerender
-    let selectedDateCopy = new Date(selectedDate);
-    selectedDateCopy.setDate(selectedDateCopy.getDate() + days);
-    selectedDate = selectedDateCopy;
+    selectedDate = addDaysToDate(selectedDate, days);
     calculateWeek();
     reload();
   };
 
   const selectedDateChanged = (date) => {
     selectedDate = date;
+  };
+
+  const addDaysToDate = (date, days) => {
+    date.setDate(date.getDate() + days);
+    return date;
   };
 </script>
 
