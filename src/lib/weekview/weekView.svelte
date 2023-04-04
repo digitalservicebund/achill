@@ -135,7 +135,7 @@
           tabindex="0"
           class="text-base font-bold text-gray-800 focus:outline-none"
         >
-          {selectedDate.toLocaleDateString("de-DE", {
+          {selectedDate.toLocaleDateString("en-gb", {
             weekday: "long",
             year: "numeric",
             month: "long",
