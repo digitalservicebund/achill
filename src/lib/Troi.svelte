@@ -80,9 +80,10 @@
         } else if (isAtCacheTop()) {
           increaseTopCacheByIntervall();
           increaseSelectedWeek();
+        } else {
+          // initial loading
+          setTimesForSelectedWeek();
         }
-        // normal week switch
-        setTimesForSelectedWeek();
         loadingEntries = false;
       }
     });
@@ -100,9 +101,9 @@
 
   function fillSelectedWeekWithCurrent() {
     // calc Monday of current week
-    const day = selectedDate.getDay() || 7; // get current day number, converting Sunday to 7
+    const dayNumberToday = selectedDate.getDay() || 7; // get current day number, converting Sunday to 7
     var monday = new Date();
-    if (day !== 1) monday.setHours(-24 * (day - 1)); // only manipulate the date if it isn't Monday
+    if (dayNumberToday !== 1) monday.setHours(-24 * (dayNumberToday - 1)); // only manipulate the date if it isn't Monday
 
     // assign Monday to Friday based on Monday
     selectedWeek[0] = monday;
@@ -192,6 +193,23 @@
       addDaysToDate(selectedWeek[4], -7)
     );
   }
+
+  const entriesPerDay = {
+    "20230327": [
+      {
+        id: 13488,
+        date: "2023-02-20",
+        hours: 8,
+        description: "Webauthn Research & Implementation",
+      },
+      {
+        id: 13488,
+        date: "2023-02-20",
+        hours: 8,
+        description: "Webauthn Research & Implementation",
+      },
+    ],
+  };
 
   function triggerTopFetch() {
     loadTimeEntries(
