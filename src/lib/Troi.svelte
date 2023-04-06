@@ -194,23 +194,6 @@
     );
   }
 
-  const entriesPerDay = {
-    "20230327": [
-      {
-        id: 13488,
-        date: "2023-02-20",
-        hours: 8,
-        description: "Webauthn Research & Implementation",
-      },
-      {
-        id: 13488,
-        date: "2023-02-20",
-        hours: 8,
-        description: "Webauthn Research & Implementation",
-      },
-    ],
-  };
-
   function triggerTopFetch() {
     loadTimeEntries(
       addDaysToDate(selectedWeek[0], 7),
