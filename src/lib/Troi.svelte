@@ -14,17 +14,12 @@
   let selectedWeek = [];
   let projects = [];
   let times = [];
-  let allHoursPerDay = {};
-  /*
-    allHoursPerDay as object, key is the date (format YYYYMMDD) and value is the sum of hours for that day
-    {
-      "20230327": 4,
-      "20230328": 5.6,
-      ...
-    }
-    troi api returns hours as float value
+  let entriesPerDay = {};
+  /* 
+    entries as array
+      '20230313': {entries: [{id: 14694, date: '2023-03-13', hours: 2.1666666667}], sum: 2.1666666667}
+      '20230316': {entries: [{id: 14695, date: '2023-03-16', hours: 2.25}, {id: 14694, date: '2023-03-16', hours: 5}], sum: 5.25}
   */
-
   const cacheIntervallWeeks = 6;
   const cacheIntervallInDays = cacheIntervallWeeks * 7;
   let cacheTopBorder = 0;
@@ -70,7 +65,7 @@
       console.log(project.id, "entries", entries);
       projectSuccessCounter++;
       if (entries.length > 0) {
-        addHoursToDay(entries);
+        collectEntriesPerDay(entries);
       }
       if (projectSuccessCounter == projects.length) {
         // switch weeks at cache borders
@@ -89,11 +84,25 @@
     });
   }
 
+  function collectEntriesPerDay(entries) {
+    entries.forEach((entry) => {
+      const entryDate = formatDate(entry.date);
+      if (!(entryDate in entriesPerDay)) {
+        entriesPerDay[entryDate] = { entries: [], sum: 0 };
+      }
+      entriesPerDay[entryDate].entries.push(entry);
+      entriesPerDay[entryDate].sum += entry.hours;
+    });
+  }
+
   function setTimesForSelectedWeek() {
     let entries = {};
     selectedWeek.forEach((date) => {
-      entries[date] = allHoursPerDay[formatDate(date)];
-      if (isNaN(entries[date])) entries[date] = 0; // assign zero if no hours for that day are present
+      if (formatDate(date) in entriesPerDay) {
+        entries[date] = entriesPerDay[formatDate(date)].sum;
+      } else {
+        entries[date] = 0; // assign zero if no hours for that day are present
+      }
     });
     console.log("entries", entries);
     times = Object.values(entries);
@@ -117,19 +126,6 @@
     // values for today button to come back to
     initalDate = selectedDate;
     initalWeek = selectedWeek;
-  }
-
-  function addHoursToDay(entries) {
-    /*
-      entries as array
-        0: {id: 14694, date: '2023-03-13', hours: 2.1666666667}
-        1: {id: 14695, date: '2023-03-16', hours: 2.25}
-    */
-    entries.forEach((entry) => {
-      const entryDate = formatDate(new Date(entry.date));
-      if (isNaN(allHoursPerDay[entryDate])) allHoursPerDay[entryDate] = 0;
-      allHoursPerDay[entryDate] += entry.hours;
-    });
   }
 
   // subtraction also possible
