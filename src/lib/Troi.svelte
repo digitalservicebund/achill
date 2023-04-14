@@ -26,6 +26,8 @@
   let cacheBottomBorder = 0;
   let cacheWeekIndex = 0;
 
+  $: entriesOfSelectedDate = [];
+
   // both variables used to jump back when today button pressed
   let initalDate = new Date();
   let initalWeek = [];
@@ -206,7 +208,26 @@
 
   function selectedDateChanged(date) {
     selectedDate = date;
+    entriesOfSelectedDate = getEntriesOfSelectedDate();
+    console.log("Entries of selected date:", entriesOfSelectedDate);
     //TODO: load only projects in the tiles according to the selected date
+  }
+
+  function getEntriesOfSelectedDate() {
+    console.log(
+      "Entries of selected date are calculated:",
+      entriesPerDay[formatDate(selectedDate)]
+    );
+    if (entriesPerDay[formatDate(selectedDate)] == null) {
+      console.log("No entries for this day");
+      return [];
+    } else {
+      console.log(
+        "Entries for this day:",
+        entriesPerDay[formatDate(selectedDate)].entries
+      );
+      return entriesPerDay[formatDate(selectedDate)].entries;
+    }
   }
 </script>
 
@@ -239,10 +260,15 @@
         >
           {project.name}
         </h2>
+        <!-- <TroiTimeEntries
+          calculationPositionId={project.id}
+          startDate={formatDate(selectedDate)}
+          endDate={formatDate(selectedDate)}
+        /> -->
+        <!-- {console.log(entriesOfSelectedDate())} -->
         <TroiTimeEntries
           calculationPositionId={project.id}
-          startDate={"20230201"}
-          endDate={"20230430"}
+          entries={entriesOfSelectedDate}
         />
       </div>
     </section>
