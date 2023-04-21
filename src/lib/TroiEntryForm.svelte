@@ -182,6 +182,8 @@
       ? values.description + ", " + generatedEntry
       : generatedEntry;
   };
+
+  console.log(componentModel);
 </script>
 
 <div
@@ -245,7 +247,6 @@
                   <details>
                     <summary>
                       {phase}
-                      <span class="icon">👇</span>
                     </summary>
                     {#if componentModel.phaseTasks}
                       {#each componentModel.phaseTasks as task}
@@ -256,6 +257,8 @@
                 {/each}
               {/if}
             {/each}
+          {:else}
+            Loading ...
           {/if}
         </div>
         <div class="my-1 flex place-items-center justify-start">

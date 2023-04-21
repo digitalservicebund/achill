@@ -3,6 +3,7 @@
   import moment from "moment";
   import { onMount } from "svelte";
 
+  // import { troiApi } from "./troiApiService";
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
@@ -11,36 +12,82 @@
   let endDate = new Date();
   let startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
-  let positions = [];
-  let componentModel = {};
+  const getCalculationPositions = async () => {
+    const calculationPositions = await $troiApi.makeRequest({
+      url: "/calculationPositions",
+      params: {
+        clientId: $troiApi.getClientId(),
+        favoritesOnly: true,
+      },
+    });
+    return calculationPositions.map((obj) => {
+      return {
+        name: obj.DisplayPath,
+        id: obj.Id,
+        subproject: obj.Subproject.id,
+      };
+    });
+  };
 
-  const reload = async () => {
-    if ($troiApi == undefined) {
-      return;
-    }
-
-    positions = await $troiApi.getCalculationPositions();
+  const getProjectData = async () => {
+    // instead of getCalculationPositions() make a custom request to also return the subprojects
+    // get phases assigned by calculation position
+    let positions = await getCalculationPositions();
     positions.forEach((position) => {
       nocodbApi.dbViewRow
         .list(
           "noco",
           "ds4g-data",
           "Tracky-Position-Phase",
-          "Tracky-Position-Phase"
+          "Tracky-Position-Phase",
+          {
+            where: `(Position ID,eq,${position.id})`,
+          }
         )
         .then(function (positionPhaseData) {
-          positionPhaseData.list.forEach((relation) => {
+          positionPhaseData.list.forEach((positionPhase) => {
             nocodbApi.dbViewRow
-              .list("noco", "ds4g-data", "Tracky-Phase", "Phase", {
-                where: `(Id,eq,${relation["Phase ID"]})`,
+              .list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase", {
+                where: `(Phase ID,eq,${positionPhase["Phase ID"]})`,
               })
               .then(function (data) {
                 data.list.forEach((phase) => {
-                  if((relation["Position ID"] == position.id) || 
-                    (!relation["Position ID"] && position.name.includes(relation["Position Name"]))) {
-                    if (!("phases" in position)) position.phases = [];
-                    position.phases.push(phase.name);
-                  }
+                  if (!("phases" in position)) position.phases = [];
+                  position.phases.push(phase["Phase Name"]);
+                });
+              })
+              .catch(function (error) {
+                console.error("ERROR GETTING PHASE: " + error);
+              });
+          });
+        })
+        .catch(function (error) {
+          console.error("ERROR GETTING POSITION-PHASE: " + error);
+        });
+    });
+
+    // get phases assigned by subproject
+    positions.forEach((position) => {
+      nocodbApi.dbViewRow
+        .list(
+          "noco",
+          "ds4g-data",
+          "Tracky-Subproject-Phase",
+          "Tracky-Subproject-Phase",
+          {
+            where: `(Subproject ID,eq,${position.subproject})`,
+          }
+        )
+        .then(function (positionPhaseData) {
+          positionPhaseData.list.forEach((positionPhase) => {
+            nocodbApi.dbViewRow
+              .list("noco", "ds4g-data", "Tracky-Phase", "Tracky-Phase", {
+                where: `(Phase ID,eq,${positionPhase["Phase ID"]})`,
+              })
+              .then(function (data) {
+                data.list.forEach((phase) => {
+                  if (!("phases" in position)) position.phases = [];
+                  position.phases.push(phase["Phase Name"]);
                 });
               })
               .catch(function (error) {
@@ -63,11 +110,20 @@
       (keyword) => keyword.type == "RECURRING"
     );
 
-    componentModel = {
+    return (componentModel = {
       recurringTasks: recurringTasks,
       phaseTasks: phaseTasks,
       positions: positions,
-    };
+    });
+  };
+
+  let componentModel = getProjectData();
+
+  const reload = async () => {
+    if ($troiApi == undefined) {
+      return;
+    }
+    componentModel = getProjectData();
   };
 
   onMount(() => {
@@ -104,7 +160,7 @@
       <button
         class="rounded-sm border border-blue-500 px-2 py-1 hover:bg-blue-100"
         on:click={() => {
-          (positions = []), reload();
+          reload();
         }}
       >
         <svg
@@ -126,27 +182,28 @@
   </div>
 </section>
 
-{#each positions as project}
-  <!-- TODO: make into single component Project -->
-  <section class="bg-white">
-    <div class="container mx-auto pt-4 pb-2">
-      <h2
-        class="text-lg font-semibold text-gray-900"
-        title="Position ID: {project.id}"
-      >
-        {project.name}
-      </h2>
-      <TroiTimeEntries
-        calculationPositionId={project.id}
-        {componentModel}
-        startDate={moment(startDate).format("YYYYMMDD")}
-        endDate={moment(endDate).format("YYYYMMDD")}
-      />
-    </div>
-  </section>
-{:else}
-  <p>Loading…</p>
-{/each}
+{#await componentModel}
+  <p>...Loading</p>
+{:then componentModel}
+  {#each componentModel.positions as project}
+    <section class="bg-white">
+      <div class="container mx-auto pt-4 pb-2">
+        <h2
+          class="text-lg font-semibold text-gray-900"
+          title="Position ID: {project.id}"
+        >
+          {project.name}
+        </h2>
+        <TroiTimeEntries
+          calculationPositionId={project.id}
+          {componentModel}
+          startDate={moment(startDate).format("YYYYMMDD")}
+          endDate={moment(endDate).format("YYYYMMDD")}
+        />
+      </div>
+    </section>
+  {/each}
+{/await}
 
 <section class="mt-8 text-xs text-gray-600">
   <p>
