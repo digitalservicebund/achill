@@ -1,4 +1,6 @@
 <script>
+  // @ts-nocheck
+
   import moment from "moment";
   import { onMount } from "svelte";
 
@@ -17,8 +19,20 @@
   let entriesPerDay = {};
   /* 
     entries as array
-      '20230313': {entries: [{id: 14694, date: '2023-03-13', hours: 2.1666666667}], sum: 2.1666666667}
-      '20230316': {entries: [{id: 14695, date: '2023-03-16', hours: 2.25}, {id: 14694, date: '2023-03-16', hours: 5}], sum: 5.25}
+      '20230313': {
+        projects: {
+          254: [
+            {id: 14694, date: '2023-03-13', hours: 1},
+            {id: 14695, date: '2023-03-13', hours: 2}
+          ],
+          255: [
+            {id: 321, date: '2023-03-13', hours: 3},
+            {id: 322, date: '2023-03-13', hours: 4}
+          ]
+        },
+        sum: 10
+      },
+      ...
   */
   const cacheIntervallWeeks = 6;
   const cacheIntervallInDays = cacheIntervallWeeks * 7;
@@ -67,7 +81,7 @@
       console.log(project.id, "entries", entries);
       projectSuccessCounter++;
       if (entries.length > 0) {
-        collectEntriesPerDay(entries);
+        collectEntriesPerDay(project, entries);
       }
       if (projectSuccessCounter == projects.length) {
         // switch weeks at cache borders
@@ -86,13 +100,42 @@
     });
   }
 
-  function collectEntriesPerDay(entries) {
+  function collectEntriesPerDay(project, entries) {
+    const projectId = project.id.toString();
+    /* 
+      entries as array
+        '20230313': {
+          projects: {
+            254: {
+              name: Grundsteuer,
+              entries: [
+                {id: 14694, date: '2023-03-13', hours: 1},
+                {id: 14695, date: '2023-03-13', hours: 2}
+              ]
+            }
+          },
+          sum: 10
+        },
+        ...
+    */
     entries.forEach((entry) => {
       const entryDate = formatDate(entry.date);
       if (!(entryDate in entriesPerDay)) {
-        entriesPerDay[entryDate] = { entries: [], sum: 0 };
+        entriesPerDay[entryDate] = {
+          projects: {},
+          sum: 0,
+        };
       }
-      entriesPerDay[entryDate].entries.push(entry);
+      if (!(projectId in entriesPerDay[entryDate]["projects"])) {
+        entriesPerDay[entryDate]["projects"][projectId] = {};
+      }
+      if (!("entries" in entriesPerDay[entryDate]["projects"][projectId])) {
+        entriesPerDay[entryDate]["projects"][projectId]["entries"] = [];
+      }
+      if (!("name" in entriesPerDay[entryDate]["projects"][projectId])) {
+        entriesPerDay[entryDate]["projects"][projectId]["name"] = project.name;
+      }
+      entriesPerDay[entryDate]["projects"][projectId]["entries"].push(entry);
       entriesPerDay[entryDate].sum += entry.hours;
     });
   }
@@ -208,26 +251,9 @@
 
   function selectedDateChanged(date) {
     selectedDate = date;
-    entriesOfSelectedDate = getEntriesOfSelectedDate();
-    console.log("Entries of selected date:", entriesOfSelectedDate);
-    //TODO: load only projects in the tiles according to the selected date
-  }
-
-  function getEntriesOfSelectedDate() {
-    console.log(
-      "Entries of selected date are calculated:",
-      entriesPerDay[formatDate(selectedDate)]
-    );
-    if (entriesPerDay[formatDate(selectedDate)] == null) {
-      console.log("No entries for this day");
-      return [];
-    } else {
-      console.log(
-        "Entries for this day:",
-        entriesPerDay[formatDate(selectedDate)].entries
-      );
-      return entriesPerDay[formatDate(selectedDate)].entries;
-    }
+    entriesOfSelectedDate = {};
+    if (entriesPerDay[formatDate(selectedDate)] == null) return;
+    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
   }
 </script>
 
@@ -250,38 +276,8 @@
       {todayClicked}
     />
   </section>
-  {#each projects as project}
-    <!-- TODO: make into single component Project -->
-    <section class="bg-white">
-      <div class="container mx-auto pt-4 pb-2">
-        <h2
-          class="text-lg font-semibold text-gray-900"
-          title="Position ID: {project.id}"
-        >
-          {project.name}
-        </h2>
-        <!-- <TroiTimeEntries
-          calculationPositionId={project.id}
-          startDate={formatDate(selectedDate)}
-          endDate={formatDate(selectedDate)}
-        /> -->
-        <!-- {console.log(entriesOfSelectedDate())} -->
-        <TroiTimeEntries
-          calculationPositionId={project.id}
-          entries={entriesOfSelectedDate}
-        />
-      </div>
-    </section>
-  {/each}
+  <TroiTimeEntries entries={entriesOfSelectedDate} />
 {/if}
-
-<!-- 
-<TroiTimeEntries
-  calculationPositionId={project.id}
-  startDate={moment(startDate).format("YYYYMMDD")}
-  endDate={moment(endDate).format("YYYYMMDD")}
-/>
--->
 
 <section class="mt-8 text-xs text-gray-600">
   <p>
