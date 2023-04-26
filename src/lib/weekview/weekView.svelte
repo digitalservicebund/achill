@@ -2,13 +2,14 @@
 <script>
   import { clear_loops } from "svelte/internal";
   import { beforeUpdate } from "svelte";
+  import { formatHours } from "../formatHours.js";
 
   // @ts-nocheck
 
   export let selectedWeek;
   export let times;
   export let selectedDate;
-  export let selectedDateChanged;
+  export let setSelectedDate;
   export let reduceWeekClicked;
   export let increaseWeekClicked;
   export let todayClicked;
@@ -61,6 +62,7 @@
   function formatToUiTime(time) {
     if (time == 0) return "0";
     // times are float input and we need to parse them to "H:MM", e.g 2.25 -> 2:15
+    return formatHours(time);
     const minutes = time % 1; // extracts 0.25 from 2.25
     const displayMinutes = (+minutes * 60).toFixed(0);
     return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
@@ -75,7 +77,7 @@
     });
     displayHours = [];
     times.forEach((time) => {
-      displayHours.push(formatToUiTime(time));
+      displayHours.push(time == 0 ? "0" : formatHours(time));
     });
   }
 </script>
@@ -170,7 +172,7 @@
                   <td>
                     <div
                       class="h-full w-full"
-                      on:click={() => selectedDateChanged(date)}
+                      on:click={() => setSelectedDate(date)}
                     >
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"

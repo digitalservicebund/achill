@@ -13,26 +13,31 @@
   let projectSuccessCounter = 0;
 
   let selectedDate = new Date();
+  $: if (entriesPerDay[formatDate(selectedDate)] != null) {
+    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
+  } else {
+    entriesOfSelectedDate = {};
+  }
+
   let selectedWeek = [];
   let projects = [];
   let times = [];
+  let entriesOfSelectedDate = [];
   let entriesPerDay = {};
   /* 
-    entries as array
-      '20230313': {
-        projects: {
-          254: [
+    '20230313': {
+      projects: {
+        254: {
+          name: Grundsteuer,
+          entries: [
             {id: 14694, date: '2023-03-13', hours: 1},
             {id: 14695, date: '2023-03-13', hours: 2}
-          ],
-          255: [
-            {id: 321, date: '2023-03-13', hours: 3},
-            {id: 322, date: '2023-03-13', hours: 4}
           ]
-        },
-        sum: 10
+        }
       },
-      ...
+      sum: 3
+    },
+    ...
   */
   const cacheIntervallWeeks = 6;
   const cacheIntervallInDays = cacheIntervallWeeks * 7;
@@ -40,13 +45,13 @@
   let cacheBottomBorder = 0;
   let cacheWeekIndex = 0;
 
-  $: entriesOfSelectedDate = [];
-
   // both variables used to jump back when today button pressed
   let initalDate = new Date();
   let initalWeek = [];
 
   onMount(async () => {
+    //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
+    if ($troiApi == undefined) return;
     projects = await $troiApi.getCalculationPositions();
     console.log(projects);
     /*
@@ -66,9 +71,6 @@
   });
 
   async function loadTimeEntries(startDate, endDate) {
-    // No clue why I need to call that here, but without it, fetching the time entries does not work.
-    await $troiApi;
-
     loadingEntries = true;
     projectSuccessCounter = 0;
     //TODO: ERROR COUNTER + WARNING FOR USER IN CASE SUCCESS COUNTER IS NOT REACHED
@@ -94,6 +96,7 @@
         } else {
           // initial loading
           setTimesForSelectedWeek();
+          selectedDate = initalDate;
         }
         loadingEntries = false;
       }
@@ -102,22 +105,6 @@
 
   function collectEntriesPerDay(project, entries) {
     const projectId = project.id.toString();
-    /* 
-      entries as array
-        '20230313': {
-          projects: {
-            254: {
-              name: Grundsteuer,
-              entries: [
-                {id: 14694, date: '2023-03-13', hours: 1},
-                {id: 14695, date: '2023-03-13', hours: 2}
-              ]
-            }
-          },
-          sum: 10
-        },
-        ...
-    */
     entries.forEach((entry) => {
       const entryDate = formatDate(entry.date);
       if (!(entryDate in entriesPerDay)) {
@@ -126,16 +113,15 @@
           sum: 0,
         };
       }
-      if (!(projectId in entriesPerDay[entryDate]["projects"])) {
-        entriesPerDay[entryDate]["projects"][projectId] = {};
+
+      let projectEntries = entriesPerDay[entryDate]["projects"];
+      if (!(projectId in projectEntries)) {
+        projectEntries[projectId] = {
+          entries: [],
+          name: project.name,
+        };
       }
-      if (!("entries" in entriesPerDay[entryDate]["projects"][projectId])) {
-        entriesPerDay[entryDate]["projects"][projectId]["entries"] = [];
-      }
-      if (!("name" in entriesPerDay[entryDate]["projects"][projectId])) {
-        entriesPerDay[entryDate]["projects"][projectId]["name"] = project.name;
-      }
-      entriesPerDay[entryDate]["projects"][projectId]["entries"].push(entry);
+      projectEntries[projectId]["entries"].push(entry);
       entriesPerDay[entryDate].sum += entry.hours;
     });
   }
@@ -249,11 +235,8 @@
     setTimesForSelectedWeek();
   }
 
-  function selectedDateChanged(date) {
+  function setSelectedDate(date) {
     selectedDate = date;
-    entriesOfSelectedDate = {};
-    if (entriesPerDay[formatDate(selectedDate)] == null) return;
-    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
   }
 </script>
 
@@ -270,7 +253,7 @@
       {selectedWeek}
       {times}
       {selectedDate}
-      {selectedDateChanged}
+      {setSelectedDate}
       {reduceWeekClicked}
       {increaseWeekClicked}
       {todayClicked}
