@@ -12,13 +12,6 @@
   let loadingEntries = true;
   let projectSuccessCounter = 0;
 
-  let selectedDate = new Date();
-  $: if (entriesPerDay[formatDate(selectedDate)] != null) {
-    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
-  } else {
-    entriesOfSelectedDate = {};
-  }
-
   let selectedWeek = [];
   let projects = [];
   let times = [];
@@ -39,6 +32,13 @@
     },
     ...
   */
+  let selectedDate = new Date();
+  $: if (entriesPerDay[formatDate(selectedDate)] != null) {
+    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
+  } else {
+    entriesOfSelectedDate = {};
+  }
+
   const cacheIntervallWeeks = 6;
   const cacheIntervallInDays = cacheIntervallWeeks * 7;
   let cacheTopBorder = 0;
@@ -238,6 +238,28 @@
   function setSelectedDate(date) {
     selectedDate = date;
   }
+
+  async function onDeleteEntry(entry, projectId) {
+    console.log("Delete entry ", entry.id);
+    let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
+    console.log("Delete result: ", result);
+    if (result.ok) {
+      const index =
+        entriesPerDay[formatDate(selectedDate)]["projects"][
+          projectId
+        ].entries.indexOf(entry);
+      console.log("Index: ", index);
+      entriesPerDay[formatDate(selectedDate)]["projects"][
+        projectId
+      ].entries.splice(index, 1);
+      entriesOfSelectedDate =
+        entriesPerDay[formatDate(selectedDate)]["projects"];
+    }
+  }
+
+  function onSaveEntry(entry) {
+    console.log("Save entry ", entry);
+  }
 </script>
 
 {#if loadingEntries}
@@ -259,7 +281,11 @@
       {todayClicked}
     />
   </section>
-  <TroiTimeEntries entries={entriesOfSelectedDate} />
+  <TroiTimeEntries
+    entries={entriesOfSelectedDate}
+    deleteClicked={onDeleteEntry}
+    saveClicked={onSaveEntry}
+  />
 {/if}
 
 <section class="mt-8 text-xs text-gray-600">
