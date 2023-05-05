@@ -33,8 +33,10 @@
     // instead of getCalculationPositions() make a custom request to also return the subprojects
     // get phases assigned by calculation position
     let positions = await getCalculationPositions();
-    positions.forEach((position) => {
-      nocodbApi.dbViewRow
+
+    // get phases assigned by calculation position
+    for (const position of positions) {
+      await nocodbApi.dbViewRow
         .list(
           "noco",
           "ds4g-data",
@@ -64,11 +66,11 @@
         .catch(function (error) {
           console.error("ERROR GETTING POSITION-PHASE: " + error);
         });
-    });
+    }
 
-    // get phases assigned by subproject
-    positions.forEach((position) => {
-      nocodbApi.dbViewRow
+    // assign per subproject
+    for (const position of positions) {
+      await nocodbApi.dbViewRow
         .list(
           "noco",
           "ds4g-data",
@@ -98,7 +100,7 @@
         .catch(function (error) {
           console.error("ERROR GETTING POSITION-PHASE: " + error);
         });
-    });
+    }
 
     let tasks = await nocodbApi.dbTableRow.list(
       "v1",
