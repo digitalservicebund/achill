@@ -23,7 +23,6 @@
   let errors = {};
 
   let handleSubmit = async () => {
-    values.hours = formatHours(values.hours);
     try {
       // `abortEarly: false` to get all the errors
       await schema.validate(values, { abortEarly: false });
@@ -40,6 +39,8 @@
         values.hours = parseInt(hoursStr || 0) + parseInt(minutesStr) / 60;
       }
       onAddClick(project, values.hours, values.description);
+      values.hours = "";
+      values.description = "";
     }
   };
 

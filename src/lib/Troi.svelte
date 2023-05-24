@@ -9,10 +9,9 @@
 
   import WeekView from "./weekview/weekView.svelte";
   import TroiEntryForm from "./TroiEntryForm.svelte";
-  import { clear_loops } from "svelte/internal";
+  import LoadingOverlay from "./loadingOverlay.svelte";
 
-  let loadingEntries = true;
-  let deleteInProgress = false;
+  let isLoading = true;
   let projectSuccessCounter = 0;
 
   let selectedWeek = [];
@@ -74,7 +73,7 @@
   });
 
   async function loadTimeEntries(startDate, endDate) {
-    loadingEntries = true;
+    isLoading = true;
     projectSuccessCounter = 0;
     //TODO: ERROR COUNTER + WARNING FOR USER IN CASE SUCCESS COUNTER IS NOT REACHED
     projects.forEach(async (project) => {
@@ -101,7 +100,7 @@
           setTimesForSelectedWeek();
           selectedDate = initalDate;
         }
-        loadingEntries = false;
+        isLoading = false;
       }
     });
   }
@@ -244,7 +243,7 @@
 
   async function onDeleteEntry(entry, projectId) {
     console.log("Delete entry ", entry.id);
-    deleteInProgress = true;
+    isLoading = true;
     let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
     console.log("Delete result: ", result);
     if (result.ok) {
@@ -259,16 +258,14 @@
       entriesOfSelectedDate =
         entriesPerDay[formatDate(selectedDate)]["projects"];
     }
-    deleteInProgress = false;
+    isLoading = false;
   }
 
   async function onAddEntry(project, hours, description) {
+    isLoading = true;
     console.log("add ", project.id, hours, description);
 
-    const apiFormattedSelectedDate = moment(selectedDate.date).format(
-      "YYYY-MM-DD"
-    );
-    const entryFormattedSelectedDate = formatDate(selectedDate);
+    const apiFormattedSelectedDate = moment(selectedDate).format("YYYY-MM-DD");
 
     let clientId = await $troiApi.getClientId();
     let employeeId = await $troiApi.getEmployeeId();
@@ -304,7 +301,7 @@
     const entry = {
       date: apiFormattedSelectedDate,
       description: result.Name,
-      hours: result.Quantity,
+      hours: +result.Quantity,
       id: result.Id,
     };
     console.log(entry);
@@ -312,6 +309,7 @@
     collectEntriesPerDay(project, [entry]);
 
     setTimesForSelectedWeek();
+    isLoading = false;
   }
 
   function onSaveEntry(entry) {
@@ -319,37 +317,30 @@
   }
 </script>
 
-{#if loadingEntries}
-  <div class="mt-8 flex flex-col items-center justify-center">
-    <div
-      class="h-16 w-16 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"
-    />
-    <div class="mt-8">Fetching your time entries 🤗</div>
-  </div>
-{:else}
-  <section>
-    <WeekView
-      {selectedWeek}
-      {times}
-      {selectedDate}
-      {setSelectedDate}
-      {reduceWeekClicked}
-      {increaseWeekClicked}
-      {todayClicked}
-    />
-  </section>
-
-  {#each projects as project}
-    <TroiEntryForm {project} onAddClick={onAddEntry} />
-  {/each}
-
-  <TroiTimeEntries
-    entries={entriesOfSelectedDate}
-    deleteClicked={onDeleteEntry}
-    {deleteInProgress}
-    saveClicked={onSaveEntry}
-  />
+{#if isLoading}
+  <LoadingOverlay message={"Please wait..."} />
 {/if}
+<section>
+  <WeekView
+    {selectedWeek}
+    {times}
+    {selectedDate}
+    {setSelectedDate}
+    {reduceWeekClicked}
+    {increaseWeekClicked}
+    {todayClicked}
+  />
+</section>
+
+{#each projects as project}
+  <TroiEntryForm {project} onAddClick={onAddEntry} />
+{/each}
+
+<TroiTimeEntries
+  entries={entriesOfSelectedDate}
+  deleteClicked={onDeleteEntry}
+  saveClicked={onSaveEntry}
+/>
 
 <section class="mt-8 text-xs text-gray-600">
   <p>
