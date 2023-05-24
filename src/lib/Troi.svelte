@@ -9,6 +9,7 @@
 
   import WeekView from "./weekview/weekView.svelte";
   import TroiEntryForm from "./TroiEntryForm.svelte";
+  import { clear_loops } from "svelte/internal";
 
   let loadingEntries = true;
   let deleteInProgress = false;
@@ -79,8 +80,8 @@
     projects.forEach(async (project) => {
       const entries = await $troiApi.getTimeEntries(
         project.id,
-        moment(startDate).format("YYYYMMDD"),
-        moment(endDate).format("YYYYMMDD")
+        formatDate(startDate),
+        formatDate(endDate)
       );
       console.log(project.id, "entries", entries);
       projectSuccessCounter++;
@@ -257,9 +258,60 @@
       ].entries.splice(index, 1);
       entriesOfSelectedDate =
         entriesPerDay[formatDate(selectedDate)]["projects"];
-      setTimesForSelectedWeek();
     }
     deleteInProgress = false;
+  }
+
+  async function onAddEntry(project, hours, description) {
+    console.log("add ", project.id, hours, description);
+
+    const apiFormattedSelectedDate = moment(selectedDate.date).format(
+      "YYYY-MM-DD"
+    );
+    const entryFormattedSelectedDate = formatDate(selectedDate);
+
+    let clientId = await $troiApi.getClientId();
+    let employeeId = await $troiApi.getEmployeeId();
+
+    const payload = {
+      Client: {
+        Path: `/clients/${clientId}`,
+      },
+      CalculationPosition: {
+        Path: `/calculationPositions/${project.id}`,
+      },
+      Employee: {
+        Path: `/employees/${employeeId}`,
+      },
+      Date: apiFormattedSelectedDate,
+      Quantity: hours,
+      Remark: description,
+    };
+
+    let result = await $troiApi.makeRequest({
+      url: "/billings/hours",
+      headers: { "Content-Type": "application/json" },
+      method: "post",
+      body: JSON.stringify(payload),
+    });
+    // console.log(result);
+
+    // date: "2023-05-19";
+    // description: "Finish cross vendor webauthn research #995, finish tenant id fix #1045";
+    // hours: 8;
+    // id: 17487;
+
+    const entry = {
+      date: apiFormattedSelectedDate,
+      description: result.Name,
+      hours: result.Quantity,
+      id: result.Id,
+    };
+    console.log(entry);
+
+    collectEntriesPerDay(project, [entry]);
+
+    setTimesForSelectedWeek();
   }
 
   function onSaveEntry(entry) {
@@ -286,7 +338,11 @@
       {todayClicked}
     />
   </section>
-  <TroiEntryForm />
+
+  {#each projects as project}
+    <TroiEntryForm {project} onAddClick={onAddEntry} />
+  {/each}
+
   <TroiTimeEntries
     entries={entriesOfSelectedDate}
     deleteClicked={onDeleteEntry}
