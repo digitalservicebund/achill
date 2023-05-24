@@ -8,8 +8,10 @@
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
   import WeekView from "./weekview/weekView.svelte";
+  import TroiEntryForm from "./TroiEntryForm.svelte";
 
   let loadingEntries = true;
+  let deleteInProgress = false;
   let projectSuccessCounter = 0;
 
   let selectedWeek = [];
@@ -241,6 +243,7 @@
 
   async function onDeleteEntry(entry, projectId) {
     console.log("Delete entry ", entry.id);
+    deleteInProgress = true;
     let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
     console.log("Delete result: ", result);
     if (result.ok) {
@@ -254,7 +257,9 @@
       ].entries.splice(index, 1);
       entriesOfSelectedDate =
         entriesPerDay[formatDate(selectedDate)]["projects"];
+      setTimesForSelectedWeek();
     }
+    deleteInProgress = false;
   }
 
   function onSaveEntry(entry) {
@@ -281,9 +286,11 @@
       {todayClicked}
     />
   </section>
+  <TroiEntryForm />
   <TroiTimeEntries
     entries={entriesOfSelectedDate}
     deleteClicked={onDeleteEntry}
+    {deleteInProgress}
     saveClicked={onSaveEntry}
   />
 {/if}

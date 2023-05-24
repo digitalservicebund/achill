@@ -4,6 +4,7 @@
   export let entries;
   export let deleteClicked;
   export let saveClicked;
+  export let deleteInProgress;
 
   let currentEditId = -1;
 
@@ -25,13 +26,20 @@
         <div>
           {formatHours(entry.hours)} Hour(s)<br />
           {entry.description} <br />
-          <button
-            type="button"
-            class="ease focus:shadow-outline m-2 select-none rounded-md border border-red-500 bg-red-500 px-4 py-2 text-white transition duration-500 hover:bg-red-600 focus:outline-none"
-            on:click={() => deleteClicked(entry, projectId)}
-          >
-            Delete
-          </button>
+          {#if deleteInProgress}
+            <div
+              class="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-red-500"
+            />
+          {:else}
+            <button
+              type="button"
+              class="ease focus:shadow-outline m-2 select-none rounded-md border border-red-500 bg-red-500 px-4 py-2 text-white transition duration-500 hover:bg-red-600 focus:outline-none"
+              on:click={() => deleteClicked(entry, projectId)}
+            >
+              Delete
+            </button>
+          {/if}
+
           {#if currentEditId >= 0}
             <button
               type="button"

@@ -101,74 +101,6 @@
       }
     }
   };
-
-  let generateHandler = () => {
-    const randomChoice = (list) => {
-      return list[Math.floor(list.length * Math.random())];
-    };
-
-    const subjectList = [
-      "Code",
-      "Architektur",
-      "Backlog",
-      "Roadmap",
-      "Wireframes",
-      "Designs",
-      "Figma",
-      "Review",
-      "Planning",
-      "Refinement",
-      "User Tests",
-      "Supportanfragen",
-      "Skizzen",
-      "User Needs",
-      "Stakeholder",
-      "Däumchen",
-      "Bugs",
-      "Stackoverflow",
-      "Probleme",
-      "Herausforderungen",
-      "Software",
-      "Quellcode",
-      "Besprechung",
-    ];
-    const verbList = [
-      "analysieren",
-      "refactorn",
-      "reinzeichnen",
-      "organisieren",
-      "vorbereiten",
-      "definieren",
-      "durchführen",
-      "untersuchen",
-      "verstehen",
-      "drehen",
-      "bauen",
-      "festlegen",
-      "spezifizieren",
-      "iterieren",
-      "nachbereiten",
-      "diskutieren",
-      "anpassen",
-      "fixen",
-      "beantworten",
-      "lesen",
-      "ideaten",
-      "brainstormen",
-      "abhalten",
-      "verfassen",
-      "kreieren",
-      "lösen",
-      "überstehen",
-      "retten",
-    ];
-
-    const generatedEntry =
-      randomChoice(subjectList) + " " + randomChoice(verbList);
-    values.description = values.description
-      ? values.description + ", " + generatedEntry
-      : generatedEntry;
-  };
 </script>
 
 <div
@@ -183,16 +115,6 @@
         <h5 class="mb-1 text-base font-medium leading-tight text-gray-900">
           {#if editMode}Edit Entry{:else}Add an entry{/if}
         </h5>
-        <div class="flex place-items-center justify-start">
-          <label for="date" class="basis-1/4">Date</label>
-          <DateInput
-            bind:value={values.date}
-            format="yyyy-MM-dd"
-            id="date"
-            placeholder="2022-01-01"
-            closeOnSelection={true}
-          />
-        </div>
         <div class="my-1 flex place-items-center justify-start">
           <label for="hours" class="basis-1/4">Hours</label>
           <input
@@ -234,13 +156,6 @@
               class="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
             >
               Add
-            </button>
-
-            <button
-              on:click={generateHandler}
-              class="inline-block rounded bg-white px-6 py-2.5 text-xs font-medium uppercase leading-tight text-blue-600 shadow-md transition duration-150 ease-in-out hover:bg-blue-100 hover:shadow-lg focus:bg-blue-100 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-200 active:shadow-lg"
-            >
-              Suggest
             </button>
           {:else}
             <button
