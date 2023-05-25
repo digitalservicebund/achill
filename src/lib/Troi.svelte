@@ -257,7 +257,12 @@
       ].entries.splice(index, 1);
       entriesOfSelectedDate =
         entriesPerDay[formatDate(selectedDate)]["projects"];
+
+      entriesPerDay[formatDate(selectedDate)]["sum"] =
+        entriesPerDay[formatDate(selectedDate)]["sum"] - Number(entry.hours);
     }
+
+    setTimesForSelectedWeek();
     isLoading = false;
   }
 
