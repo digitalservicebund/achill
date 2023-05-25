@@ -22,7 +22,11 @@ test.describe("formatHours", async () => {
     expect(formatHours("0.33333")).toBe("0:20");
   });
 
-  test("2.05", () => {
+  test("2.05 returns 2:03", () => {
     expect(formatHours("2.05")).toBe("2:03");
+  });
+
+  test("0.0166 returns 0:01", () => {
+    expect(formatHours("0.0166")).toBe("0:01");
   });
 });

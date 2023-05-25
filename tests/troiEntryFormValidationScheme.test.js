@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { troiEntryFormValidationScheme } from "../src/lib/TroiEntryForm/troiEntryFormValidationScheme.js/index.js";
+import { troiEntryFormValidationScheme } from "../src/lib/TroiEntryForm/troiEntryFormValidationScheme.js";
 
 test.describe("troiEntryFormValidationScheme", async () => {
 

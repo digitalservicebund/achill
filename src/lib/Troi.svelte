@@ -356,13 +356,6 @@
 </section>
 
 <style>
-  div :global(.date-time-field input) {
-    color: rgb(31 41 55);
-    font-feature-settings: "kern" 1, "tnum" 1;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
   :root {
     --date-input-width: 6.5rem;
   }
