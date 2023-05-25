@@ -6,11 +6,23 @@ test.describe("formatHours", async () => {
     expect(formatHours("1")).toBe("1:00");
   });
 
-  test("hh:mm returns hh:mm", () => {
-    expect(formatHours("01:00")).toBe("1:00");
+  test("5 returns 5:00", () => {
+    expect(formatHours("5")).toBe("5:00");
   });
 
-  test("h.hourFraction returns hh:mm", () => {
-    expect(formatHours("1.33333")).toBe("1:20");
+  test("1.5 returns 1:30", () => {
+    expect(formatHours("1.5")).toBe("1:30");
+  });
+
+  test("0.2 returns 0:20", () => {
+    expect(formatHours("0.2")).toBe("0:12");
+  });
+
+  test("0.33333 returns 0:20", () => {
+    expect(formatHours("0.33333")).toBe("0:20");
+  });
+
+  test("2.05", () => {
+    expect(formatHours("2.05")).toBe("2:03");
   });
 });
