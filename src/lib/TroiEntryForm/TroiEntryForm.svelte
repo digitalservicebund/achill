@@ -1,20 +1,10 @@
 <script>
   // @ts-nocheck
 
-  import * as yup from "yup";
-
-  import { formatHours } from "./formatHours.js";
+  import { troiEntryFormValidationScheme } from "./troiEntryFormValidationScheme.js";
 
   export let project;
   export let onAddClick;
-
-  const schema = yup.object().shape({
-    hours: yup
-      .string()
-      .required("Hours are required, must be hh:mm")
-      .matches(/\d?\d?:\d\d/),
-    description: yup.string().required("Description is required"),
-  });
 
   let values = {
     description: "",
@@ -25,7 +15,9 @@
   let handleSubmit = async () => {
     try {
       // `abortEarly: false` to get all the errors
-      await schema.validate(values, { abortEarly: false });
+      await troiEntryFormValidationScheme.validate(values, {
+        abortEarly: false,
+      });
       errors = {};
     } catch (err) {
       errors = err.inner.reduce((acc, err) => {

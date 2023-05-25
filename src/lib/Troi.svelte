@@ -8,7 +8,7 @@
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
   import WeekView from "./weekview/weekView.svelte";
-  import TroiEntryForm from "./TroiEntryForm.svelte";
+  import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
   import LoadingOverlay from "./loadingOverlay.svelte";
 
   let isLoading = true;
