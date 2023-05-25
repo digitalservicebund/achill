@@ -19,6 +19,7 @@
   let times = [];
   let entriesOfSelectedDate = [];
   let entriesPerDay = {};
+  let currentEditId = -1;
   /* 
     '20230313': {
       projects: {
@@ -317,8 +318,67 @@
     isLoading = false;
   }
 
-  function onSaveEntry(entry) {
-    console.log("Save entry ", entry);
+  async function onUpdateEntry(projectId, entry) {
+    console.log("Update entry ", entry);
+    isLoading = true;
+
+    let clientId = await $troiApi.getClientId();
+    let employeeId = await $troiApi.getEmployeeId();
+
+    const payload = {
+      Client: {
+        Path: `/clients/${clientId}`,
+      },
+      CalculationPosition: {
+        Path: `/calculationPositions/${projectId}`,
+      },
+      Employee: {
+        Path: `/employees/${employeeId}`,
+      },
+      Date: entry.date,
+      Quantity: entry.hours,
+      Remark: entry.description,
+    };
+
+    const result = await $troiApi.makeRequest({
+      url: `/billings/hours/${entry.id}`,
+      headers: { "Content-Type": "application/json" },
+      method: "put",
+      body: JSON.stringify(payload),
+    });
+
+    if (result.Id == entry.id) {
+      console.log("Update successful");
+      // TODO
+      // const index =
+      //   entriesPerDay[formatDate(selectedDate)]["projects"][
+      //     projectId
+      //   ].entries.indexOf(entry);
+
+      // console.log("INDEX: ", index);
+
+      // const oldEntry =
+      //   entriesPerDay[formatDate(selectedDate)]["projects"][projectId].entries[
+      //     index
+      //   ];
+
+      // console.log("Old entry: ", oldEntry);
+
+      // entriesPerDay[formatDate(selectedDate)]["sum"] =
+      //   entriesPerDay[formatDate(selectedDate)]["sum"] - Number(oldEntry.hours);
+
+      // entriesPerDay[formatDate(selectedDate)]["projects"][projectId].entries[
+      //   index
+      // ] = entry;
+
+      // entriesPerDay[formatDate(selectedDate)]["sum"] =
+      //   entriesPerDay[formatDate(selectedDate)]["sum"] + Number(entry.hours);
+
+      // currentEditId = -1;
+      // setTimesForSelectedWeek();
+    }
+
+    isLoading = false;
   }
 </script>
 
@@ -344,7 +404,8 @@
 <TroiTimeEntries
   entries={entriesOfSelectedDate}
   deleteClicked={onDeleteEntry}
-  saveClicked={onSaveEntry}
+  {onUpdateEntry}
+  {currentEditId}
 />
 
 <section class="mt-8 text-xs text-gray-600">

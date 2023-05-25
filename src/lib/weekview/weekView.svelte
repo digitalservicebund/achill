@@ -2,7 +2,7 @@
 <script>
   import { clear_loops } from "svelte/internal";
   import { beforeUpdate } from "svelte";
-  import { formatHours } from "../formatHours.js";
+  import { convertFloatTimeToHHMM } from "../timeConverter.js";
 
   // @ts-nocheck
 
@@ -63,7 +63,7 @@
     });
     displayHours = [];
     times.forEach((time) => {
-      displayHours.push(time == 0 ? "0" : formatHours(time));
+      displayHours.push(time == 0 ? "0" : convertFloatTimeToHHMM(time));
     });
   }
 </script>

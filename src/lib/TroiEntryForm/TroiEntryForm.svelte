@@ -37,7 +37,7 @@
   };
 
   let submitHandler = async () => {
-    await handleSubmit(false, null);
+    await handleSubmit();
   };
 </script>
 
