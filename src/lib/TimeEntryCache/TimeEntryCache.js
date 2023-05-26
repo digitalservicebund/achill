@@ -57,7 +57,6 @@ export class TimeEntryCache {
     entries.forEach((entry) => {
       this.addEntry(project, entry);
     });
-    console.log(this.cache);
   }
 
   addEntry(project, entry, successCallback = () => {}) {

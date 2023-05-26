@@ -147,7 +147,7 @@
   }
 
   function increaseSelectedWeek() {
-    changeWeek(-1);
+    changeWeek(+1);
     timeEntryCache.increaseWeekIndex();
   }
 
@@ -174,7 +174,7 @@
     timeEntryCache.weekIndex = 0;
     selectedDate = initalDate;
     selectedWeek = initalWeek;
-    setTimesForSelectedWeek();
+    update();
   }
 
   function setSelectedDate(date) {
