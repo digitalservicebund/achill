@@ -1,6 +1,4 @@
 import moment from "moment";
-// @ts-ignore
-import { clear_loops } from "svelte/internal";
 
 // cache structure
 /* 
@@ -147,11 +145,20 @@ export class TimeEntryCache {
     }
   }
 
-  deleteEntry(entry, projectId, successCallback) {
-    const index = this._entriesFor(entry.date, projectId).indexOf(entry);
-    this._entriesFor(entry.date, projectId).splice(index, 1);
+  deleteEntryById(entry, projectId, successCallback = () => {}) {
+    console.log("entry", entry);
+    console.log("projectId", projectId);
+    const entries = this._entriesFor(entry.date, projectId);
+    const index = entries.map((entry) => entry.id).indexOf(entry.id);
+    entries.splice(index, 1);
 
     this.aggregateHoursFor(entry.date);
+    successCallback();
+  }
+
+  updateEntry(project, entry, successCallback = () => {}) {
+    this.deleteEntryById(entry, project.id);
+    this.addEntry(project, entry);
     successCallback();
   }
 }

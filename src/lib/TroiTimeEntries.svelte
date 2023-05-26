@@ -7,7 +7,7 @@
   } from "./timeConverter.js";
   import { troiEntryFormValidationScheme } from "./TroiEntryForm/troiEntryFormValidationScheme.js";
 
-  export let entries;
+  export let projects;
   export let deleteClicked;
   export let onUpdateEntry;
   export let currentEditId;
@@ -46,16 +46,16 @@
   };
 </script>
 
-{#each Object.keys(entries) as projectId}
+{#each Object.keys(projects) as projectId}
   <section class="bg-white">
     <div class="container mx-auto pt-4 pb-2">
       <h2
         class="text-lg font-semibold text-gray-900"
         title="Position ID: {projectId}"
       >
-        {entries[projectId]["name"]}
+        {projects[projectId]["name"]}
       </h2>
-      {#each entries[projectId]["entries"] as entry}
+      {#each projects[projectId]["entries"] as entry}
         {#if entry.id == currentEditId}
           <div data-test="entry-form" class="my-2 flex justify-center">
             <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">

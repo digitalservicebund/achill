@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   import { troiApi } from "./troiApiService";
-  import TroiTimeEntries from "./TroiTimeEntries.svelte";
+  import { TroiTimeEntries } from "./TroiTimeEntries.svelte";
 
   import WeekView from "./WeekView/WeekView.svelte";
   import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
@@ -16,7 +16,7 @@
   let selectedWeek = [];
   let projects = [];
   let times = [];
-  let entriesOfSelectedDate = [];
+  let projectsOfSelectedDate = [];
 
   // both variables used to jump back when today button pressed
   let initalDate = new Date();
@@ -27,7 +27,7 @@
   let currentEditId = -1; //TODO: Rework update of component after edit was saved
 
   let selectedDate = new Date();
-  $: entriesOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
+  $: projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
 
   onMount(async () => {
     //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
@@ -48,9 +48,12 @@
     );
   });
 
-  function update() {
-    entriesOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
-    setTimesForSelectedWeek();
+  function updateUI() {
+    projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
+    times = [];
+    selectedWeek.forEach((date) => {
+      times.push(timeEntryCache.totalHoursOf(date));
+    });
   }
 
   async function loadTimeEntries(startDate, endDate) {
@@ -81,16 +84,9 @@
           // initial loading
           selectedDate = initalDate;
         }
-        update();
+        updateUI();
         isLoading = false;
       }
-    });
-  }
-
-  function setTimesForSelectedWeek() {
-    times = [];
-    selectedWeek.forEach((date) => {
-      times.push(timeEntryCache.totalHoursOf(date));
     });
   }
 
@@ -128,7 +124,7 @@
       triggerBottomFetch();
     } else {
       reduceSelectedWeek();
-      update();
+      updateUI();
     }
   }
 
@@ -137,7 +133,7 @@
       triggerTopFetch();
     } else {
       increaseSelectedWeek();
-      update();
+      updateUI();
     }
   }
 
@@ -174,18 +170,25 @@
     timeEntryCache.weekIndex = 0;
     selectedDate = initalDate;
     selectedWeek = initalWeek;
-    update();
+    updateUI();
   }
 
   function setSelectedDate(date) {
     selectedDate = date;
   }
 
+  function getProjectById(projectId) {
+    const index = projects
+      .map((project) => project.id)
+      .indexOf(Number(projectId));
+    return projects[index];
+  }
+
   async function onDeleteEntry(entry, projectId) {
     isLoading = true;
     let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
     if (result.ok) {
-      timeEntryCache.deleteEntry(entry, projectId, update);
+      timeEntryCache.deleteEntryById(entry, projectId, updateUI);
     }
     isLoading = false;
   }
@@ -229,7 +232,7 @@
     };
     console.log(entry);
 
-    timeEntryCache.addEntry(project, entry, update);
+    timeEntryCache.addEntry(project, entry, updateUI);
     isLoading = false;
   }
 
@@ -263,36 +266,13 @@
     });
 
     if (result.Id == entry.id) {
-      console.log("Update successful");
-      // TODO
-      // const index =
-      //   timeEntryCache.cache[formatDate(selectedDate)]["projects"][
-      //     projectId
-      //   ].entries.indexOf(entry);
-
-      // console.log("INDEX: ", index);
-
-      // const oldEntry =
-      //   timeEntryCache.cache[formatDate(selectedDate)]["projects"][projectId].entries[
-      //     index
-      //   ];
-
-      // console.log("Old entry: ", oldEntry);
-
-      // timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
-      //   timeEntryCache.cache[formatDate(selectedDate)]["sum"] - Number(oldEntry.hours);
-
-      // timeEntryCache.cache[formatDate(selectedDate)]["projects"][projectId].entries[
-      //   index
-      // ] = entry;
-
-      // timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
-      //   timeEntryCache.cache[formatDate(selectedDate)]["sum"] + Number(entry.hours);
-
-      // currentEditId = -1;
-      // setTimesForSelectedWeek();
+      const project = getProjectById(projectId);
+      timeEntryCache.updateEntry(project, entry, () => {
+        //TODO: TroiTimeEntries does not reset :()
+        currentEditId = Number(-1);
+        updateUI();
+      });
     }
-
     isLoading = false;
   }
 </script>
@@ -317,7 +297,7 @@
 {/each}
 
 <TroiTimeEntries
-  entries={entriesOfSelectedDate}
+  projects={projectsOfSelectedDate}
   deleteClicked={onDeleteEntry}
   {onUpdateEntry}
   {currentEditId}
