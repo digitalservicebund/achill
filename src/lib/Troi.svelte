@@ -27,7 +27,7 @@
   let currentEditId = -1; //TODO: Rework update of component after edit was saved
 
   let selectedDate = new Date();
-  $: entriesOfSelectedDate = timeEntryCache.entriesFor(selectedDate);
+  $: entriesOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
 
   onMount(async () => {
     //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
@@ -55,7 +55,7 @@
     projects.forEach(async (project) => {
       const entries = await $troiApi.getTimeEntries(
         project.id,
-        formatDate(startDate),
+        formatDate(startDate), // needs format YYYYMMDD
         formatDate(endDate)
       );
       console.log(project.id, "entries", entries);
@@ -174,27 +174,14 @@
   }
 
   async function onDeleteEntry(entry, projectId) {
-    console.log("Delete entry ", entry.id);
     isLoading = true;
     let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
-    console.log("Delete result: ", result);
     if (result.ok) {
-      const index =
-        timeEntryCache.cache[formatDate(selectedDate)]["projects"][
-          projectId
-        ].entries.indexOf(entry);
-      console.log("Index: ", index);
-      timeEntryCache.cache[formatDate(selectedDate)]["projects"][
-        projectId
-      ].entries.splice(index, 1);
-      entriesOfSelectedDate =
-        timeEntryCache.cache[formatDate(selectedDate)]["projects"];
-
-      timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
-        timeEntryCache.cache[formatDate(selectedDate)]["sum"] -
-        Number(entry.hours);
+      timeEntryCache.deleteEntry(entry, projectId);
+      // TODO: Rework so if cache changes it should automatically udpate
+      // maybe have a generic updateComponent function that does these things
+      entriesOfSelectedDate = timeEntryCache.projectsFor(entry.date);
     }
-
     setTimesForSelectedWeek();
     isLoading = false;
   }

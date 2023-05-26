@@ -1,4 +1,6 @@
 import moment from "moment";
+// @ts-ignore
+import { clear_loops } from "svelte/internal";
 
 // cache structure
 /* 
@@ -43,15 +45,14 @@ export class TimeEntryCache {
   addEntries(project, entries) {
     const projectId = project.id.toString();
     entries.forEach((entry) => {
-      const entryDate = formatToYYYYMMDD(entry.date);
-      if (!(entryDate in this.cache)) {
-        this.cache[entryDate] = {
+      if (!(entry.date in this.cache)) {
+        this.cache[entry.date] = {
           projects: {},
           sum: 0,
         };
       }
 
-      let projectEntries = this.cache[entryDate]["projects"];
+      let projectEntries = this.cache[entry.date]["projects"];
       if (!(projectId in projectEntries)) {
         projectEntries[projectId] = {
           entries: [],
@@ -59,32 +60,25 @@ export class TimeEntryCache {
         };
       }
       projectEntries[projectId]["entries"].push(entry);
-      this.cache[entryDate].sum += entry.hours;
+      this.cache[entry.date].sum += entry.hours;
     });
+    console.log(this.cache);
   }
 
   aggregateHoursFor(date) {
-    if (!(formatToYYYYMMDD(date) in this.cache)) {
-      return;
-    }
     // get all projectIds
-    const projectIds = Object.keys(
-      this.cache[formatToYYYYMMDD(date)]["projects"]
-    );
+    const projectIds = Object.keys(this.projectsFor(date));
 
     // iterate entries in each project and aggregate hours
     let sum = 0;
     projectIds.forEach((projectId) => {
-      sum += this.cache[formatToYYYYMMDD(date)]["projects"][projectId][
-        "entries"
-      ].reduce((accumulator, entry) => {
-        accumulator + entry.hours;
+      sum += this.entriesFor(date, projectId).reduce((accumulator, entry) => {
+        return accumulator + entry.hours;
       }, 0);
     });
-    console.log(sum);
 
     // assign hours
-    this.cache[formatToYYYYMMDD(date)].sum = sum;
+    this.cache[date].sum = sum;
   }
 
   increaseBottomBorderByIntervall() {
@@ -111,25 +105,44 @@ export class TimeEntryCache {
     this.weekIndex--;
   }
 
-  entriesFor(date) {
-    if (formatToYYYYMMDD(date) in this.cache) {
-      return this.cache[formatToYYYYMMDD(date)]["projects"];
+  projectsFor(date) {
+    date = convertToCacheFormat(date);
+    if (date in this.cache) {
+      return this.cache[date]["projects"];
     } else {
       return {};
     }
   }
 
+  // -----------------------
+  // internal cache functions
+  entriesFor(date, projectId) {
+    return this.cache[date]["projects"][projectId]["entries"];
+  }
+  // -----------------------
+
   totalHoursOf(date) {
-    if (formatToYYYYMMDD(date) in this.cache) {
-      return this.cache[formatToYYYYMMDD(date)].sum;
+    date = convertToCacheFormat(date);
+    if (date in this.cache) {
+      return this.cache[date].sum;
     } else {
       return 0; // assign zero if no hours for that day are present
     }
   }
 
-  deleteEntry(entry, projectId) {}
+  deleteEntry(entry, projectId) {
+    const date = entry.date;
+    const index =
+      this.cache[date]["projects"][projectId].entries.indexOf(entry);
+    console.log(index);
+    console.log("1", this.cache[date]["projects"][projectId].entries);
+    this.cache[date]["projects"][projectId].entries.splice(index, 1);
+    console.log("2", this.cache[date]["projects"][projectId].entries);
+
+    this.aggregateHoursFor(date);
+  }
 }
 
-function formatToYYYYMMDD(date) {
-  return moment(date).format("YYYYMMDD");
+function convertToCacheFormat(date) {
+  return moment(date).format("YYYY-MM-DD");
 }
