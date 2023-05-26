@@ -55,8 +55,8 @@
     projects.forEach(async (project) => {
       const entries = await $troiApi.getTimeEntries(
         project.id,
-        formatDate(startDate), // needs format YYYYMMDD
-        formatDate(endDate)
+        formatDateToYYYYMMDD(startDate), // needs format YYYYMMDD
+        formatDateToYYYYMMDD(endDate)
       );
       console.log(project.id, "entries", entries);
       projectSuccessCounter++;
@@ -114,7 +114,7 @@
     return new Date(date.getTime() + days * 86400000); // 24*60*60*1000
   }
 
-  function formatDate(date) {
+  function formatDateToYYYYMMDD(date) {
     return moment(date).format("YYYYMMDD");
   }
 
@@ -231,8 +231,10 @@
     };
     console.log(entry);
 
-    collectEntriesPerDay(project, [entry]);
-
+    timeEntryCache.addEntries(project, [entry]);
+    // TODO: Rework so if cache changes it should automatically udpate
+    // maybe have a generic updateComponent function that does these things
+    entriesOfSelectedDate = timeEntryCache.projectsFor(entry.date);
     setTimesForSelectedWeek();
     isLoading = false;
   }
