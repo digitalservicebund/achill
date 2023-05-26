@@ -5,7 +5,6 @@
     convertFloatTimeToHHMM,
     convertHHMMTimeToFloat,
   } from "./timeConverter.js";
-  import { format } from "./svelteHelper.js";
   import { troiEntryFormValidationScheme } from "./TroiEntryForm/troiEntryFormValidationScheme.js";
 
   export let entries;
@@ -22,7 +21,7 @@
 
   function editClicked(entry) {
     currentEditId = entry.id;
-    values.hours = entry.hours;
+    values.hours = convertFloatTimeToHHMM(entry.hours);
     values.description = entry.description;
   }
 
@@ -66,7 +65,6 @@
                     <label for="hours" class="basis-1/4">Hours</label>
                     <input
                       bind:value={values.hours}
-                      use:format={convertFloatTimeToHHMM}
                       type="text"
                       id="hours"
                       data-test-id="hours"

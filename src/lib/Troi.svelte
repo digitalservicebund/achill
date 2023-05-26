@@ -7,50 +7,27 @@
   import { troiApi } from "./troiApiService";
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
-  import WeekView from "./weekview/weekView.svelte";
+  import WeekView from "./WeekView/WeekView.svelte";
   import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
   import LoadingOverlay from "./loadingOverlay.svelte";
+  import { TimeEntryCache } from "./TimeEntryCache/TimeEntryCache";
 
-  let isLoading = true;
-  let projectSuccessCounter = 0;
-
+  const timeEntryCache = new TimeEntryCache();
   let selectedWeek = [];
   let projects = [];
   let times = [];
   let entriesOfSelectedDate = [];
-  let entriesPerDay = {};
-  let currentEditId = -1;
-  /* 
-    '20230313': {
-      projects: {
-        254: {
-          name: Grundsteuer,
-          entries: [
-            {id: 14694, date: '2023-03-13', hours: 1},
-            {id: 14695, date: '2023-03-13', hours: 2}
-          ]
-        }
-      },
-      sum: 3
-    },
-    ...
-  */
-  let selectedDate = new Date();
-  $: if (entriesPerDay[formatDate(selectedDate)] != null) {
-    entriesOfSelectedDate = entriesPerDay[formatDate(selectedDate)]["projects"];
-  } else {
-    entriesOfSelectedDate = {};
-  }
-
-  const cacheIntervallWeeks = 6;
-  const cacheIntervallInDays = cacheIntervallWeeks * 7;
-  let cacheTopBorder = 0;
-  let cacheBottomBorder = 0;
-  let cacheWeekIndex = 0;
 
   // both variables used to jump back when today button pressed
   let initalDate = new Date();
   let initalWeek = [];
+
+  let isLoading = true;
+  let projectSuccessCounter = 0;
+  let currentEditId = -1; //TODO: Rework update of component after edit was saved
+
+  let selectedDate = new Date();
+  $: entriesOfSelectedDate = timeEntryCache.entriesFor(selectedDate);
 
   onMount(async () => {
     //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
@@ -65,11 +42,9 @@
       1: ...
     */
     fillSelectedWeekWithCurrent();
-    increaseBottomCacheByIntervall();
-    increaseTopCacheByIntervall();
     loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -cacheIntervallInDays),
-      addDaysToDate(selectedWeek[4], cacheIntervallInDays)
+      addDaysToDate(selectedWeek[0], -timeEntryCache.getCacheIntervallInDays()),
+      addDaysToDate(selectedWeek[4], timeEntryCache.getCacheIntervallInDays())
     );
   });
 
@@ -86,15 +61,16 @@
       console.log(project.id, "entries", entries);
       projectSuccessCounter++;
       if (entries.length > 0) {
-        collectEntriesPerDay(project, entries);
+        timeEntryCache.addEntries(project, entries);
       }
+
       if (projectSuccessCounter == projects.length) {
         // switch weeks at cache borders
-        if (isAtCacheBottom()) {
-          increaseBottomCacheByIntervall();
+        if (timeEntryCache.isAtCacheBottom()) {
+          timeEntryCache.increaseBottomCacheByIntervall();
           reduceSelectedWeek();
-        } else if (isAtCacheTop()) {
-          increaseTopCacheByIntervall();
+        } else if (timeEntryCache.isAtCacheTop()) {
+          timeEntryCache.increaseTopCacheByIntervall();
           increaseSelectedWeek();
         } else {
           // initial loading
@@ -106,40 +82,18 @@
     });
   }
 
-  function collectEntriesPerDay(project, entries) {
-    const projectId = project.id.toString();
-    entries.forEach((entry) => {
-      const entryDate = formatDate(entry.date);
-      if (!(entryDate in entriesPerDay)) {
-        entriesPerDay[entryDate] = {
-          projects: {},
-          sum: 0,
-        };
-      }
-
-      let projectEntries = entriesPerDay[entryDate]["projects"];
-      if (!(projectId in projectEntries)) {
-        projectEntries[projectId] = {
-          entries: [],
-          name: project.name,
-        };
-      }
-      projectEntries[projectId]["entries"].push(entry);
-      entriesPerDay[entryDate].sum += entry.hours;
-    });
-  }
-
   function setTimesForSelectedWeek() {
-    let entries = {};
+    times = [];
     selectedWeek.forEach((date) => {
-      if (formatDate(date) in entriesPerDay) {
-        entries[date] = entriesPerDay[formatDate(date)].sum;
-      } else {
-        entries[date] = 0; // assign zero if no hours for that day are present
-      }
+      times.push(timeEntryCache.totalHoursOf(date));
     });
-    console.log("entries", entries);
-    times = Object.values(entries);
+
+    // let entries = {};
+    // selectedWeek.forEach((date) => {
+    //   entries[date] = timeEntryCache.totalHoursOf(date);
+    // });
+    // console.log("entries", entries);
+    // times = Object.values(entries);
   }
 
   function fillSelectedWeekWithCurrent() {
@@ -171,24 +125,8 @@
     return moment(date).format("YYYYMMDD");
   }
 
-  function increaseBottomCacheByIntervall() {
-    cacheBottomBorder -= cacheIntervallWeeks;
-  }
-
-  function increaseTopCacheByIntervall() {
-    cacheTopBorder += cacheIntervallWeeks;
-  }
-
-  function isAtCacheBottom() {
-    return cacheWeekIndex == cacheBottomBorder;
-  }
-
-  function isAtCacheTop() {
-    return cacheWeekIndex == cacheTopBorder;
-  }
-
   function reduceWeekClicked() {
-    if (isAtCacheBottom()) {
+    if (timeEntryCache.isAtCacheBottom()) {
       triggerBottomFetch();
     } else {
       reduceSelectedWeek();
@@ -196,7 +134,7 @@
   }
 
   function increaseWeekClicked() {
-    if (isAtCacheTop()) {
+    if (timeEntryCache.isAtCacheTop()) {
       triggerTopFetch();
     } else {
       increaseSelectedWeek();
@@ -207,19 +145,19 @@
     selectedDate = addDaysToDate(selectedDate, -7);
     selectedWeek = selectedWeek.map((day) => addDaysToDate(day, -7));
     setTimesForSelectedWeek();
-    cacheWeekIndex--;
+    timeEntryCache.decreaseWeekIndex();
   }
 
   function increaseSelectedWeek() {
     selectedDate = addDaysToDate(selectedDate, 7);
     selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7));
     setTimesForSelectedWeek();
-    cacheWeekIndex++;
+    timeEntryCache.increaseWeekIndex();
   }
 
   function triggerBottomFetch() {
     loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -cacheIntervallInDays),
+      addDaysToDate(selectedWeek[0], -timeEntryCache.getCacheIntervallInDays()),
       addDaysToDate(selectedWeek[4], -7)
     );
   }
@@ -227,12 +165,12 @@
   function triggerTopFetch() {
     loadTimeEntries(
       addDaysToDate(selectedWeek[0], 7),
-      addDaysToDate(selectedWeek[4], cacheIntervallInDays)
+      addDaysToDate(selectedWeek[4], timeEntryCache.getCacheIntervallInDays())
     );
   }
 
   function todayClicked() {
-    cacheWeekIndex = 0;
+    timeEntryCache.cacheWeekIndex = 0;
     selectedDate = initalDate;
     selectedWeek = initalWeek;
     setTimesForSelectedWeek();
@@ -249,18 +187,19 @@
     console.log("Delete result: ", result);
     if (result.ok) {
       const index =
-        entriesPerDay[formatDate(selectedDate)]["projects"][
+        timeEntryCache.cache[formatDate(selectedDate)]["projects"][
           projectId
         ].entries.indexOf(entry);
       console.log("Index: ", index);
-      entriesPerDay[formatDate(selectedDate)]["projects"][
+      timeEntryCache.cache[formatDate(selectedDate)]["projects"][
         projectId
       ].entries.splice(index, 1);
       entriesOfSelectedDate =
-        entriesPerDay[formatDate(selectedDate)]["projects"];
+        timeEntryCache.cache[formatDate(selectedDate)]["projects"];
 
-      entriesPerDay[formatDate(selectedDate)]["sum"] =
-        entriesPerDay[formatDate(selectedDate)]["sum"] - Number(entry.hours);
+      timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
+        timeEntryCache.cache[formatDate(selectedDate)]["sum"] -
+        Number(entry.hours);
     }
 
     setTimesForSelectedWeek();
@@ -351,28 +290,28 @@
       console.log("Update successful");
       // TODO
       // const index =
-      //   entriesPerDay[formatDate(selectedDate)]["projects"][
+      //   timeEntryCache.cache[formatDate(selectedDate)]["projects"][
       //     projectId
       //   ].entries.indexOf(entry);
 
       // console.log("INDEX: ", index);
 
       // const oldEntry =
-      //   entriesPerDay[formatDate(selectedDate)]["projects"][projectId].entries[
+      //   timeEntryCache.cache[formatDate(selectedDate)]["projects"][projectId].entries[
       //     index
       //   ];
 
       // console.log("Old entry: ", oldEntry);
 
-      // entriesPerDay[formatDate(selectedDate)]["sum"] =
-      //   entriesPerDay[formatDate(selectedDate)]["sum"] - Number(oldEntry.hours);
+      // timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
+      //   timeEntryCache.cache[formatDate(selectedDate)]["sum"] - Number(oldEntry.hours);
 
-      // entriesPerDay[formatDate(selectedDate)]["projects"][projectId].entries[
+      // timeEntryCache.cache[formatDate(selectedDate)]["projects"][projectId].entries[
       //   index
       // ] = entry;
 
-      // entriesPerDay[formatDate(selectedDate)]["sum"] =
-      //   entriesPerDay[formatDate(selectedDate)]["sum"] + Number(entry.hours);
+      // timeEntryCache.cache[formatDate(selectedDate)]["sum"] =
+      //   timeEntryCache.cache[formatDate(selectedDate)]["sum"] + Number(entry.hours);
 
       // currentEditId = -1;
       // setTimesForSelectedWeek();
