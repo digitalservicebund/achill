@@ -48,6 +48,11 @@
     );
   });
 
+  function update() {
+    entriesOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
+    setTimesForSelectedWeek();
+  }
+
   async function loadTimeEntries(startDate, endDate) {
     isLoading = true;
     projectSuccessCounter = 0;
@@ -55,7 +60,7 @@
     projects.forEach(async (project) => {
       const entries = await $troiApi.getTimeEntries(
         project.id,
-        formatDateToYYYYMMDD(startDate), // needs format YYYYMMDD
+        formatDateToYYYYMMDD(startDate),
         formatDateToYYYYMMDD(endDate)
       );
       console.log(project.id, "entries", entries);
@@ -74,9 +79,9 @@
           increaseSelectedWeek();
         } else {
           // initial loading
-          setTimesForSelectedWeek();
           selectedDate = initalDate;
         }
+        update();
         isLoading = false;
       }
     });
@@ -123,6 +128,7 @@
       triggerBottomFetch();
     } else {
       reduceSelectedWeek();
+      update();
     }
   }
 
@@ -131,21 +137,23 @@
       triggerTopFetch();
     } else {
       increaseSelectedWeek();
+      update();
     }
   }
 
   function reduceSelectedWeek() {
-    selectedDate = addDaysToDate(selectedDate, -7);
-    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, -7));
-    setTimesForSelectedWeek();
+    changeWeek(-1);
     timeEntryCache.decreaseWeekIndex();
   }
 
   function increaseSelectedWeek() {
-    selectedDate = addDaysToDate(selectedDate, 7);
-    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7));
-    setTimesForSelectedWeek();
+    changeWeek(-1);
     timeEntryCache.increaseWeekIndex();
+  }
+
+  function changeWeek(direction) {
+    selectedDate = addDaysToDate(selectedDate, 7 * direction);
+    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7 * direction));
   }
 
   function triggerBottomFetch() {
@@ -177,12 +185,8 @@
     isLoading = true;
     let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
     if (result.ok) {
-      timeEntryCache.deleteEntry(entry, projectId);
-      // TODO: Rework so if cache changes it should automatically udpate
-      // maybe have a generic updateComponent function that does these things
-      entriesOfSelectedDate = timeEntryCache.projectsFor(entry.date);
+      timeEntryCache.deleteEntry(entry, projectId, update);
     }
-    setTimesForSelectedWeek();
     isLoading = false;
   }
 
@@ -216,12 +220,6 @@
       method: "post",
       body: JSON.stringify(payload),
     });
-    // console.log(result);
-
-    // date: "2023-05-19";
-    // description: "Finish cross vendor webauthn research #995, finish tenant id fix #1045";
-    // hours: 8;
-    // id: 17487;
 
     const entry = {
       date: apiFormattedSelectedDate,
@@ -231,11 +229,7 @@
     };
     console.log(entry);
 
-    timeEntryCache.addEntries(project, [entry]);
-    // TODO: Rework so if cache changes it should automatically udpate
-    // maybe have a generic updateComponent function that does these things
-    entriesOfSelectedDate = timeEntryCache.projectsFor(entry.date);
-    setTimesForSelectedWeek();
+    timeEntryCache.addEntry(project, entry, update);
     isLoading = false;
   }
 

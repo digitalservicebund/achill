@@ -42,27 +42,52 @@ export class TimeEntryCache {
     return intervallInDays;
   }
 
-  addEntries(project, entries) {
-    const projectId = project.id.toString();
-    entries.forEach((entry) => {
-      if (!(entry.date in this.cache)) {
-        this.cache[entry.date] = {
-          projects: {},
-          sum: 0,
-        };
-      }
+  // -----------------------
+  // internal cache functions
+  _getDay(date) {
+    return this.cache[date];
+  }
 
-      let projectEntries = this.cache[entry.date]["projects"];
-      if (!(projectId in projectEntries)) {
-        projectEntries[projectId] = {
-          entries: [],
-          name: project.name,
-        };
-      }
-      projectEntries[projectId]["entries"].push(entry);
-      this.cache[entry.date].sum += entry.hours;
+  _entriesFor(date, projectId) {
+    return this.cache[date]["projects"][projectId]["entries"];
+  }
+  // -----------------------
+
+  addEntries(project, entries) {
+    entries.forEach((entry) => {
+      this.addEntry(project, entry);
     });
     console.log(this.cache);
+  }
+
+  addEntry(project, entry, successCallback = () => {}) {
+    // init if not present
+    if (!(entry.date in this.cache)) {
+      this.initStructureForDate(entry.date);
+    }
+
+    let projects = this.projectsFor(entry.date);
+    // init if not present
+    if (!(project.id in projects)) {
+      this.initStructureForProject(entry.date, project);
+    }
+    this._entriesFor(entry.date, project.id).push(entry);
+    this._getDay(entry.date).sum += entry.hours;
+    successCallback();
+  }
+
+  initStructureForDate(date) {
+    this.cache[date] = {
+      projects: {},
+      sum: 0,
+    };
+  }
+
+  initStructureForProject(date, project) {
+    this.projectsFor(date)[project.id] = {
+      entries: [],
+      name: project.name,
+    };
   }
 
   aggregateHoursFor(date) {
@@ -72,7 +97,7 @@ export class TimeEntryCache {
     // iterate entries in each project and aggregate hours
     let sum = 0;
     projectIds.forEach((projectId) => {
-      sum += this.entriesFor(date, projectId).reduce((accumulator, entry) => {
+      sum += this._entriesFor(date, projectId).reduce((accumulator, entry) => {
         return accumulator + entry.hours;
       }, 0);
     });
@@ -108,38 +133,27 @@ export class TimeEntryCache {
   projectsFor(date) {
     date = convertToCacheFormat(date);
     if (date in this.cache) {
-      return this.cache[date]["projects"];
+      return this._getDay(date)["projects"];
     } else {
       return {};
     }
   }
-
-  // -----------------------
-  // internal cache functions
-  entriesFor(date, projectId) {
-    return this.cache[date]["projects"][projectId]["entries"];
-  }
-  // -----------------------
 
   totalHoursOf(date) {
     date = convertToCacheFormat(date);
     if (date in this.cache) {
       return this.cache[date].sum;
     } else {
-      return 0; // assign zero if no hours for that day are present
+      return 0;
     }
   }
 
-  deleteEntry(entry, projectId) {
-    const date = entry.date;
-    const index =
-      this.cache[date]["projects"][projectId].entries.indexOf(entry);
-    console.log(index);
-    console.log("1", this.cache[date]["projects"][projectId].entries);
-    this.cache[date]["projects"][projectId].entries.splice(index, 1);
-    console.log("2", this.cache[date]["projects"][projectId].entries);
+  deleteEntry(entry, projectId, successCallback) {
+    const index = this._entriesFor(entry.date, projectId).indexOf(entry);
+    this._entriesFor(entry.date, projectId).splice(index, 1);
 
-    this.aggregateHoursFor(date);
+    this.aggregateHoursFor(entry.date);
+    successCallback();
   }
 }
 
