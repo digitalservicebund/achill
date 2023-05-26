@@ -8,7 +8,8 @@ import moment from "moment";
         name: Grundsteuer,
         entries: [
           {id: 14694, date: '2023-03-13', hours: 1},
-          {id: 14695, date: '2023-03-13', hours: 2}
+          {id: 14695, date: '2023-03-13', hours: 2},
+          ...
         ]
       },
       255: {
@@ -23,20 +24,20 @@ import moment from "moment";
   ...
 */
 
-const cacheIntervallWeeks = 6;
-const cacheIntervallInDays = cacheIntervallWeeks * 7;
+const intervallInWeeks = 6;
+const intervallInDays = intervallInWeeks * 7;
 
 export class TimeEntryCache {
   constructor() {
     this.cache = {};
-    this.cacheTopBorder = cacheIntervallWeeks;
-    this.cacheBottomBorder = -cacheIntervallWeeks;
-    this.cacheWeekIndex = 0;
+    this.topBorder = intervallInWeeks;
+    this.bottomBorder = -intervallInWeeks;
+    this.weekIndex = 0;
   }
 
   // TODO: rework to private property
-  getCacheIntervallInDays() {
-    return cacheIntervallInDays;
+  getIntervallInDays() {
+    return intervallInDays;
   }
 
   addEntries(project, entries) {
@@ -62,28 +63,52 @@ export class TimeEntryCache {
     });
   }
 
-  increaseBottomCacheByIntervall() {
-    this.cacheBottomBorder -= cacheIntervallWeeks;
+  aggregateHoursFor(date) {
+    if (!(formatToYYYYMMDD(date) in this.cache)) {
+      return;
+    }
+    // get all projectIds
+    const projectIds = Object.keys(
+      this.cache[formatToYYYYMMDD(date)]["projects"]
+    );
+
+    // iterate entries in each project and aggregate hours
+    let sum = 0;
+    projectIds.forEach((projectId) => {
+      sum += this.cache[formatToYYYYMMDD(date)]["projects"][projectId][
+        "entries"
+      ].reduce((accumulator, entry) => {
+        accumulator + entry.hours;
+      }, 0);
+    });
+    console.log(sum);
+
+    // assign hours
+    this.cache[formatToYYYYMMDD(date)].sum = sum;
   }
 
-  increaseTopCacheByIntervall() {
-    this.cacheTopBorder += cacheIntervallWeeks;
+  increaseBottomBorderByIntervall() {
+    this.bottomBorder -= intervallInWeeks;
+  }
+
+  increaseTopBorderByIntervall() {
+    this.topBorder += intervallInWeeks;
   }
 
   isAtCacheBottom() {
-    return this.cacheWeekIndex == this.cacheBottomBorder;
+    return this.weekIndex == this.bottomBorder;
   }
 
   isAtCacheTop() {
-    return this.cacheWeekIndex == this.cacheTopBorder;
+    return this.weekIndex == this.topBorder;
   }
 
   increaseWeekIndex() {
-    this.cacheWeekIndex++;
+    this.weekIndex++;
   }
 
   decreaseWeekIndex() {
-    this.cacheWeekIndex--;
+    this.weekIndex--;
   }
 
   entriesFor(date) {
@@ -101,6 +126,8 @@ export class TimeEntryCache {
       return 0; // assign zero if no hours for that day are present
     }
   }
+
+  deleteEntry(entry, projectId) {}
 }
 
 function formatToYYYYMMDD(date) {

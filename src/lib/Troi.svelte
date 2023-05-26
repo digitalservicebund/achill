@@ -43,8 +43,8 @@
     */
     fillSelectedWeekWithCurrent();
     loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -timeEntryCache.getCacheIntervallInDays()),
-      addDaysToDate(selectedWeek[4], timeEntryCache.getCacheIntervallInDays())
+      addDaysToDate(selectedWeek[0], -timeEntryCache.getIntervallInDays()),
+      addDaysToDate(selectedWeek[4], timeEntryCache.getIntervallInDays())
     );
   });
 
@@ -67,10 +67,10 @@
       if (projectSuccessCounter == projects.length) {
         // switch weeks at cache borders
         if (timeEntryCache.isAtCacheBottom()) {
-          timeEntryCache.increaseBottomCacheByIntervall();
+          timeEntryCache.increaseBottomBorderByIntervall();
           reduceSelectedWeek();
         } else if (timeEntryCache.isAtCacheTop()) {
-          timeEntryCache.increaseTopCacheByIntervall();
+          timeEntryCache.increaseTopBorderByIntervall();
           increaseSelectedWeek();
         } else {
           // initial loading
@@ -87,13 +87,6 @@
     selectedWeek.forEach((date) => {
       times.push(timeEntryCache.totalHoursOf(date));
     });
-
-    // let entries = {};
-    // selectedWeek.forEach((date) => {
-    //   entries[date] = timeEntryCache.totalHoursOf(date);
-    // });
-    // console.log("entries", entries);
-    // times = Object.values(entries);
   }
 
   function fillSelectedWeekWithCurrent() {
@@ -157,7 +150,7 @@
 
   function triggerBottomFetch() {
     loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -timeEntryCache.getCacheIntervallInDays()),
+      addDaysToDate(selectedWeek[0], -timeEntryCache.getIntervallInDays()),
       addDaysToDate(selectedWeek[4], -7)
     );
   }
@@ -165,12 +158,12 @@
   function triggerTopFetch() {
     loadTimeEntries(
       addDaysToDate(selectedWeek[0], 7),
-      addDaysToDate(selectedWeek[4], timeEntryCache.getCacheIntervallInDays())
+      addDaysToDate(selectedWeek[4], timeEntryCache.getIntervallInDays())
     );
   }
 
   function todayClicked() {
-    timeEntryCache.cacheWeekIndex = 0;
+    timeEntryCache.weekIndex = 0;
     selectedDate = initalDate;
     selectedWeek = initalWeek;
     setTimesForSelectedWeek();
