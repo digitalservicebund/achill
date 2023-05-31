@@ -32,7 +32,7 @@
   $: projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
 
   onMount(async () => {
-    //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
+    // make sure $troiApi from store is not used before it is initialized
     if ($troiApi == undefined) return;
     troiApiWrapper.init($troiApi);
     projects = await troiApiWrapper.api.getCalculationPositions();
@@ -193,7 +193,7 @@
       entry.id
     );
     if (result.ok) {
-      timeEntryCache.deleteEntryById(entry, projectId, updateUI);
+      timeEntryCache.deleteEntry(entry, projectId, updateUI);
     }
     isLoading = false;
   }

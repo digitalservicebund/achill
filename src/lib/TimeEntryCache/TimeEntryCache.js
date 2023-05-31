@@ -49,6 +49,12 @@ export class TimeEntryCache {
   _entriesFor(date, projectId) {
     return this.cache[date]["projects"][projectId]["entries"];
   }
+
+  _findEntryWithSameDescription(entry, projectId) {
+    return this._entriesFor(entry.date, projectId).find(
+      (e) => e.description == entry.description
+    );
+  }
   // -----------------------
 
   addEntries(project, entries) {
@@ -67,6 +73,13 @@ export class TimeEntryCache {
     // init if not present
     if (!(project.id in projects)) {
       this.initStructureForProject(entry.date, project);
+    }
+
+    // check if entry with same description alread exists
+    const existingEntry = this._findEntryWithSameDescription(entry, project.id);
+    if (existingEntry) {
+      console.log("already exists: ", existingEntry.id, existingEntry.hours);
+      this.deleteEntry(existingEntry, project.id);
     }
     this._entriesFor(entry.date, project.id).push(entry);
     this._getDay(entry.date).sum += entry.hours;
@@ -145,7 +158,7 @@ export class TimeEntryCache {
     }
   }
 
-  deleteEntryById(entry, projectId, successCallback = () => {}) {
+  deleteEntry(entry, projectId, successCallback = () => {}) {
     console.log("entry", entry);
     console.log("projectId", projectId);
     const entries = this._entriesFor(entry.date, projectId);
@@ -157,7 +170,7 @@ export class TimeEntryCache {
   }
 
   updateEntry(project, entry, successCallback = () => {}) {
-    this.deleteEntryById(entry, project.id);
+    this.deleteEntry(entry, project.id);
     this.addEntry(project, entry);
     successCallback();
   }
