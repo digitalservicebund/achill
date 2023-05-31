@@ -49,12 +49,14 @@
 {#each Object.keys(projects) as projectId}
   <section class="bg-white">
     <div class="container mx-auto pt-4 pb-2">
-      <h2
-        class="text-lg font-semibold text-gray-900"
-        title="Position ID: {projectId}"
-      >
-        {projects[projectId]["name"]}
-      </h2>
+      {#if projects[projectId].entries.length > 0}
+        <h2
+          class="text-lg font-semibold text-gray-900"
+          title="Position ID: {projectId}"
+        >
+          {projects[projectId]["name"]}
+        </h2>
+      {/if}
       {#each projects[projectId]["entries"] as entry}
         {#if entry.id == editState.id}
           <div data-test="entry-form" class="my-2 flex justify-center">
