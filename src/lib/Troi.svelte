@@ -6,6 +6,7 @@
 
   import { troiApi } from "./troiApiService";
   import { TimeEntryCache } from "./TimeEntryCache/TimeEntryCache";
+  import TroiApiWrapper from "./TroiApiWrapper/TroiApiWrapper";
 
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
   import WeekView from "./weekView.svelte";
@@ -13,6 +14,7 @@
   import LoadingOverlay from "./loadingOverlay.svelte";
 
   const timeEntryCache = new TimeEntryCache();
+  const troiApiWrapper = new TroiApiWrapper();
   let selectedWeek = [];
   let projects = [];
   let times = [];
@@ -32,7 +34,8 @@
   onMount(async () => {
     //TODO: troiApi sometimes is null, and then will raise an error when calling .getCalculationPositions
     if ($troiApi == undefined) return;
-    projects = await $troiApi.getCalculationPositions();
+    troiApiWrapper.init($troiApi);
+    projects = await troiApiWrapper.api.getCalculationPositions();
     console.log(projects);
     /*
       projects returned as array
@@ -61,7 +64,7 @@
     projectSuccessCounter = 0;
     //TODO: ERROR COUNTER + WARNING FOR USER IN CASE SUCCESS COUNTER IS NOT REACHED
     projects.forEach(async (project) => {
-      const entries = await $troiApi.getTimeEntries(
+      const entries = await troiApiWrapper.api.getTimeEntries(
         project.id,
         formatDateToYYYYMMDD(startDate),
         formatDateToYYYYMMDD(endDate)
@@ -186,7 +189,9 @@
 
   async function onDeleteEntry(entry, projectId) {
     isLoading = true;
-    let result = await $troiApi.deleteTimeEntryViaServerSideProxy(entry.id);
+    let result = await troiApiWrapper.api.deleteTimeEntryViaServerSideProxy(
+      entry.id
+    );
     if (result.ok) {
       timeEntryCache.deleteEntryById(entry, projectId, updateUI);
     }
@@ -195,76 +200,28 @@
 
   async function onAddEntry(project, hours, description) {
     isLoading = true;
-    console.log("add ", project.id, hours, description);
-
     const apiFormattedSelectedDate = moment(selectedDate).format("YYYY-MM-DD");
-
-    let clientId = await $troiApi.getClientId();
-    let employeeId = await $troiApi.getEmployeeId();
-
-    const payload = {
-      Client: {
-        Path: `/clients/${clientId}`,
-      },
-      CalculationPosition: {
-        Path: `/calculationPositions/${project.id}`,
-      },
-      Employee: {
-        Path: `/employees/${employeeId}`,
-      },
-      Date: apiFormattedSelectedDate,
-      Quantity: hours,
-      Remark: description,
-    };
-
-    let result = await $troiApi.makeRequest({
-      url: "/billings/hours",
-      headers: { "Content-Type": "application/json" },
-      method: "post",
-      body: JSON.stringify(payload),
-    });
+    const result = await troiApiWrapper.addEntry(
+      project.id,
+      apiFormattedSelectedDate,
+      hours,
+      description
+    );
 
     const entry = {
       date: apiFormattedSelectedDate,
       description: result.Name,
-      hours: +result.Quantity,
+      hours: Number(result.Quantity),
       id: result.Id,
     };
-    console.log(entry);
 
     timeEntryCache.addEntry(project, entry, updateUI);
     isLoading = false;
   }
 
   async function onUpdateEntry(projectId, entry) {
-    console.log("Update entry ", entry);
     isLoading = true;
-
-    let clientId = await $troiApi.getClientId();
-    let employeeId = await $troiApi.getEmployeeId();
-
-    const payload = {
-      Client: {
-        Path: `/clients/${clientId}`,
-      },
-      CalculationPosition: {
-        Path: `/calculationPositions/${projectId}`,
-      },
-      Employee: {
-        Path: `/employees/${employeeId}`,
-      },
-      Date: entry.date,
-      Quantity: entry.hours,
-      Remark: entry.description,
-    };
-
-    const result = await $troiApi.makeRequest({
-      url: `/billings/hours/${entry.id}`,
-      headers: { "Content-Type": "application/json" },
-      method: "put",
-      body: JSON.stringify(payload),
-    });
-
+    const result = await troiApiWrapper.updateEntry(projectId, entry);
     if (result.Id == entry.id) {
       const project = getProjectById(projectId);
       timeEntryCache.updateEntry(project, entry, () => {
