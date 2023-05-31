@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   import { troiApi } from "./troiApiService";
-  import { TroiTimeEntries } from "./TroiTimeEntries.svelte";
+  import TroiTimeEntries from "./TroiTimeEntries.svelte";
 
   import WeekView from "./WeekView/WeekView.svelte";
   import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
