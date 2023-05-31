@@ -75,14 +75,36 @@ export class TimeEntryCache {
       this.initStructureForProject(entry.date, project);
     }
 
-    // check if entry with same description alread exists
+    // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
     const existingEntry = this._findEntryWithSameDescription(entry, project.id);
     if (existingEntry) {
-      console.log("already exists: ", existingEntry.id, existingEntry.hours);
       this.deleteEntry(existingEntry, project.id);
     }
+
     this._entriesFor(entry.date, project.id).push(entry);
     this._getDay(entry.date).sum += entry.hours;
+    successCallback();
+  }
+
+  deleteEntry(entry, projectId, successCallback = () => {}) {
+    console.log("entry", entry);
+    console.log("projectId", projectId);
+    const entries = this._entriesFor(entry.date, projectId);
+    const index = entries.map((entry) => entry.id).indexOf(entry.id);
+    entries.splice(index, 1);
+
+    this.aggregateHoursFor(entry.date);
+    successCallback();
+  }
+
+  updateEntry(project, entry, successCallback = () => {}) {
+    // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
+    const existingEntry = this._findEntryWithSameDescription(entry, project.id);
+    if (existingEntry) {
+      this.deleteEntry(existingEntry, project.id);
+    }
+    this.deleteEntry(entry, project.id);
+    this.addEntry(project, entry);
     successCallback();
   }
 
@@ -156,23 +178,6 @@ export class TimeEntryCache {
     } else {
       return 0;
     }
-  }
-
-  deleteEntry(entry, projectId, successCallback = () => {}) {
-    console.log("entry", entry);
-    console.log("projectId", projectId);
-    const entries = this._entriesFor(entry.date, projectId);
-    const index = entries.map((entry) => entry.id).indexOf(entry.id);
-    entries.splice(index, 1);
-
-    this.aggregateHoursFor(entry.date);
-    successCallback();
-  }
-
-  updateEntry(project, entry, successCallback = () => {}) {
-    this.deleteEntry(entry, project.id);
-    this.addEntry(project, entry);
-    successCallback();
   }
 }
 

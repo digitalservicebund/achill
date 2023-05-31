@@ -222,13 +222,49 @@
   async function onUpdateEntry(projectId, entry) {
     isLoading = true;
     const result = await troiApiWrapper.updateEntry(projectId, entry);
-    if (result.Id == entry.id) {
-      const project = getProjectById(projectId);
-      timeEntryCache.updateEntry(project, entry, () => {
-        timeEntryEditState = { id: -1 };
-        updateUI();
-      });
-    }
+    console.log(result);
+    const project = getProjectById(projectId);
+
+    const apiFormattedSelectedDate = moment(selectedDate).format("YYYY-MM-DD");
+    const updatedEntry = {
+      date: apiFormattedSelectedDate,
+      description: result.Name,
+      hours: Number(result.Quantity),
+      id: result.Id,
+    };
+
+    // updated entry still has unique description
+    timeEntryCache.updateEntry(project, updatedEntry, () => {
+      timeEntryEditState = { id: -1 };
+      updateUI();
+    });
+
+    // if (result.Id == entry.id) {
+
+    // } else {
+    //   // updated entry has duplicate description with an existing entry
+    //   // ids different -> entry was updated to entry that has same description to an exisiting one
+    //   const apiFormattedSelectedDate =
+    //     moment(selectedDate).format("YYYY-MM-DD");
+
+    //   // delete "old entries"
+    //   const oldEntry = {
+    //     date: apiFormattedSelectedDate,
+    //     id: entry.Id,
+    //   };
+    //   timeEntryCache.deleteEntry(oldEntry, projectId);
+    //   oldEntry.id = result.Id;
+    //   timeEntryCache.deleteEntry(oldEntry, projectId);
+
+    //   // add updatedEntry
+    //   const updatedEntry = {
+    //     date: apiFormattedSelectedDate,
+    //     description: result.Name,
+    //     hours: Number(result.Quantity),
+    //     id: result.Id,
+    //   };
+    //   timeEntryCache.addEntry(project, updatedEntry, updateUI);
+    // }
     isLoading = false;
   }
 </script>
