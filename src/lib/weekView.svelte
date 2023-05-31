@@ -2,7 +2,7 @@
 <script>
   import { clear_loops } from "svelte/internal";
   import { beforeUpdate } from "svelte";
-  import { convertFloatTimeToHHMM } from "../timeConverter.js";
+  import { convertFloatTimeToHHMM } from "./timeConverter.js";
 
   // @ts-nocheck
 

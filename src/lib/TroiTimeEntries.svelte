@@ -10,7 +10,7 @@
   export let projects;
   export let deleteClicked;
   export let onUpdateEntry;
-  export let currentEditId;
+  export let editState = { id: -1 };
 
   let values = {
     hours: "",
@@ -20,7 +20,7 @@
   let errors = {};
 
   function editClicked(entry) {
-    currentEditId = entry.id;
+    editState.id = entry.id;
     values.hours = convertFloatTimeToHHMM(entry.hours);
     values.description = entry.description;
   }
@@ -56,7 +56,7 @@
         {projects[projectId]["name"]}
       </h2>
       {#each projects[projectId]["entries"] as entry}
-        {#if entry.id == currentEditId}
+        {#if entry.id == editState.id}
           <div data-test="entry-form" class="my-2 flex justify-center">
             <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
               <div class="flex flex-row">
@@ -107,7 +107,7 @@
             Delete
           </button>
 
-          {#if entry.id == currentEditId}
+          {#if entry.id == editState.id}
             <button
               type="button"
               class="ease focus:shadow-outline m-2 select-none rounded-md border border-green-500 bg-green-500 px-4 py-2 text-white transition duration-500 hover:bg-green-600 focus:outline-none"

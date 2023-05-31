@@ -5,12 +5,12 @@
   import { onMount } from "svelte";
 
   import { troiApi } from "./troiApiService";
-  import TroiTimeEntries from "./TroiTimeEntries.svelte";
+  import { TimeEntryCache } from "./TimeEntryCache/TimeEntryCache";
 
-  import WeekView from "./WeekView/WeekView.svelte";
+  import TroiTimeEntries from "./TroiTimeEntries.svelte";
+  import WeekView from "./weekView.svelte";
   import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
   import LoadingOverlay from "./loadingOverlay.svelte";
-  import { TimeEntryCache } from "./TimeEntryCache/TimeEntryCache";
 
   const timeEntryCache = new TimeEntryCache();
   let selectedWeek = [];
@@ -24,7 +24,7 @@
 
   let isLoading = true;
   let projectSuccessCounter = 0;
-  let currentEditId = -1; //TODO: Rework update of component after edit was saved
+  let timeEntryEditState = { id: -1 };
 
   let selectedDate = new Date();
   $: projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
@@ -268,8 +268,7 @@
     if (result.Id == entry.id) {
       const project = getProjectById(projectId);
       timeEntryCache.updateEntry(project, entry, () => {
-        //TODO: TroiTimeEntries does not reset :()
-        currentEditId = Number(-1);
+        timeEntryEditState = { id: -1 };
         updateUI();
       });
     }
@@ -300,7 +299,7 @@
   projects={projectsOfSelectedDate}
   deleteClicked={onDeleteEntry}
   {onUpdateEntry}
-  {currentEditId}
+  editState={timeEntryEditState}
 />
 
 <section class="mt-8 text-xs text-gray-600">
