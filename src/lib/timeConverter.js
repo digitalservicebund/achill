@@ -13,8 +13,13 @@ export const convertFloatTimeToHHMM = (time) => {
 
 export const convertHHMMTimeToFloat = (time) => {
   if (time.includes(":")) {
-    const [hours, minutes] = time.split(":");
-    const minuteFractions = Number(minutes) / 60;
+    let [hours, minutes] = time.split(":");
+
+    if (minutes.length == 1) {
+      minutes *= 10;
+    }
+
+    let minuteFractions = Number(minutes) / 60;
 
     return Number(hours) + minuteFractions;
   } else {

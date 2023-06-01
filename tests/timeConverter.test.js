@@ -59,4 +59,8 @@ test.describe("convertHHMMTimeToFloat", async () => {
   test("0:01 returns 0.0166", () => {
     expect(convertHHMMTimeToFloat("0:01")).toBe(1 / 60);
   });
+
+  test("1:3 returns 1.5", () => {
+    expect(convertHHMMTimeToFloat("1:3")).toBe(1.5);
+  });
 });
