@@ -52,7 +52,7 @@ export default class TimeEntryCache {
 
   _findEntryWithSameDescription(entry, projectId) {
     return this._entriesFor(entry.date, projectId).find(
-      (e) => e.description == entry.description
+      (e) => e.description.toLowerCase() == entry.description.toLowerCase()
     );
   }
   // -----------------------
@@ -87,10 +87,13 @@ export default class TimeEntryCache {
   }
 
   deleteEntry(entry, projectId, successCallback = () => { }) {
-    console.log("entry", entry);
-    console.log("projectId", projectId);
     const entries = this._entriesFor(entry.date, projectId);
     const index = entries.map((entry) => entry.id).indexOf(entry.id);
+
+    // If the element is not found, simply return
+    if (index == -1) {
+      return;
+    }
     entries.splice(index, 1);
 
     this.aggregateHoursFor(entry.date);

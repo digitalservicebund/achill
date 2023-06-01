@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import LoginPage from "./TestHelper/LoginPage";
-import TroiApiStub, { correctUser, correctPassword } from "./TestHelper/TroiApiStub";
+import { correctUser, correctPassword } from "./TestHelper/TroiApiStub";
 import { initilaizeTestSetup } from "./TestHelper/TestHelper";
 
 test.beforeEach(async ({ context }) => {
