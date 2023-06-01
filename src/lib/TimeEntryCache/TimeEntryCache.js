@@ -63,7 +63,7 @@ export class TimeEntryCache {
     });
   }
 
-  addEntry(project, entry, successCallback = () => {}) {
+  addEntry(project, entry, successCallback = () => { }) {
     // init if not present
     if (!(entry.date in this.cache)) {
       this.initStructureForDate(entry.date);
@@ -86,7 +86,7 @@ export class TimeEntryCache {
     successCallback();
   }
 
-  deleteEntry(entry, projectId, successCallback = () => {}) {
+  deleteEntry(entry, projectId, successCallback = () => { }) {
     console.log("entry", entry);
     console.log("projectId", projectId);
     const entries = this._entriesFor(entry.date, projectId);
@@ -97,7 +97,7 @@ export class TimeEntryCache {
     successCallback();
   }
 
-  updateEntry(project, entry, successCallback = () => {}) {
+  updateEntry(project, entry, successCallback = () => { }) {
     // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
     const existingEntry = this._findEntryWithSameDescription(entry, project.id);
     if (existingEntry) {

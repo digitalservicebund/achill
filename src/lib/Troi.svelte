@@ -200,16 +200,17 @@
 
   async function onAddEntry(project, hours, description) {
     isLoading = true;
-    const apiFormattedSelectedDate = moment(selectedDate).format("YYYY-MM-DD");
+    const troiFormattedSelectedDate =
+      timeEntryCache.convertToCacheFormat(selectedDate);
     const result = await troiApiWrapper.addEntry(
       project.id,
-      apiFormattedSelectedDate,
+      troiFormattedSelectedDate,
       hours,
       description
     );
 
     const entry = {
-      date: apiFormattedSelectedDate,
+      date: troiFormattedSelectedDate,
       description: result.Name,
       hours: Number(result.Quantity),
       id: result.Id,
@@ -222,12 +223,12 @@
   async function onUpdateEntry(projectId, entry) {
     isLoading = true;
     const result = await troiApiWrapper.updateEntry(projectId, entry);
-    console.log(result);
     const project = getProjectById(projectId);
 
-    const apiFormattedSelectedDate = moment(selectedDate).format("YYYY-MM-DD");
+    const troiFormattedSelectedDate =
+      timeEntryCache.convertToCacheFormat(selectedDate);
     const updatedEntry = {
-      date: apiFormattedSelectedDate,
+      date: troiFormattedSelectedDate,
       description: result.Name,
       hours: Number(result.Quantity),
       id: result.Id,
@@ -238,33 +239,6 @@
       timeEntryEditState = { id: -1 };
       updateUI();
     });
-
-    // if (result.Id == entry.id) {
-
-    // } else {
-    //   // updated entry has duplicate description with an existing entry
-    //   // ids different -> entry was updated to entry that has same description to an exisiting one
-    //   const apiFormattedSelectedDate =
-    //     moment(selectedDate).format("YYYY-MM-DD");
-
-    //   // delete "old entries"
-    //   const oldEntry = {
-    //     date: apiFormattedSelectedDate,
-    //     id: entry.Id,
-    //   };
-    //   timeEntryCache.deleteEntry(oldEntry, projectId);
-    //   oldEntry.id = result.Id;
-    //   timeEntryCache.deleteEntry(oldEntry, projectId);
-
-    //   // add updatedEntry
-    //   const updatedEntry = {
-    //     date: apiFormattedSelectedDate,
-    //     description: result.Name,
-    //     hours: Number(result.Quantity),
-    //     id: result.Id,
-    //   };
-    //   timeEntryCache.addEntry(project, updatedEntry, updateUI);
-    // }
     isLoading = false;
   }
 </script>
