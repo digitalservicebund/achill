@@ -5,7 +5,9 @@
   import { onMount } from "svelte";
 
   import { troiApi } from "./troiApiService";
-  import { TimeEntryCache } from "./TimeEntryCache/TimeEntryCache";
+  import TimeEntryCache, {
+    convertToCacheFormat,
+  } from "./TimeEntryCache/TimeEntryCache";
   import TroiApiWrapper from "./TroiApiWrapper/TroiApiWrapper";
 
   import TroiTimeEntries from "./TroiTimeEntries.svelte";
@@ -200,8 +202,7 @@
 
   async function onAddEntry(project, hours, description) {
     isLoading = true;
-    const troiFormattedSelectedDate =
-      timeEntryCache.convertToCacheFormat(selectedDate);
+    const troiFormattedSelectedDate = convertToCacheFormat(selectedDate);
     const result = await troiApiWrapper.addEntry(
       project.id,
       troiFormattedSelectedDate,
@@ -225,8 +226,7 @@
     const result = await troiApiWrapper.updateEntry(projectId, entry);
     const project = getProjectById(projectId);
 
-    const troiFormattedSelectedDate =
-      timeEntryCache.convertToCacheFormat(selectedDate);
+    const troiFormattedSelectedDate = convertToCacheFormat(selectedDate);
     const updatedEntry = {
       date: troiFormattedSelectedDate,
       description: result.Name,

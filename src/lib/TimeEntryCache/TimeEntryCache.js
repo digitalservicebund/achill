@@ -27,7 +27,7 @@ import moment from "moment";
 const intervallInWeeks = 6;
 const intervallInDays = intervallInWeeks * 7;
 
-export class TimeEntryCache {
+export default class TimeEntryCache {
   constructor() {
     this.cache = {};
     this.topBorder = intervallInWeeks;
@@ -181,6 +181,6 @@ export class TimeEntryCache {
   }
 }
 
-function convertToCacheFormat(date) {
+export function convertToCacheFormat(date) {
   return moment(date).format("YYYY-MM-DD");
 }
