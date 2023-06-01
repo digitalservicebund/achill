@@ -55,7 +55,7 @@
             bind:value={values.hours}
             type="text"
             id="hours"
-            data-test-id="hours"
+            data-test-id="hours-{project.name}"
             class={`w-auto basis-1/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
               errors.hours
                 ? "border border-b-2 border-red-500"
@@ -70,6 +70,7 @@
             bind:value={values.description}
             type="text"
             id="description"
+            data-test-id="description-{project.name}"
             class={`w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
               errors.description
                 ? "border border-b-2 border-red-500"
@@ -83,7 +84,7 @@
         <div class="flex flex-col justify-center gap-1">
           <button
             on:click={submitHandler}
-            data-test="add-button"
+            data-test-id="add-button-{project.name}"
             class="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
           >
             Add
