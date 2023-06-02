@@ -55,10 +55,7 @@
 
   function updateUI() {
     projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
-    times = [];
-    selectedWeek.forEach((date) => {
-      times.push(timeEntryCache.totalHoursOf(date));
-    });
+    times = selectedWeek.map((date) => timeEntryCache.totalHoursOf(date));
   }
 
   async function loadTimeEntries(startDate, endDate) {

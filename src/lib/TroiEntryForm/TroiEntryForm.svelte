@@ -1,4 +1,6 @@
 <script>
+  import { convertHHMMTimeToFloat } from "$lib/timeConverter.js";
+
   // @ts-nocheck
 
   import { troiEntryFormValidationScheme } from "./troiEntryFormValidationScheme.js";
@@ -26,11 +28,8 @@
     }
 
     if (Object.keys(errors).length === 0) {
-      if (values.hours.includes(":")) {
-        const [hoursStr, minutesStr] = values.hours.split(":");
-        values.hours = parseInt(hoursStr || 0) + parseInt(minutesStr) / 60;
-      }
-      onAddClick(project, values.hours, values.description);
+      const convertedHours = convertHHMMTimeToFloat(values.hours);
+      onAddClick(project, convertedHours, values.description);
       values.hours = "";
       values.description = "";
     }
