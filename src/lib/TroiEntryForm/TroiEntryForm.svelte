@@ -1,4 +1,5 @@
 <script>
+  import EntryForm from "$lib/UiComponents/EntryForm.svelte";
   import { convertHHMMTimeToFloat } from "$lib/timeConverter.js";
 
   // @ts-nocheck
@@ -47,43 +48,14 @@
         <h5 class="mb-1 text-base font-medium leading-tight text-gray-900">
           {project.name}
         </h5>
-
-        <div class="my-1 flex place-items-center justify-start">
-          <label for="hours" class="basis-1/4">Hours</label>
-          <input
-            bind:value={values.hours}
-            type="text"
-            id="hours"
-            data-test-id="hours-{project.name}"
-            class={`w-auto basis-1/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
-              errors.hours
-                ? "border border-b-2 border-red-500"
-                : "border-1 border-b-[1px] border-gray-300"
-            }`}
-            placeholder="2:15"
-          />
-        </div>
-        <div class="my-1 flex place-items-center justify-start">
-          <label for="description" class="basis-1/4">What</label>
-          <textarea
-            bind:value={values.description}
-            type="text"
-            id="description"
-            data-test-id="description-{project.name}"
-            class={`w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ${
-              errors.description
-                ? "border border-b-2 border-red-500"
-                : "border-1 border-b-[1px] border-gray-300"
-            }`}
-            placeholder="Working the work…"
-          />
-        </div>
+        <EntryForm {values} {errors} />
       </div>
+
       <div class="flex basis-1/4 justify-end">
         <div class="flex flex-col justify-center gap-1">
           <button
             on:click={submitHandler}
-            data-test-id="add-button-{project.name}"
+            data-testid="add-button-{project.name}"
             class="inline-block h-auto rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg"
           >
             Add

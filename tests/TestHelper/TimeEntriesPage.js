@@ -9,18 +9,18 @@ export default class TimeEntriesPage {
     }
 
     async addEntry(projectName, hours, description, useEnter = false) {
-        const hoursFieldLabel = '[data-test-id="hours-' + projectName + '"]';
-        const descriptionFieldLabel = '[data-test-id="description-' + projectName + '"]';
-        const addButtonLabel = '[data-test-id="add-button-' + projectName + '"]';
-        await this.page.locator(hoursFieldLabel).fill(hours);
+        const hoursTestId = "hours-" + projectName;
+        const descriptionTestId = "description-" + projectName;
+        const addButtonTestId = "add-button-" + projectName;
+        await this.page.getByTestId(hoursTestId).fill(hours);
         await this.page
-            .locator(descriptionFieldLabel)
+            .getByTestId(descriptionTestId)
             .fill(description);
 
         if (useEnter) {
             await this.page.keyboard.press("Enter");
         } else {
-            await this.page.locator(addButtonLabel).click();
+            await this.page.getByTestId(addButtonTestId).click();
         }
     }
 

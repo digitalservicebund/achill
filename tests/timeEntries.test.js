@@ -27,7 +27,7 @@ test.describe("Time entries", async () => {
     // await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 4:45 Hours");
 
     // const form = page.locator("data-test=entry-form");
-    // await expect(form.locator("data-test-id=hours")).toBeEmpty();
+    // await expect(form.locator("data-testid=hours")).toBeEmpty();
     // await expect(form.locator("id=description")).toBeEmpty();
   });
 
@@ -48,7 +48,7 @@ test.describe("Time entries", async () => {
   //   await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 4:45 Hours");
 
   //   const form = page.locator("data-test=entry-form");
-  //   await expect(form.locator("data-test-id=hours")).toBeEmpty();
+  //   await expect(form.locator("data-testid=hours")).toBeEmpty();
   //   await expect(form.locator("id=description")).toBeEmpty();
   // });
 
@@ -97,7 +97,7 @@ test.describe("Time entries", async () => {
   //   );
 
   //   const form = page.locator("data-test=entry-form");
-  //   await expect(form.locator("data-test-id=hours")).toHaveCSS(
+  //   await expect(form.locator("data-testid=hours")).toHaveCSS(
   //     "border-color",
   //     "rgb(239, 68, 68)"
   //   );
@@ -154,7 +154,7 @@ test.describe("Time entries", async () => {
   //   await expect(page.locator("data-test=entry-form")).toHaveCount(2);
 
   //   const form = page.locator("data-test=entry-form").nth(1);
-  //   await expect(form.locator("data-test-id=hours")).toHaveCSS(
+  //   await expect(form.locator("data-testid=hours")).toHaveCSS(
   //     "border-color",
   //     "rgb(239, 68, 68)"
   //   );
