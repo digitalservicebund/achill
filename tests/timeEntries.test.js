@@ -31,7 +31,7 @@ test.describe("Time entries", async () => {
     const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
     const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
     const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
-    await expect(enrtyCardContent).toHaveText("4:45 Hour(s) a task");
+    await expect(enrtyCardContent).toHaveText(expectedText);
 
     const hoursTestId = "hours-" + entryToAdd.project;
     const descriptionTestId = "description-" + entryToAdd.project;
