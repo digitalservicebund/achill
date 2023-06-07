@@ -66,6 +66,28 @@
       displayHours.push(time == 0 ? "0" : convertFloatTimeToHHMM(time));
     });
   }
+
+  function getDateClasses(index, selectedDate) {
+    let dateClasses = "flex h-8 w-8 items-center justify-center rounded-full ";
+    let date = selectedWeek[index];
+    // let calendarEvents = calendarEventsForWeek[index];
+
+    if (datesEqual(date, today)) {
+      dateClasses += "outline-none ring-2 ring-black ring-offset-2 ";
+    }
+
+    if (datesEqual(date, selectedDate)) {
+      dateClasses += "bg-blue-600 text-white hover:bg-blue-700 ";
+    } else {
+      // if (calendarEvents.length) {
+      //   dateClasses += "text-gray-500 bg-blue-200 hover:bg-[#B8BDC3] ";
+      // } else {
+      dateClasses += "text-black hover:bg-[#B8BDC3] ";
+      // }
+    }
+
+    return dateClasses;
+  }
 </script>
 
 <!-- svelte-ignore a11y-no-redundant-roles -->
@@ -154,7 +176,7 @@
             </thead>
             <tbody>
               <tr>
-                {#each selectedWeek as date}
+                {#each selectedWeek as date, index}
                   <td>
                     <div
                       class="h-full w-full"
@@ -163,42 +185,9 @@
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
                       >
-                        <!-- SELECTED && TODAY -->
-                        {#if datesEqual(date, today) && datesEqual(date, selectedDate)}
-                          <!-- svelte-ignore a11y-no-redundant-roles -->
-                          <!-- svelte-ignore a11y-missing-attribute -->
-                          <a
-                            role="link"
-                            tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white outline-none ring-2 ring-black ring-offset-2 hover:bg-blue-700"
-                            >{getDayOf(date)}</a
-                          >
-
-                          <!-- UNSELECTED && TODAY -->
-                        {:else if datesEqual(date, today)}
-                          <!-- svelte-ignore a11y-no-redundant-roles -->
-                          <!-- svelte-ignore a11y-missing-attribute -->
-                          <a
-                            role="link"
-                            tabindex="0"
-                            class="flex  h-8 w-8 items-center justify-center rounded-full bg-white text-black outline-none ring-2 ring-black ring-offset-2 hover:bg-[#B8BDC3]"
-                            >{getDayOf(date)}</a
-                          >
-                          <!-- SELECTED -->
-                        {:else if datesEqual(date, selectedDate)}
-                          <p
-                            class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700"
-                          >
-                            {getDayOf(date)}
-                          </p>
-                          <!-- UNSELECTED -->
-                        {:else}
-                          <p
-                            class="flex h-8 w-8 items-center justify-center rounded-full text-black hover:bg-[#B8BDC3]"
-                          >
-                            {getDayOf(date)}
-                          </p>
-                        {/if}
+                        <p class={getDateClasses(index, selectedDate)}>
+                          {getDayOf(date)}
+                        </p>
                       </div>
                     </div>
                   </td>
