@@ -9,6 +9,7 @@
 >
   <div
     class="h-16 w-16 animate-spin rounded-full border-t-2 border-b-2 border-gray-900"
+    data-testid="loadingOverlay"
   />
   <div class="mt-8">{message}</div>
 </div>

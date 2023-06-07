@@ -14,21 +14,29 @@ test.beforeEach(async ({ context, page }) => {
 test.describe("Time entries", async () => {
   test("add entry", async ({ page }) => {
 
-    await new TimeEntriesPage(page).addEntry(
-      "My Project",
-      "4:45",
-      "a task",
-      false
-    );
+    const entryToAdd = {
+      project: "My Project",
+      time: "4:45",
+      description: "a task"
+    }
 
-    // await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+    const timeEntriesPage = new TimeEntriesPage(page);
 
-    // const card = page.locator("data-test=entry-card");
-    // await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 4:45 Hours");
+    await timeEntriesPage.fillForm(entryToAdd);
+    await timeEntriesPage.submitForm(entryToAdd.project);
 
-    // const form = page.locator("data-test=entry-form");
-    // await expect(form.locator("data-testid=hours")).toBeEmpty();
-    // await expect(form.locator("id=description")).toBeEmpty();
+    await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+    await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+
+    const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+    const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
+    const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
+    await expect(enrtyCardContent).toHaveText("4:45 Hour(s) a task");
+
+    const hoursTestId = "hours-" + entryToAdd.project;
+    const descriptionTestId = "description-" + entryToAdd.project;
+    await expect(page.getByTestId(hoursTestId)).toBeEmpty()
+    await expect(page.getByTestId(descriptionTestId)).toBeEmpty()
   });
 
   // test("add entry - with enter", async ({ page }) => {

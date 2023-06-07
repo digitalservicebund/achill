@@ -1,4 +1,5 @@
 import md5 from "crypto-js/md5.js";
+import { sleep } from "./TestHelper";
 
 export const correctUser = "user.name";
 export const correctPassword = "s3cr3t";
@@ -52,7 +53,7 @@ export default class TroiApiStub {
         return this._response({ status: 401 });
     }
 
-    match(method, pathname, params, postData) {
+    async match(method, pathname, params, postData) {
         if (method === "GET" && pathname.endsWith("/clients")) {
             return this._response({ jsonBody: [mockData.client] });
         } else if (
@@ -85,7 +86,14 @@ export default class TroiApiStub {
                 Quantity: postData.Quantity,
                 Remark: postData.Remark,
             });
-            return this._response({});
+            return this._response({
+                jsonBody: {
+                    id: this.entries.length,
+                    Date: postData.Date,
+                    Quantity: postData.Quantity,
+                    Name: postData.Remark,
+                }
+            });
         } else if (method === "PUT" && pathname.indexOf("/billings/hours") > -1) {
             const splittedPath = pathname.split("/");
             const id = parseInt(splittedPath[splittedPath.length - 1], 10);
@@ -101,7 +109,9 @@ export default class TroiApiStub {
         }
     }
 
-    _response({ status = 200, jsonBody = {} }) {
+    async _response({ status = 200, jsonBody = {} }) {
+        // Simulate trois api delay
+        await sleep(500);
         return {
             status: status,
             headers: { "Access-Control-Allow-Origin": "*" },

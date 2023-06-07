@@ -3,19 +3,18 @@ export default class TimeEntriesPage {
         this.page = page;
     }
 
-    async setFromTo(from, to) {
-        await this.page.locator('label:has-text("Show from:")').fill(from);
-        await this.page.locator('label:has-text("to:")').fill(to);
-    }
+    async fillForm(entry) {
+        const hoursTestId = "hours-" + entry.project;
+        const descriptionTestId = "description-" + entry.project;
 
-    async addEntry(projectName, hours, description, useEnter = false) {
-        const hoursTestId = "hours-" + projectName;
-        const descriptionTestId = "description-" + projectName;
-        const addButtonTestId = "add-button-" + projectName;
-        await this.page.getByTestId(hoursTestId).fill(hours);
+        await this.page.getByTestId(hoursTestId).fill(entry.time);
         await this.page
             .getByTestId(descriptionTestId)
-            .fill(description);
+            .fill(entry.description);
+    }
+
+    async submitForm(projectName, useEnter = false) {
+        const addButtonTestId = "add-button-" + projectName;
 
         if (useEnter) {
             await this.page.keyboard.press("Enter");

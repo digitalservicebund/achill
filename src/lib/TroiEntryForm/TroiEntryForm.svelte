@@ -48,7 +48,12 @@
         <h5 class="mb-1 text-base font-medium leading-tight text-gray-900">
           {project.name}
         </h5>
-        <EntryForm {values} {errors} />
+        <EntryForm
+          {values}
+          {errors}
+          hoursTestId={"hours-" + project.name}
+          descriptionTestId={"description-" + project.name}
+        />
       </div>
 
       <div class="flex basis-1/4 justify-end">

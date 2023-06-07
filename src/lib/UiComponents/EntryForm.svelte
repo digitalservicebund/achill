@@ -5,6 +5,8 @@
     };
 
     export let errors = {};
+    export let hoursTestId = "hours";
+    export let descriptionTestId = "description";
 
     const inputClass =
         "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ";
@@ -23,7 +25,7 @@
                 bind:value={values.hours}
                 type="text"
                 id="hours"
-                data-testid="hours"
+                data-testid={hoursTestId}
                 class={errors.hours ? errorAppearance : normalAppearance}
                 placeholder="2:15"
             />
@@ -33,6 +35,7 @@
             <textarea
                 bind:value={values.description}
                 id="description"
+                data-testid={descriptionTestId}
                 class={errors.description ? errorAppearance : normalAppearance}
                 placeholder="Working the work…"
             />
