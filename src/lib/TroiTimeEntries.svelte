@@ -1,4 +1,7 @@
 <script>
+  import { buttonBlue, buttonGreen, buttonRed } from "../components/Colors.js";
+  import AchillButton from "../components/AchillButton.svelte";
+
   // @ts-nocheck
 
   import {
@@ -72,33 +75,32 @@
             </div>
           {:else}
             <div data-testid="entry-card-content">
-              {convertFloatTimeToHHMM(entry.hours)} Hour(s)<br />
-              {entry.description} <br />
+              <b>{convertFloatTimeToHHMM(entry.hours)} Hour(s)</b><br />
+              <p>{entry.description}</p>
+              <br />
             </div>
           {/if}
           <div>
-            <button
-              type="button"
-              class="ease focus:shadow-outline select-none rounded-md border border-red-500 bg-red-500 px-4 py-2 text-white transition duration-500 hover:bg-red-600 focus:outline-none"
-              on:click={() => deleteClicked(entry, projectId)}
-            >
-              Delete
-            </button>
-
+            <AchillButton
+              text={"Delete"}
+              testId={"TODO"}
+              onClick={() => deleteClicked(entry, projectId)}
+              color={buttonRed}
+            />
             {#if entry.id == editState.id}
-              <button
-                type="button"
-                class="ease focus:shadow-outline m-2 select-none rounded-md border border-green-500 bg-green-500 px-4 py-2 text-white transition duration-500 hover:bg-green-600 focus:outline-none"
-                on:click={() => saveClicked(projectId, entry)}
-                >Save
-              </button>
+              <AchillButton
+                text={"Save"}
+                testId={"TODO"}
+                onClick={() => saveClicked(projectId, entry)}
+                color={buttonGreen}
+              />
             {:else}
-              <button
-                type="button"
-                class="ease focus:shadow-outline m-2 select-none rounded-md border border-blue-500 bg-blue-500 px-4 py-2 text-white transition duration-500 hover:bg-blue-600 focus:outline-none"
-                on:click={() => editClicked(entry)}
-                >Edit
-              </button>
+              <AchillButton
+                text={"Edit"}
+                testId={"TODO"}
+                onClick={() => editClicked(entry)}
+                color={buttonBlue}
+              />
             {/if}
           </div>
         </div>

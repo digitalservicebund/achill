@@ -14,7 +14,7 @@ export default class TimeEntriesPage {
     }
 
     async submitForm(projectName, useEnter = false) {
-        const addButtonTestId = "add-button-" + projectName;
+        const addButtonTestId = "button-" + projectName;
 
         if (useEnter) {
             await this.page.keyboard.press("Enter");
