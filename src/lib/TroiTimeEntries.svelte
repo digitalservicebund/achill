@@ -59,7 +59,7 @@
           {projects[projectId]["name"]}
         </h2>
       {/if}
-      {#each projects[projectId]["entries"] as entry}
+      {#each projects[projectId]["entries"].sort((a, b) => a.id - b.id) as entry}
         <div
           class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
           data-testid="entryCard-{projects[projectId]['name']}"
