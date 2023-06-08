@@ -8,6 +8,7 @@
 
   export let selectedWeek;
   export let times;
+  export let calendarEvents = [];
   export let selectedDate;
   export let setSelectedDate;
   export let reduceWeekClicked;
@@ -70,7 +71,6 @@
   function getDateClasses(index, selectedDate) {
     let dateClasses = "flex h-8 w-8 items-center justify-center rounded-full ";
     let date = selectedWeek[index];
-    // let calendarEvents = calendarEventsForWeek[index];
 
     if (datesEqual(date, today)) {
       dateClasses += "outline-none ring-2 ring-black ring-offset-2 ";
@@ -79,11 +79,11 @@
     if (datesEqual(date, selectedDate)) {
       dateClasses += "bg-blue-600 text-white hover:bg-blue-700 ";
     } else {
-      // if (calendarEvents.length) {
-      //   dateClasses += "text-gray-500 bg-blue-200 hover:bg-[#B8BDC3] ";
-      // } else {
-      dateClasses += "text-black hover:bg-[#B8BDC3] ";
-      // }
+      if (calendarEvents.length > 0 && calendarEvents[index].length) {
+        dateClasses += "text-gray-500 bg-blue-200 hover:bg-[#B8BDC3] ";
+      } else {
+        dateClasses += "text-black hover:bg-[#B8BDC3] ";
+      }
     }
 
     return dateClasses;
@@ -160,6 +160,44 @@
         <div class="flex items-center justify-between overflow-x-auto">
           <table class="w-full">
             <thead>
+              <tr>
+                {#each calendarEvents as calendarEventsForDay}
+                  <th>
+                    <div class="column w-full justify-center text-gray-600">
+                      {#if calendarEventsForDay.length > 0}
+                        <!-- TODO: Decide where to put the event description -->
+                        <!-- {calendarEventsForDay[0].subject}
+                        <br /> -->
+                        <!-- See https://v2.troi.dev/#tag/calendarEvents/paths/~1calendarEvents/get -->
+                        {#if calendarEventsForDay[0].type == "R"}
+                          <!-- regular TODO -->
+                          <span class="material-symbols-outlined"> event </span>
+                        {:else if calendarEventsForDay[0].type == "H"}
+                          <!-- public holiday -->
+                          <span class="material-symbols-outlined">
+                            wb_sunny
+                          </span>
+                        {:else if calendarEventsForDay[0].type == "G"}
+                          <!-- general TODO -->
+                          <span class="material-symbols-outlined"> event </span>
+                        {:else if calendarEventsForDay[0].type == "P"}
+                          <!-- private/vacation -->
+                          <span class="material-symbols-outlined">
+                            beach_access
+                          </span>
+                        {:else if calendarEventsForDay[0].type == "T"}
+                          <!-- assigment (sic!) -->
+                          <span class="material-symbols-outlined">
+                            assignment
+                          </span>
+                        {/if}
+                      {:else}
+                        <span class="material-symbols-outlined"> event </span>
+                      {/if}
+                    </div>
+                  </th>
+                {/each}
+              </tr>
               <tr>
                 {#each weekdays as weekday}
                   <th>

@@ -2,6 +2,7 @@
   // @ts-nocheck
 
   import moment from "moment";
+  import { date } from "yup/lib/locale";
   import { onMount } from "svelte";
 
   import { troiApi } from "./troiApiService";
@@ -20,6 +21,7 @@
   let selectedWeek = [];
   let projects = [];
   let times = [];
+  let calendarEvents = [];
   let projectsOfSelectedDate = [];
 
   // both variables used to jump back when today button pressed
@@ -38,7 +40,6 @@
     if ($troiApi == undefined) return;
     troiApiWrapper.init($troiApi);
     projects = await troiApiWrapper.api.getCalculationPositions();
-    console.log(projects);
     /*
       projects returned as array
       0: 
@@ -55,13 +56,21 @@
 
   function updateUI() {
     projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
-    times = selectedWeek.map((date) => timeEntryCache.totalHoursOf(date));
+
+    times = [];
+    calendarEvents = [];
+    selectedWeek.forEach((date) => {
+      times.push(timeEntryCache.totalHoursOf(date));
+      calendarEvents.push(timeEntryCache.getEventsForDate(date));
+    });
   }
 
   async function loadTimeEntries(startDate, endDate) {
     isLoading = true;
     projectSuccessCounter = 0;
     //TODO: ERROR COUNTER + WARNING FOR USER IN CASE SUCCESS COUNTER IS NOT REACHED
+    await loadCalendarEvents(startDate, endDate);
+
     projects.forEach(async (project) => {
       const entries = await troiApiWrapper.api.getTimeEntries(
         project.id,
@@ -90,6 +99,42 @@
         isLoading = false;
       }
     });
+  }
+
+  async function loadCalendarEvents(startDate, endDate) {
+    const calendarEvents = await $troiApi.getCalendarEvents(
+      "H",
+      formatDateToYYYYMMDD(startDate),
+      formatDateToYYYYMMDD(endDate)
+    );
+
+    calendarEvents.forEach((calendarEvent) => {
+      let dates = getDatesBetween(
+        new Date(calendarEvent.startDate),
+        new Date(calendarEvent.endDate)
+      );
+
+      dates.forEach((date) => {
+        timeEntryCache.addEventForDate(
+          {
+            id: calendarEvent.id,
+            subject: calendarEvent.subject,
+            type: calendarEvent.type,
+          },
+          date
+        );
+      });
+    });
+  }
+
+  function getDatesBetween(startDate, endDate) {
+    var dateArray = new Array();
+    var currentDate = startDate;
+    while (currentDate <= endDate) {
+      dateArray.push(new Date(currentDate));
+      currentDate = addDaysToDate(currentDate, 1);
+    }
+    return dateArray;
   }
 
   function fillSelectedWeekWithCurrent() {
@@ -247,6 +292,7 @@
   <WeekView
     {selectedWeek}
     {times}
+    {calendarEvents}
     {selectedDate}
     {setSelectedDate}
     {reduceWeekClicked}

@@ -2,7 +2,7 @@ import moment from "moment";
 
 // cache structure
 /* 
-  '20230313': {
+  '2023-03-13': {
     projects: {
       254: {
         name: Grundsteuer,
@@ -19,7 +19,16 @@ import moment from "moment";
         ]
       }
     },
-    sum: 3
+    sum: 3,
+    events : [
+      {
+        id: '12821',
+        subject: 'Karfreitag',
+        type: 'H',
+        startTime: 09:00:00,
+        endTime: 18:00:00
+      }
+    ]
   },
   ...
 */
@@ -111,10 +120,30 @@ export default class TimeEntryCache {
     successCallback();
   }
 
+  addEventForDate(event, date) {
+    const cacheDate = date = convertToCacheFormat(date);
+    this.initStructureForDate(cacheDate);
+    this.cache[date]["events"].push(event)
+  }
+
+  getEventsForDate(date) {
+    const cacheDate = convertToCacheFormat(date);
+    if (this.cache[cacheDate]) {
+      return this.cache[cacheDate]["events"]
+    }
+
+    return []
+  }
+
   initStructureForDate(date) {
+    if (this.cache[date]) {
+      return;
+    }
+
     this.cache[date] = {
       projects: {},
       sum: 0,
+      events: []
     };
   }
 
