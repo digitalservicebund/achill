@@ -1,7 +1,6 @@
 <script>
   // @ts-nocheck
 
-  import moment from "moment";
   import { onMount } from "svelte";
   import { troiApi } from "./apis/troiApiService";
   import TimeEntryCache, {
@@ -12,6 +11,11 @@
   import WeekView from "$lib/components/WeekView.svelte";
   import TroiEntryForm from "$lib/components/NewTimeEntryForm.svelte";
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
+  import {
+    addDaysToDate,
+    formatDateToYYYYMMDD,
+    getDatesBetween,
+  } from "$lib/utils/dateUtils";
 
   const timeEntryCache = new TimeEntryCache();
   const troiApiWrapper = new TroiApiWrapper();
@@ -124,20 +128,6 @@
     });
   }
 
-  function getDatesBetween(startDate, endDate) {
-    // Set equal hours for start and endDate so the hour difference
-    // doesn't influence the date comparison
-    startDate.setHours(5, 0, 0, 0);
-    endDate.setHours(5, 0, 0, 0);
-    var dateArray = new Array();
-    var currentDate = startDate;
-    while (currentDate <= endDate) {
-      dateArray.push(new Date(currentDate));
-      currentDate = addDaysToDate(currentDate, 1);
-    }
-    return dateArray;
-  }
-
   function fillSelectedWeekWithCurrent() {
     // calc Monday of current week
     const dayNumberToday = selectedDate.getDay() || 7; // get current day number, converting Sunday to 7
@@ -156,15 +146,6 @@
     // values for today button to come back to
     initalDate = selectedDate;
     initalWeek = selectedWeek;
-  }
-
-  // subtraction also possible
-  function addDaysToDate(date, days) {
-    return new Date(date.getTime() + days * 86400000); // 24*60*60*1000
-  }
-
-  function formatDateToYYYYMMDD(date) {
-    return moment(date).format("YYYYMMDD");
   }
 
   function reduceWeekClicked() {

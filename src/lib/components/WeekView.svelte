@@ -1,7 +1,8 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
   import { beforeUpdate } from "svelte";
-  import { convertFloatTimeToHHMM } from "../utils/timeConverter.js";
+  import { convertFloatTimeToHHMM } from "$lib/utils/timeConverter.js";
+  import { datesEqual } from "$lib/utils/dateUtils.js";
 
   // @ts-nocheck
 
@@ -26,14 +27,6 @@
   beforeUpdate(() => {
     updateComponent();
   });
-
-  function datesEqual(date1, date2) {
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getFullYear() === date2.getFullYear()
-    );
-  }
 
   function getDayOf(date) {
     return date.getDate();
