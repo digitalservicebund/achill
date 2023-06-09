@@ -155,7 +155,7 @@
         </div>
 
         {#each selectedCalendarEvents as calendarEvent}
-          <div aria-label="TODO" class="flex items-center text-gray-600">
+          <div aria-label="TODO" class="my-2 flex items-center text-gray-600">
             <!-- See https://v2.troi.dev/#tag/calendarEvents/paths/~1calendarEvents/get -->
             {#if calendarEvent.type == "R"}
               <!-- regular TODO -->
@@ -173,7 +173,9 @@
               <!-- assigment (sic!) -->
               <span class="material-symbols-outlined"> assignment </span>
             {/if}
-            {calendarEvent.subject}
+            <p class="ml-2">
+              {calendarEvent.subject}
+            </p>
           </div>
         {/each}
       </div>

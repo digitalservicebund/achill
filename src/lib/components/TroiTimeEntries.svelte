@@ -47,7 +47,7 @@
     <div class="container mx-auto pt-4 pb-2">
       {#if projects[projectId].entries.length > 0}
         <h2
-          class="text-lg font-semibold text-gray-900"
+          class="mb-4 text-lg font-semibold text-gray-900"
           title="Position ID: {projectId}"
           data-testid="project-heading-{projects[projectId]['name']}"
         >
@@ -74,13 +74,13 @@
           {/if}
           {#if !disabled}
             <div>
-              <AchillButton
-                text={"Delete"}
-                testId={"TODO"}
-                onClick={() => deleteClicked(entry, projectId)}
-                color={buttonRed}
-              />
               {#if entry.id == editState.id}
+                <AchillButton
+                  text={"Cancel"}
+                  testId={"TODO"}
+                  onClick={() => (editState = { id: -1 })}
+                  color={buttonRed}
+                />
                 <AchillButton
                   text={"Save"}
                   testId={"TODO"}
@@ -88,6 +88,12 @@
                   color={buttonGreen}
                 />
               {:else}
+                <AchillButton
+                  text={"Delete"}
+                  testId={"TODO"}
+                  onClick={() => deleteClicked(entry, projectId)}
+                  color={buttonRed}
+                />
                 <AchillButton
                   text={"Edit"}
                   testId={"TODO"}
