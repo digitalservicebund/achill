@@ -10,16 +10,21 @@ export function formatDateToYYYYMMDD(date) {
 }
 
 export function getDatesBetween(startDate, endDate) {
-    // Set equal hours for start and endDate so the hour difference
+    // TODO: Find a better solution??
+    // Adapt hours in respect to time zones so the timezone
     // doesn't influence the date comparison
-    startDate.setHours(5, 0, 0, 0);
-    endDate.setHours(5, 0, 0, 0);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    start.setHours(5, (end.getTimezoneOffset()), 0, 0);
+    end.setHours(5, (start.getTimezoneOffset()), 0, 0);
+
     var dateArray = new Array();
-    var currentDate = startDate;
-    while (currentDate <= endDate) {
+    var currentDate = start;
+    while (currentDate <= end) {
         dateArray.push(new Date(currentDate));
         currentDate = addDaysToDate(currentDate, 1);
     }
+
     return dateArray;
 }
 
