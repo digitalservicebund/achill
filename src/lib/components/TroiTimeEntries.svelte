@@ -16,6 +16,7 @@
   export let deleteClicked;
   export let onUpdateEntry;
   export let editState = { id: -1 };
+  export let disabled = false;
 
   let values = {
     hours: "",
@@ -71,29 +72,31 @@
               <br />
             </div>
           {/if}
-          <div>
-            <AchillButton
-              text={"Delete"}
-              testId={"TODO"}
-              onClick={() => deleteClicked(entry, projectId)}
-              color={buttonRed}
-            />
-            {#if entry.id == editState.id}
+          {#if !disabled}
+            <div>
               <AchillButton
-                text={"Save"}
+                text={"Delete"}
                 testId={"TODO"}
-                onClick={() => saveClicked(projectId, entry)}
-                color={buttonGreen}
+                onClick={() => deleteClicked(entry, projectId)}
+                color={buttonRed}
               />
-            {:else}
-              <AchillButton
-                text={"Edit"}
-                testId={"TODO"}
-                onClick={() => editClicked(entry)}
-                color={buttonBlue}
-              />
-            {/if}
-          </div>
+              {#if entry.id == editState.id}
+                <AchillButton
+                  text={"Save"}
+                  testId={"TODO"}
+                  onClick={() => saveClicked(projectId, entry)}
+                  color={buttonGreen}
+                />
+              {:else}
+                <AchillButton
+                  text={"Edit"}
+                  testId={"TODO"}
+                  onClick={() => editClicked(entry)}
+                  color={buttonBlue}
+                />
+              {/if}
+            </div>
+          {/if}
         </div>
         <br />
       {/each}

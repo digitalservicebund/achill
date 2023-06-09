@@ -16,6 +16,7 @@
     formatDateToYYYYMMDD,
     getDatesBetween,
   } from "$lib/utils/dateUtils";
+  import InfoBanner from "$lib/components/InfoBanner.svelte";
 
   const timeEntryCache = new TimeEntryCache();
   const troiApiWrapper = new TroiApiWrapper();
@@ -23,6 +24,8 @@
   let projects = [];
   let times = [];
   let calendarEvents = [];
+  let selectedDayIsHoliday = false;
+  let selectedDayIsVacation = false;
   let projectsOfSelectedDate = [];
 
   // both variables used to jump back when today button pressed
@@ -64,6 +67,8 @@
       times.push(timeEntryCache.totalHoursOf(date));
       calendarEvents.push(timeEntryCache.getEventsForDate(date));
     });
+
+    setSelectedDayEvents();
   }
 
   async function loadTimeEntries(startDate, endDate) {
@@ -94,7 +99,7 @@
           increaseSelectedWeek();
         } else {
           // initial loading
-          selectedDate = initalDate;
+          setSelectedDate(initalDate);
         }
         updateUI();
         isLoading = false;
@@ -177,8 +182,8 @@
   }
 
   function changeWeek(direction) {
-    selectedDate = addDaysToDate(selectedDate, 7 * direction);
     selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7 * direction));
+    setSelectedDate(addDaysToDate(selectedDate, 7 * direction));
   }
 
   function triggerBottomFetch() {
@@ -197,13 +202,35 @@
 
   function todayClicked() {
     timeEntryCache.weekIndex = 0;
-    selectedDate = initalDate;
+    setSelectedDate(initalDate);
     selectedWeek = initalWeek;
     updateUI();
   }
 
   function setSelectedDate(date) {
     selectedDate = date;
+    setSelectedDayEvents();
+  }
+
+  function setSelectedDayEvents() {
+    const selectedDayCalendarEvents =
+      calendarEvents[(selectedDate.getDay() + 6) % 7];
+
+    if (selectedDayCalendarEvents == undefined) {
+      return;
+    }
+
+    const holidayEvent = selectedDayCalendarEvents.find(
+      (event) => event.type == "H"
+    );
+
+    selectedDayIsHoliday = holidayEvent != undefined;
+
+    const vacationEvent = selectedDayCalendarEvents.find(
+      (event) => event.type == "P"
+    );
+
+    selectedDayIsVacation = vacationEvent != undefined;
   }
 
   function getProjectById(projectId) {
@@ -283,15 +310,25 @@
   />
 </section>
 
-{#each projects as project}
-  <TroiEntryForm {project} onAddClick={onAddEntry} />
-{/each}
+{#if !selectedDayIsHoliday}
+  {#if selectedDayIsVacation}
+    <InfoBanner
+      text={"Are you sure you want to book time on a vacation day?!"}
+    />
+  {/if}
+  {#each projects as project}
+    <TroiEntryForm {project} onAddClick={onAddEntry} />
+  {/each}
+{:else}
+  <InfoBanner text={"You can't log time on a holiday!"} />
+{/if}
 
 <TroiTimeEntries
   projects={projectsOfSelectedDate}
   deleteClicked={onDeleteEntry}
   {onUpdateEntry}
   editState={timeEntryEditState}
+  disabled={selectedDayIsHoliday}
 />
 
 <section class="mt-8 text-xs text-gray-600">
