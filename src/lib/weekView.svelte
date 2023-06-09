@@ -1,6 +1,5 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
-  import { clear_loops } from "svelte/internal";
   import { beforeUpdate } from "svelte";
   import { convertFloatTimeToHHMM } from "./timeConverter.js";
 
@@ -21,6 +20,7 @@
   let selectedMonth;
   let selectedYear;
   let displayHours = [];
+  let selectedCalendarEvents = [];
   const weekdays = ["M", "T", "W", "T", "F"];
 
   beforeUpdate(() => {
@@ -44,7 +44,7 @@
    */
   function getWeekNumber() {
     var tdt = new Date(selectedDate.valueOf());
-    var dayn = (selectedDate.getDay() + 6) % 7;
+    var dayn = getDayNumber();
     tdt.setDate(tdt.getDate() - dayn + 3);
     var firstThursday = tdt.valueOf();
     tdt.setMonth(0, 1);
@@ -55,6 +55,10 @@
     return 1 + Math.ceil((firstThursday - tdt) / 604800000);
   }
 
+  function getDayNumber() {
+    return (selectedDate.getDay() + 6) % 7;
+  }
+
   function updateComponent() {
     selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
     selectedYear = selectedDate.getFullYear();
@@ -63,6 +67,9 @@
       weekday: "long",
     });
     displayHours = [];
+    selectedCalendarEvents = calendarEvents[getDayNumber()]
+      ? calendarEvents[getDayNumber()]
+      : [];
     times.forEach((time) => {
       displayHours.push(time == 0 ? "0" : convertFloatTimeToHHMM(time));
     });
@@ -153,6 +160,29 @@
             day: "numeric",
           })}
         </div>
+
+        {#each selectedCalendarEvents as calendarEvent}
+          <div aria-label="TODO" class="flex items-center text-gray-600">
+            <!-- See https://v2.troi.dev/#tag/calendarEvents/paths/~1calendarEvents/get -->
+            {#if calendarEvent.type == "R"}
+              <!-- regular TODO -->
+              <span class="material-symbols-outlined"> event </span>
+            {:else if calendarEvent.type == "H"}
+              <!-- public holiday -->
+              <span class="material-symbols-outlined"> wb_sunny </span>
+            {:else if calendarEvent.type == "G"}
+              <!-- general TODO -->
+              <span class="material-symbols-outlined"> event </span>
+            {:else if calendarEvent.type == "P"}
+              <!-- private/vacation -->
+              <span class="material-symbols-outlined"> beach_access </span>
+            {:else if calendarEvent.type == "T"}
+              <!-- assigment (sic!) -->
+              <span class="material-symbols-outlined"> assignment </span>
+            {/if}
+            {calendarEvent.subject}
+          </div>
+        {/each}
       </div>
 
       <!-- Calendar -->
@@ -160,44 +190,6 @@
         <div class="flex items-center justify-between overflow-x-auto">
           <table class="w-full">
             <thead>
-              <tr>
-                {#each calendarEvents as calendarEventsForDay}
-                  <th>
-                    <div class="column w-full justify-center text-gray-600">
-                      {#if calendarEventsForDay.length > 0}
-                        <!-- TODO: Decide where to put the event description -->
-                        <!-- {calendarEventsForDay[0].subject}
-                        <br /> -->
-                        <!-- See https://v2.troi.dev/#tag/calendarEvents/paths/~1calendarEvents/get -->
-                        {#if calendarEventsForDay[0].type == "R"}
-                          <!-- regular TODO -->
-                          <span class="material-symbols-outlined"> event </span>
-                        {:else if calendarEventsForDay[0].type == "H"}
-                          <!-- public holiday -->
-                          <span class="material-symbols-outlined">
-                            wb_sunny
-                          </span>
-                        {:else if calendarEventsForDay[0].type == "G"}
-                          <!-- general TODO -->
-                          <span class="material-symbols-outlined"> event </span>
-                        {:else if calendarEventsForDay[0].type == "P"}
-                          <!-- private/vacation -->
-                          <span class="material-symbols-outlined">
-                            beach_access
-                          </span>
-                        {:else if calendarEventsForDay[0].type == "T"}
-                          <!-- assigment (sic!) -->
-                          <span class="material-symbols-outlined">
-                            assignment
-                          </span>
-                        {/if}
-                      {:else}
-                        <span class="material-symbols-outlined"> event </span>
-                      {/if}
-                    </div>
-                  </th>
-                {/each}
-              </tr>
               <tr>
                 {#each weekdays as weekday}
                   <th>
