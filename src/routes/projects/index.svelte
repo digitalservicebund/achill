@@ -4,8 +4,8 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
 
-  import { user, logout, loggedIn } from "../../lib/auth.js";
-  import Troi from "../../lib/Troi.svelte";
+  import { user, logout, loggedIn } from "$lib/stores/auth.js";
+  import Troi from "$lib/Troi.svelte";
 
   onMount(() => {
     if (!$loggedIn) {

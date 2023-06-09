@@ -2,19 +2,16 @@
   // @ts-nocheck
 
   import moment from "moment";
-  import { date } from "yup/lib/locale";
   import { onMount } from "svelte";
-
-  import { troiApi } from "./troiApiService";
+  import { troiApi } from "./apis/troiApiService";
   import TimeEntryCache, {
     convertToCacheFormat,
-  } from "./TimeEntryCache/TimeEntryCache";
-  import TroiApiWrapper from "./TroiApiWrapper/TroiApiWrapper";
-
-  import TroiTimeEntries from "./TroiTimeEntries.svelte";
-  import WeekView from "./weekView.svelte";
-  import TroiEntryForm from "./TroiEntryForm/TroiEntryForm.svelte";
-  import LoadingOverlay from "./loadingOverlay.svelte";
+  } from "$lib/stores/TimeEntryCache";
+  import TroiApiWrapper from "./apis/TroiApiWrapper";
+  import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
+  import WeekView from "$lib/components/WeekView.svelte";
+  import TroiEntryForm from "$lib/components/NewTimeEntryForm.svelte";
+  import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
 
   const timeEntryCache = new TimeEntryCache();
   const troiApiWrapper = new TroiApiWrapper();

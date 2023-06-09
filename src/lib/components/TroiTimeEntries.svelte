@@ -1,15 +1,16 @@
 <script>
-  import { buttonBlue, buttonGreen, buttonRed } from "../components/Colors.js";
-  import AchillButton from "../components/AchillButton.svelte";
-
-  // @ts-nocheck
-
+  import {
+    buttonBlue,
+    buttonGreen,
+    buttonRed,
+  } from "$lib/components/colors.js";
+  import AchillButton from "$lib/components/TroiButton.svelte";
   import {
     convertFloatTimeToHHMM,
     convertHHMMTimeToFloat,
-  } from "./timeConverter.js";
-  import { troiEntryFormValidationScheme } from "./TroiEntryForm/troiEntryFormValidationScheme.js";
-  import EntryForm from "./UiComponents/EntryForm.svelte";
+  } from "$lib/utils/timeConverter.js";
+  import EntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
+  import { validateForm } from "./EntryForm/timeEntryFormValidator";
 
   export let projects;
   export let deleteClicked;
@@ -29,25 +30,15 @@
     values.description = entry.description;
   }
 
-  let saveClicked = async (projectId, entry) => {
-    try {
-      // `abortEarly: false` to get all the errors
-      await troiEntryFormValidationScheme.validate(values, {
-        abortEarly: false,
-      });
-      errors = {};
-    } catch (err) {
-      errors = err.inner.reduce((acc, err) => {
-        return { ...acc, [err.path]: err.message };
-      }, {});
-    }
+  async function saveClicked(projectId, entry) {
+    errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
       entry.hours = convertHHMMTimeToFloat(values.hours);
       entry.description = values.description;
       onUpdateEntry(projectId, entry);
     }
-  };
+  }
 </script>
 
 {#each Object.keys(projects) as projectId}

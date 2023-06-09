@@ -1,7 +1,7 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
   import { beforeUpdate } from "svelte";
-  import { convertFloatTimeToHHMM } from "./timeConverter.js";
+  import { convertFloatTimeToHHMM } from "../utils/timeConverter.js";
 
   // @ts-nocheck
 

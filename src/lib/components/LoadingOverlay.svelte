@@ -1,6 +1,4 @@
-<!-- svelte-ignore a11y-missing-attribute -->
 <script>
-  // @ts-nocheck
   export let message;
 </script>
 

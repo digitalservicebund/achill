@@ -1,11 +1,11 @@
 <script>
   import { goto } from "$app/navigation";
-  import { login } from "../../lib/auth";
+  import { login } from "$lib/stores/auth";
   import TroiApiService, {
     AuthenticationFailed,
     troiApi,
-  } from "../../lib/troiApiService";
-  import Input from "./../../lib/Input.svelte";
+  } from "../../lib/apis/troiApiService";
+  import Input from "../../lib/components/Input.svelte";
 
   const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
   let userName = "";

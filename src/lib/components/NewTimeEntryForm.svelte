@@ -1,12 +1,9 @@
 <script>
-  import EntryForm from "$lib/UiComponents/EntryForm.svelte";
-  import { convertHHMMTimeToFloat } from "$lib/timeConverter.js";
-  import AchillButton from "../../components/AchillButton.svelte";
-
-  // @ts-nocheck
-
-  import { troiEntryFormValidationScheme } from "./troiEntryFormValidationScheme.js";
-  import { buttonBlue } from "../../components/Colors.js";
+  import EntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
+  import { convertHHMMTimeToFloat } from "$lib/utils/timeConverter.js";
+  import AchillButton from "$lib/components/TroiButton.svelte";
+  import { buttonBlue } from "$lib/components/colors.js";
+  import { validateForm } from "$lib/components/EntryForm/timeEntryFormValidator.js";
 
   export let project;
   export let onAddClick;
@@ -17,18 +14,8 @@
   };
   let errors = {};
 
-  let handleSubmit = async () => {
-    try {
-      // `abortEarly: false` to get all the errors
-      await troiEntryFormValidationScheme.validate(values, {
-        abortEarly: false,
-      });
-      errors = {};
-    } catch (err) {
-      errors = err.inner.reduce((acc, err) => {
-        return { ...acc, [err.path]: err.message };
-      }, {});
-    }
+  async function handleSubmit() {
+    errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
       const convertedHours = convertHHMMTimeToFloat(values.hours);
@@ -36,11 +23,7 @@
       values.hours = "";
       values.description = "";
     }
-  };
-
-  let submitHandler = async () => {
-    await handleSubmit();
-  };
+  }
 </script>
 
 <div data-test="entry-form" class="my-2 flex justify-center">
@@ -63,7 +46,7 @@
           <AchillButton
             text={"ADD"}
             testId={"-" + project.name}
-            onClick={submitHandler}
+            onClick={handleSubmit}
             color={buttonBlue}
           />
         </div>

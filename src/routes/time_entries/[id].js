@@ -1,4 +1,4 @@
-import TroiApiService from "../../lib/troiApiService";
+import TroiApiService from "../../lib/apis/troiApiService";
 
 const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
