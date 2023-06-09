@@ -110,8 +110,8 @@
 
     calendarEvents.forEach((calendarEvent) => {
       let dates = getDatesBetween(
-        new Date(calendarEvent.startDate),
-        new Date(calendarEvent.endDate)
+        new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
+        new Date(Math.min(new Date(calendarEvent.endDate), endDate))
       );
 
       dates.forEach((date) => {
@@ -128,6 +128,10 @@
   }
 
   function getDatesBetween(startDate, endDate) {
+    // Set equal hours for start and endDate so the hour difference
+    // doesn't influence the date comparison
+    startDate.setHours(5, 0, 0, 0);
+    endDate.setHours(5, 0, 0, 0);
     var dateArray = new Array();
     var currentDate = startDate;
     while (currentDate <= endDate) {
