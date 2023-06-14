@@ -28,11 +28,8 @@
 
 <div data-test="entry-form" class="my-2 flex justify-center">
   <div class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg">
-    <div class="flex flex-row">
+    <div class="flex flex-col">
       <div class="basis-3/4 p-1">
-        <h5 class="mb-1 text-base font-medium leading-tight text-gray-900">
-          {project.name}
-        </h5>
         <EntryForm
           {values}
           {errors}
@@ -40,16 +37,13 @@
           descriptionTestId={"description-" + project.name}
         />
       </div>
-
-      <div class="flex basis-1/4 justify-end">
-        <div class="flex flex-col justify-center gap-1">
-          <AchillButton
-            text={"ADD"}
-            testId={"-" + project.name}
-            onClick={handleSubmit}
-            color={buttonBlue}
-          />
-        </div>
+      <div>
+        <AchillButton
+          text={"ADD"}
+          testId={"-" + project.name}
+          onClick={handleSubmit}
+          color={buttonBlue}
+        />
       </div>
     </div>
   </div>

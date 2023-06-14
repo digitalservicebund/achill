@@ -9,7 +9,6 @@
   import TroiApiWrapper from "./apis/TroiApiWrapper";
   import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
   import WeekView from "$lib/components/WeekView.svelte";
-  import TroiEntryForm from "$lib/components/NewTimeEntryForm.svelte";
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
   import {
     addDaysToDate,
@@ -26,7 +25,7 @@
   let calendarEvents = [];
   let selectedDayIsHoliday = false;
   let selectedDayIsVacation = false;
-  let projectsOfSelectedDate = [];
+  let entriesForSelectedDate = {};
 
   // both variables used to jump back when today button pressed
   let initalDate = new Date();
@@ -37,7 +36,7 @@
   let timeEntryEditState = { id: -1 };
 
   let selectedDate = new Date();
-  $: projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
+  $: entriesForSelectedDate = getEntriesFor(selectedDate);
 
   onMount(async () => {
     // make sure $troiApi from store is not used before it is initialized
@@ -59,7 +58,7 @@
   });
 
   function updateUI() {
-    projectsOfSelectedDate = timeEntryCache.projectsFor(selectedDate);
+    entriesForSelectedDate = getEntriesFor(selectedDate);
 
     times = [];
     calendarEvents = [];
@@ -105,6 +104,23 @@
         isLoading = false;
       }
     });
+  }
+
+  function getEntriesFor(date) {
+    let entriesForDate = {};
+
+    if (projects.length == 0) {
+      return entriesForDate;
+    }
+
+    projects.forEach((project) => {
+      entriesForDate[project.id] = timeEntryCache.entriesForProject(
+        date,
+        project.id
+      );
+    });
+
+    return entriesForDate;
   }
 
   async function loadCalendarEvents(startDate, endDate) {
@@ -316,20 +332,18 @@
       text={"Are you sure you want to book time on a vacation day?!"}
     />
   {/if}
-  {#each projects as project}
-    <TroiEntryForm {project} onAddClick={onAddEntry} />
-  {/each}
+  <TroiTimeEntries
+    {projects}
+    entries={entriesForSelectedDate}
+    deleteClicked={onDeleteEntry}
+    {onUpdateEntry}
+    {onAddEntry}
+    editState={timeEntryEditState}
+    disabled={selectedDayIsHoliday}
+  />
 {:else}
   <InfoBanner text={"You can't log time on a holiday!"} />
 {/if}
-
-<TroiTimeEntries
-  projects={projectsOfSelectedDate}
-  deleteClicked={onDeleteEntry}
-  {onUpdateEntry}
-  editState={timeEntryEditState}
-  disabled={selectedDayIsHoliday}
-/>
 
 <section class="mt-8 text-xs text-gray-600">
   <p>

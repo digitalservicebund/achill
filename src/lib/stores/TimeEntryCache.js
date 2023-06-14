@@ -64,6 +64,15 @@ export default class TimeEntryCache {
       (e) => e.description.toLowerCase() == entry.description.toLowerCase()
     );
   }
+
+  _projectsFor(date) {
+    date = convertToCacheFormat(date);
+    if (date in this.cache) {
+      return this._getDay(date)["projects"];
+    } else {
+      return {};
+    }
+  }
   // -----------------------
 
   addEntries(project, entries) {
@@ -78,7 +87,7 @@ export default class TimeEntryCache {
       this.initStructureForDate(entry.date);
     }
 
-    let projects = this.projectsFor(entry.date);
+    let projects = this._projectsFor(entry.date);
     // init if not present
     if (!(project.id in projects)) {
       this.initStructureForProject(entry.date, project);
@@ -148,7 +157,7 @@ export default class TimeEntryCache {
   }
 
   initStructureForProject(date, project) {
-    this.projectsFor(date)[project.id] = {
+    this._projectsFor(date)[project.id] = {
       entries: [],
       name: project.name,
     };
@@ -156,7 +165,7 @@ export default class TimeEntryCache {
 
   aggregateHoursFor(date) {
     // get all projectIds
-    const projectIds = Object.keys(this.projectsFor(date));
+    const projectIds = Object.keys(this._projectsFor(date));
 
     // iterate entries in each project and aggregate hours
     let sum = 0;
@@ -194,12 +203,12 @@ export default class TimeEntryCache {
     this.weekIndex--;
   }
 
-  projectsFor(date) {
+  entriesForProject(date, projectId) {
     date = convertToCacheFormat(date);
-    if (date in this.cache) {
-      return this._getDay(date)["projects"];
+    if (date in this.cache && projectId in this._getDay(date)["projects"]) {
+      return this._getDay(date)["projects"][projectId]["entries"];
     } else {
-      return {};
+      return [];
     }
   }
 
