@@ -3,10 +3,6 @@
 
   import { onMount } from "svelte";
   import { troiApi } from "./apis/troiApiService";
-  import TimeEntryCache, {
-    convertToCacheFormat,
-  } from "$lib/stores/TimeEntryCache";
-  import TroiApiWrapper from "./apis/TroiApiWrapper";
   import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
   import WeekView from "$lib/components/WeekView.svelte";
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
@@ -16,9 +12,13 @@
     getDatesBetween,
   } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
+  import TroiController, {
+    timeEntryCache,
+    troiApiWrapper,
+  } from "$lib/controllers/TroiController";
 
-  const timeEntryCache = new TimeEntryCache();
-  const troiApiWrapper = new TroiApiWrapper();
+  const troiController = new TroiController();
+
   let selectedWeek = [];
   let projects = [];
   let times = [];
@@ -41,7 +41,7 @@
   onMount(async () => {
     // make sure $troiApi from store is not used before it is initialized
     if ($troiApi == undefined) return;
-    troiApiWrapper.init($troiApi);
+    troiController.init($troiApi);
     projects = await troiApiWrapper.api.getCalculationPositions();
     /*
       projects returned as array
@@ -256,57 +256,36 @@
     return projects[index];
   }
 
-  async function onDeleteEntry(entry, projectId) {
+  async function onDeleteEntryClicked(entry, projectId) {
     isLoading = true;
-    let result = await troiApiWrapper.api.deleteTimeEntryViaServerSideProxy(
-      entry.id
-    );
-    if (result.ok) {
-      timeEntryCache.deleteEntry(entry, projectId, updateUI);
-    }
-    isLoading = false;
+    await troiController.deleteEntry(entry, projectId, () => {
+      updateUI();
+      isLoading = false;
+    });
   }
 
-  async function onAddEntry(project, hours, description) {
+  async function onAddEntryClicked(project, hours, description) {
     isLoading = true;
-    const troiFormattedSelectedDate = convertToCacheFormat(selectedDate);
-    const result = await troiApiWrapper.addEntry(
-      project.id,
-      troiFormattedSelectedDate,
+    await troiController.addEntry(
+      selectedDate,
+      project,
       hours,
-      description
+      description,
+      () => {
+        updateUI();
+        isLoading = false;
+      }
     );
-
-    const entry = {
-      date: troiFormattedSelectedDate,
-      description: result.Name,
-      hours: Number(result.Quantity),
-      id: result.Id,
-    };
-
-    timeEntryCache.addEntry(project, entry, updateUI);
-    isLoading = false;
   }
 
-  async function onUpdateEntry(projectId, entry) {
+  async function onUpdateEntryClicked(projectId, entry) {
     isLoading = true;
-    const result = await troiApiWrapper.updateEntry(projectId, entry);
     const project = getProjectById(projectId);
-
-    const troiFormattedSelectedDate = convertToCacheFormat(selectedDate);
-    const updatedEntry = {
-      date: troiFormattedSelectedDate,
-      description: result.Name,
-      hours: Number(result.Quantity),
-      id: result.Id,
-    };
-
-    // updated entry still has unique description
-    timeEntryCache.updateEntry(project, updatedEntry, () => {
+    await troiController.updateEntry(project, entry, () => {
       timeEntryEditState = { id: -1 };
       updateUI();
+      isLoading = false;
     });
-    isLoading = false;
   }
 </script>
 
@@ -335,9 +314,9 @@
   <TroiTimeEntries
     {projects}
     entries={entriesForSelectedDate}
-    deleteClicked={onDeleteEntry}
-    {onUpdateEntry}
-    {onAddEntry}
+    deleteClicked={onDeleteEntryClicked}
+    onUpdateEntry={onUpdateEntryClicked}
+    onAddEntry={onAddEntryClicked}
     editState={timeEntryEditState}
     disabled={selectedDayIsHoliday}
   />
