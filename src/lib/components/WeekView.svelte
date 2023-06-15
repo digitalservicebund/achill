@@ -5,13 +5,12 @@
     datesEqual,
     getDayNumberFor,
     getWeekNumberFor,
-    getWeekDaysFor,
   } from "$lib/utils/dateUtils.js";
 
   // @ts-nocheck
 
   export let selectedWeek;
-  export let times;
+  export let timesAndEventsOfSelectedWeek = [];
   export let calendarEvents = [];
   export let selectedDate;
   export let setSelectedDate;
@@ -23,10 +22,6 @@
   const todaysDate = new Date();
 
   $: selectedWeekNumber = getWeekNumberFor(selectedDate);
-  $: displayHours = times.map((time) => {
-    return time == 0 ? "0" : convertFloatTimeToHHMM(time);
-  });
-
   $: selectedCalendarEvents = calendarEvents[getDayNumberFor(selectedDate)]
     ? calendarEvents[getDayNumberFor(selectedDate)]
     : [];
@@ -44,11 +39,7 @@
     if (datesEqual(date, selectedDate)) {
       dateClasses += "bg-blue-600 text-white hover:bg-blue-700 ";
     } else {
-      if (calendarEvents.length > 0 && calendarEvents[index].length) {
-        dateClasses += "text-gray-500 bg-blue-200 hover:bg-[#B8BDC3] ";
-      } else {
-        dateClasses += "text-black hover:bg-[#B8BDC3] ";
-      }
+      dateClasses += "text-black hover:bg-[#B8BDC3] ";
     }
 
     return dateClasses;
@@ -184,16 +175,20 @@
                 {/each}
               </tr>
               <tr>
-                {#each displayHours as time}
+                {#each timesAndEventsOfSelectedWeek as data}
                   <td>
                     <div class="flex min-w-[6ch] justify-center px-2 py-2">
-                      {#if time == 0}
-                        <p class="text-base font-medium text-gray-500">
-                          {time}
-                        </p>
+                      {#if data.events.length}
+                        <span class="material-symbols-outlined">
+                          beach_access
+                        </span>
                       {:else}
-                        <p class="text-base font-medium text-blue-600">
-                          {time}
+                        <p
+                          class="text-base font-medium {data.hours == 0
+                            ? 'text-gray-500'
+                            : 'text-blue-600'}"
+                        >
+                          {convertFloatTimeToHHMM(data.hours)}
                         </p>
                       {/if}
                     </div>

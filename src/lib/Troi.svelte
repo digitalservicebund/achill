@@ -22,7 +22,7 @@
 
   let selectedWeek = [];
   let projects = [];
-  let times = [];
+  let timesAndEventsOfSelectedWeek = [];
   let calendarEvents = [];
   let selectedDayIsHoliday = false;
   let selectedDayIsVacation = false;
@@ -61,10 +61,13 @@
   function updateUI() {
     entriesForSelectedDate = getEntriesFor(selectedDate);
 
-    times = [];
+    timesAndEventsOfSelectedWeek = [];
     calendarEvents = [];
     selectedWeek.forEach((date) => {
-      times.push(timeEntryCache.totalHoursOf(date));
+      timesAndEventsOfSelectedWeek.push({
+        hours: timeEntryCache.totalHoursOf(date),
+        events: timeEntryCache.getEventsForDate(date),
+      });
       calendarEvents.push(timeEntryCache.getEventsForDate(date));
     });
 
@@ -284,7 +287,7 @@
 <section>
   <WeekView
     {selectedWeek}
-    {times}
+    {timesAndEventsOfSelectedWeek}
     {calendarEvents}
     {selectedDate}
     {setSelectedDate}
