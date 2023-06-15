@@ -10,6 +10,7 @@
     addDaysToDate,
     formatDateToYYYYMMDD,
     getDatesBetween,
+    weekDaysForDate,
   } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
   import TroiController, {
@@ -50,7 +51,7 @@
         name: "DigitalService / MK_22_0009 / Musterprojekt / Unterprojekt 1 / Regular Engineering"
       1: ...
     */
-    fillSelectedWeekWithCurrent();
+    initilizeSelectedWeekAndDate();
     loadTimeEntries(
       addDaysToDate(selectedWeek[0], -timeEntryCache.getIntervallInDays()),
       addDaysToDate(selectedWeek[4], timeEntryCache.getIntervallInDays())
@@ -149,24 +150,12 @@
     });
   }
 
-  function fillSelectedWeekWithCurrent() {
-    // calc Monday of current week
-    const dayNumberToday = selectedDate.getDay() || 7; // get current day number, converting Sunday to 7
-    var monday = new Date();
-    if (dayNumberToday !== 1) monday.setHours(-24 * (dayNumberToday - 1)); // only manipulate the date if it isn't Monday
-
-    // assign Monday to Friday based on Monday
-    selectedWeek[0] = monday;
-    for (let i = 1; i < 5; i++) {
-      selectedWeek[i] = addDaysToDate(monday, i);
-    }
-    // if hours set to 0, summer and winter time will interfere and change the day. Setting to 5 is somewhat "safe"
-    selectedWeek.map((date) => date.setHours(5, 0, 0, 0));
-    selectedDate.setHours(5, 0, 0, 0);
-
+  function initilizeSelectedWeekAndDate() {
     // values for today button to come back to
-    initalDate = selectedDate;
-    initalWeek = selectedWeek;
+    initalDate.setHours(5, 0, 0, 0);
+    selectedDate = initalDate;
+    initalWeek = weekDaysForDate(initalDate);
+    selectedWeek = initalWeek;
   }
 
   function reduceWeekClicked() {

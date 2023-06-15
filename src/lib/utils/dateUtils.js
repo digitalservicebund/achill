@@ -35,3 +35,21 @@ export function datesEqual(date1, date2) {
         date1.getFullYear() === date2.getFullYear()
     );
 }
+
+export function weekDaysForDate(date) {
+    // calc Monday of current week
+    const dateDayNumber = date.getDay() || 7; // get current day number, converting Sunday to 7
+    var monday = new Date();
+    if (dateDayNumber !== 1) monday.setHours(-24 * (dateDayNumber - 1)); // only manipulate the date if it isn't Monday
+
+    // assign Monday to Friday based on Monday
+    let weekDates = []
+    weekDates[0] = monday;
+    for (let i = 1; i < 5; i++) {
+        weekDates[i] = addDaysToDate(monday, i);
+    }
+    // if hours set to 0, summer and winter time will interfere and change the day. Setting to 5 is somewhat "safe"
+    weekDates.forEach((date) => date.setHours(5, 0, 0, 0));
+
+    return weekDates;
+}
