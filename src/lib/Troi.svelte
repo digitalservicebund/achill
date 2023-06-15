@@ -298,9 +298,7 @@
 
 {#if !selectedDayIsHoliday}
   {#if selectedDayIsVacation}
-    <InfoBanner
-      text={"Are you sure you want to book time on a vacation day?!"}
-    />
+    <InfoBanner text={"You are on vacation."} symbol={"beach_access"} />
   {/if}
   <TroiTimeEntries
     {projects}
@@ -312,7 +310,10 @@
     disabled={selectedDayIsHoliday}
   />
 {:else}
-  <InfoBanner text={"You can't log time on a holiday!"} />
+  <InfoBanner
+    text={"Public holiday, working impossible."}
+    symbol={"wb_sunny"}
+  />
 {/if}
 
 <section class="mt-8 text-xs text-gray-600">

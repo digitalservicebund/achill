@@ -1,9 +1,13 @@
 <script>
     export let text;
+    export let symbol;
 </script>
 
-<div class="flex w-full justify-center rounded-lg bg-gray-100 p-4 shadow-lg">
-    <h1 class="text-lg font-semibold text-orange-500">
+<div class="flex w-full items-center justify-start rounded-lg bg-blue-600 p-4">
+    <span class="material-symbols-outlined mr-2 text-white">
+        {symbol}
+    </span>
+    <p class="text-sm text-white">
         {text}
-    </h1>
+    </p>
 </div>
