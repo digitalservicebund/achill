@@ -1,11 +1,11 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
-  import { beforeUpdate, onMount } from "svelte";
   import { convertFloatTimeToHHMM } from "$lib/utils/timeConverter.js";
   import {
     datesEqual,
     getDayNumberFor,
     getWeekNumberFor,
+    getWeekDaysFor,
   } from "$lib/utils/dateUtils.js";
 
   // @ts-nocheck
@@ -19,40 +19,25 @@
   export let increaseWeekClicked;
   export let todayClicked;
 
-  const today = new Date();
-  let selectedWeekday;
-  let selectedWeekNumber;
-  let selectedMonth;
-  let selectedYear;
-  let displayHours = [];
-  let selectedCalendarEvents = [];
-  const weekdays = ["M", "T", "W", "T", "F"];
+  // both variables used to jump back when today button pressed
+  const todaysDate = new Date();
 
-  beforeUpdate(() => {
-    updateComponent();
+  $: selectedWeekNumber = getWeekNumberFor(selectedDate);
+  $: displayHours = times.map((time) => {
+    return time == 0 ? "0" : convertFloatTimeToHHMM(time);
   });
 
-  function updateComponent() {
-    selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
-    selectedYear = selectedDate.getFullYear();
-    selectedWeekNumber = getWeekNumberFor(selectedDate);
-    selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
-      weekday: "long",
-    });
-    displayHours = [];
-    selectedCalendarEvents = calendarEvents[getDayNumberFor(selectedDate)]
-      ? calendarEvents[getDayNumberFor(selectedDate)]
-      : [];
-    times.forEach((time) => {
-      displayHours.push(time == 0 ? "0" : convertFloatTimeToHHMM(time));
-    });
-  }
+  $: selectedCalendarEvents = calendarEvents[getDayNumberFor(selectedDate)]
+    ? calendarEvents[getDayNumberFor(selectedDate)]
+    : [];
+
+  const weekdays = ["M", "T", "W", "T", "F"];
 
   function getDateClasses(index, selectedDate) {
     let dateClasses = "flex h-8 w-8 items-center justify-center rounded-full ";
     let date = selectedWeek[index];
 
-    if (datesEqual(date, today)) {
+    if (datesEqual(date, todaysDate)) {
       dateClasses += "outline-none ring-2 ring-black ring-offset-2 ";
     }
 

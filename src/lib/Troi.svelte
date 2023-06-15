@@ -10,7 +10,7 @@
     addDaysToDate,
     formatDateToYYYYMMDD,
     getDatesBetween,
-    weekDaysForDate,
+    getWeekDaysFor,
   } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
   import TroiController, {
@@ -154,7 +154,7 @@
     // values for today button to come back to
     initalDate.setHours(5, 0, 0, 0);
     selectedDate = initalDate;
-    initalWeek = weekDaysForDate(initalDate);
+    initalWeek = getWeekDaysFor(initalDate);
     selectedWeek = initalWeek;
   }
 
