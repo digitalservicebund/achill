@@ -11,7 +11,6 @@
 
   export let selectedWeek;
   export let timesAndEventsOfSelectedWeek = [];
-  export let calendarEvents = [];
   export let selectedDate;
   export let setSelectedDate;
   export let reduceWeekClicked;
@@ -22,9 +21,6 @@
   const todaysDate = new Date();
 
   $: selectedWeekNumber = getWeekNumberFor(selectedDate);
-  $: selectedCalendarEvents = calendarEvents[getDayNumberFor(selectedDate)]
-    ? calendarEvents[getDayNumberFor(selectedDate)]
-    : [];
 
   const weekdays = ["M", "T", "W", "T", "F"];
 
@@ -109,31 +105,6 @@
             day: "numeric",
           })}
         </div>
-
-        {#each selectedCalendarEvents as calendarEvent}
-          <div aria-label="TODO" class="my-2 flex items-center text-gray-600">
-            <!-- See https://v2.troi.dev/#tag/calendarEvents/paths/~1calendarEvents/get -->
-            {#if calendarEvent.type == "R"}
-              <!-- regular TODO -->
-              <span class="material-symbols-outlined"> event </span>
-            {:else if calendarEvent.type == "H"}
-              <!-- public holiday -->
-              <span class="material-symbols-outlined"> wb_sunny </span>
-            {:else if calendarEvent.type == "G"}
-              <!-- general TODO -->
-              <span class="material-symbols-outlined"> event </span>
-            {:else if calendarEvent.type == "P"}
-              <!-- private/vacation -->
-              <span class="material-symbols-outlined"> beach_access </span>
-            {:else if calendarEvent.type == "T"}
-              <!-- assigment (sic!) -->
-              <span class="material-symbols-outlined"> assignment </span>
-            {/if}
-            <p class="ml-2">
-              {calendarEvent.subject}
-            </p>
-          </div>
-        {/each}
       </div>
 
       <!-- Calendar -->
@@ -178,7 +149,11 @@
                 {#each timesAndEventsOfSelectedWeek as data}
                   <td>
                     <div class="flex min-w-[6ch] justify-center px-2 py-2">
-                      {#if data.events.length}
+                      {#if data.events.length && data.events[0].type === "H"}
+                        <span class="material-symbols-outlined">
+                          wb_sunny
+                        </span>
+                      {:else if data.events.length && data.events[0].type === "P"}
                         <span class="material-symbols-outlined">
                           beach_access
                         </span>

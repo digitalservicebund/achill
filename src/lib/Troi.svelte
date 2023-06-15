@@ -288,7 +288,6 @@
   <WeekView
     {selectedWeek}
     {timesAndEventsOfSelectedWeek}
-    {calendarEvents}
     {selectedDate}
     {setSelectedDate}
     {reduceWeekClicked}
