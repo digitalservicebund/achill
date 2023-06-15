@@ -1,8 +1,12 @@
 <!-- svelte-ignore a11y-missing-attribute -->
 <script>
-  import { beforeUpdate } from "svelte";
+  import { beforeUpdate, onMount } from "svelte";
   import { convertFloatTimeToHHMM } from "$lib/utils/timeConverter.js";
-  import { datesEqual } from "$lib/utils/dateUtils.js";
+  import {
+    datesEqual,
+    getDayNumberFor,
+    getWeekNumberFor,
+  } from "$lib/utils/dateUtils.js";
 
   // @ts-nocheck
 
@@ -28,40 +32,16 @@
     updateComponent();
   });
 
-  function getDayOf(date) {
-    return date.getDate();
-  }
-
-  /**
-   * ISO-8601 week number
-   */
-  function getWeekNumber() {
-    var tdt = new Date(selectedDate.valueOf());
-    var dayn = getDayNumber();
-    tdt.setDate(tdt.getDate() - dayn + 3);
-    var firstThursday = tdt.valueOf();
-    tdt.setMonth(0, 1);
-    if (tdt.getDay() !== 4) {
-      tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
-    }
-    // @ts-ignore
-    return 1 + Math.ceil((firstThursday - tdt) / 604800000);
-  }
-
-  function getDayNumber() {
-    return (selectedDate.getDay() + 6) % 7;
-  }
-
   function updateComponent() {
     selectedMonth = selectedDate.toLocaleString("default", { month: "long" });
     selectedYear = selectedDate.getFullYear();
-    selectedWeekNumber = getWeekNumber();
+    selectedWeekNumber = getWeekNumberFor(selectedDate);
     selectedWeekday = selectedDate.toLocaleDateString("de-DE", {
       weekday: "long",
     });
     displayHours = [];
-    selectedCalendarEvents = calendarEvents[getDayNumber()]
-      ? calendarEvents[getDayNumber()]
+    selectedCalendarEvents = calendarEvents[getDayNumberFor(selectedDate)]
+      ? calendarEvents[getDayNumberFor(selectedDate)]
       : [];
     times.forEach((time) => {
       displayHours.push(time == 0 ? "0" : convertFloatTimeToHHMM(time));
@@ -211,7 +191,7 @@
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
                       >
                         <p class={getDateClasses(index, selectedDate)}>
-                          {getDayOf(date)}
+                          {date.getDate()}
                         </p>
                       </div>
                     </div>

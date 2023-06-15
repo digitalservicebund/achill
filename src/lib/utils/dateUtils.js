@@ -53,3 +53,23 @@ export function weekDaysForDate(date) {
 
     return weekDates;
 }
+
+/**
+   * ISO-8601 week number
+   */
+export function getWeekNumberFor(date) {
+    var tdt = new Date(date.valueOf());
+    var dayn = getDayNumberFor(date);
+    tdt.setDate(tdt.getDate() - dayn + 3);
+    var firstThursday = tdt.valueOf();
+    tdt.setMonth(0, 1);
+    if (tdt.getDay() !== 4) {
+        tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
+    }
+    // @ts-ignore
+    return 1 + Math.ceil((firstThursday - tdt) / 604800000);
+}
+
+export function getDayNumberFor(date) {
+    return (date.getDay() + 6) % 7;
+}
