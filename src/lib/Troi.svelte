@@ -28,10 +28,18 @@
     // make sure $troiApi from store is not used before it is initialized
     if ($troiApi == undefined) return;
 
-    await troiController.init($troiApi);
+    await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
     projects = troiController.getProjects();
     updateUI();
   });
+
+  function showLoadingSpinner() {
+    isLoading = true;
+  }
+
+  function hideLoadingSpinner() {
+    isLoading = false;
+  }
 
   async function updateUI() {
     entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
@@ -43,6 +51,8 @@
   async function onSelectedDateChangedTo(date) {
     entriesForSelectedDate = await troiController.getEntriesFor(date);
     selectedDate = date;
+    timesAndEventsOfSelectedWeek =
+      troiController.getTimesAndEventsFor(selectedWeek);
     setSelectedDayEvents();
   }
 

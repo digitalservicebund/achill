@@ -9,8 +9,10 @@ const intervallInDays = intervallInWeeks * 7;
 
 export default class TroiController {
 
-    async init(troiApi) {
+    async init(troiApi, willStartLoadingCallback, finishedLoadingCallback) {
         this._troiApi = troiApi;
+        this._willStartLoadingCallback = willStartLoadingCallback;
+        this._finishedLoadingCallback = finishedLoadingCallback;
         // Load all stared projects when initializing the repository
         this._projects = await this._troiApi.getCalculationPositions();
 
@@ -82,9 +84,6 @@ export default class TroiController {
     getTimesAndEventsFor(week) {
         let timesAndEventsOfWeek = [];
 
-        // TODO: might needs to be combined with getEntriesFor
-        // or needs to check cache borders and trigger fetch by itself
-
         week.forEach((date) => {
             timesAndEventsOfWeek.push({
                 hours: timeEntryCache.totalHoursOf(date),
@@ -104,17 +103,23 @@ export default class TroiController {
     async getEntriesFor(date) {
 
         if (date > this._cacheTopBorder) {
+            console.log("AT CACHE TOP BORDER");
+            this._willStartLoadingCallback();
             const fetchStartDate = getWeekDaysFor(date)[0]
             const fetchEndDate = addDaysToDate(fetchStartDate, intervallInDays - 3);
 
             await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
+            this._finishedLoadingCallback();
         }
 
         if (date < this._cacheBottomBorder) {
+            console.log("AT CACHE BOTTOM BORDER");
+            this._willStartLoadingCallback();
             const fetchEndDate = getWeekDaysFor(date)[4];
             const fetchStartDate = addDaysToDate(fetchEndDate, -intervallInDays + 3);
 
             await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
+            this._finishedLoadingCallback();
         }
 
         return timeEntryCache.getEntriesFor(date)
