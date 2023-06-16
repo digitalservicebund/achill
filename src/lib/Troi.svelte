@@ -6,21 +6,15 @@
   import TroiTimeEntries from "$lib/components/TroiTimeEntries.svelte";
   import WeekView from "$lib/components/WeekView.svelte";
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
-  import {
-    addDaysToDate,
-    formatDateToYYYYMMDD,
-    getDatesBetween,
-    getWeekDaysFor,
-  } from "$lib/utils/dateUtils";
+  import { getWeekDaysFor } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
-  import TroiController, {
-    timeEntryCache,
-    troiApiWrapper,
-  } from "$lib/controllers/TroiController";
+  import TroiController from "$lib/controllers/TroiController";
 
   const troiController = new TroiController();
 
-  let selectedWeek = [];
+  let selectedDate = new Date();
+  let selectedWeek = getWeekDaysFor(selectedDate);
+
   let projects = [];
   let timesAndEventsOfSelectedWeek = [];
   let calendarEvents = [];
@@ -28,196 +22,35 @@
   let selectedDayIsVacation = false;
   let entriesForSelectedDate = {};
 
-  // both variables used to jump back when today button pressed
-  let initalDate = new Date();
-  let initalWeek = [];
-
   let isLoading = true;
-  let projectSuccessCounter = 0;
   let timeEntryEditState = { id: -1 };
-
-  let selectedDate = new Date();
-  $: entriesForSelectedDate = getEntriesFor(selectedDate);
 
   onMount(async () => {
     // make sure $troiApi from store is not used before it is initialized
     if ($troiApi == undefined) return;
-    troiController.init($troiApi);
-    projects = await troiApiWrapper.api.getCalculationPositions();
-    /*
-      projects returned as array
-      0: 
-        id: 515
-        name: "DigitalService / MK_22_0009 / Musterprojekt / Unterprojekt 1 / Regular Engineering"
-      1: ...
-    */
-    initilizeSelectedWeekAndDate();
-    loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -timeEntryCache.getIntervallInDays()),
-      addDaysToDate(selectedWeek[4], timeEntryCache.getIntervallInDays())
-    );
+
+    await troiController.init($troiApi);
+    projects = troiController.getProjects();
+    console.log("Try to trigger Initial reload of weekView");
+    updateUI();
   });
 
-  function updateUI() {
-    entriesForSelectedDate = getEntriesFor(selectedDate);
-
-    timesAndEventsOfSelectedWeek = [];
-    calendarEvents = [];
-    selectedWeek.forEach((date) => {
-      timesAndEventsOfSelectedWeek.push({
-        hours: timeEntryCache.totalHoursOf(date),
-        events: timeEntryCache.getEventsForDate(date),
-      });
-      calendarEvents.push(timeEntryCache.getEventsForDate(date));
-    });
-
-    setSelectedDayEvents();
+  async function updateUI() {
+    entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
+    timesAndEventsOfSelectedWeek =
+      troiController.getTimesAndEventsFor(selectedWeek);
+    isLoading = false;
   }
 
-  async function loadTimeEntries(startDate, endDate) {
-    isLoading = true;
-    projectSuccessCounter = 0;
-    //TODO: ERROR COUNTER + WARNING FOR USER IN CASE SUCCESS COUNTER IS NOT REACHED
-    await loadCalendarEvents(startDate, endDate);
-
-    projects.forEach(async (project) => {
-      const entries = await troiApiWrapper.api.getTimeEntries(
-        project.id,
-        formatDateToYYYYMMDD(startDate),
-        formatDateToYYYYMMDD(endDate)
-      );
-      console.log(project.id, "entries", entries);
-      projectSuccessCounter++;
-      if (entries.length > 0) {
-        timeEntryCache.addEntries(project, entries);
-      }
-
-      if (projectSuccessCounter == projects.length) {
-        // switch weeks at cache borders
-        if (timeEntryCache.isAtCacheBottom()) {
-          timeEntryCache.increaseBottomBorderByIntervall();
-          reduceSelectedWeek();
-        } else if (timeEntryCache.isAtCacheTop()) {
-          timeEntryCache.increaseTopBorderByIntervall();
-          increaseSelectedWeek();
-        } else {
-          // initial loading
-          setSelectedDate(initalDate);
-        }
-        updateUI();
-        isLoading = false;
-      }
-    });
-  }
-
-  function getEntriesFor(date) {
-    let entriesForDate = {};
-
-    if (projects.length == 0) {
-      return entriesForDate;
-    }
-
-    projects.forEach((project) => {
-      entriesForDate[project.id] = timeEntryCache.entriesForProject(
-        date,
-        project.id
-      );
-    });
-
-    return entriesForDate;
-  }
-
-  async function loadCalendarEvents(startDate, endDate) {
-    const calendarEvents = await $troiApi.getCalendarEvents(
-      "H",
-      formatDateToYYYYMMDD(startDate),
-      formatDateToYYYYMMDD(endDate)
-    );
-
-    calendarEvents.forEach((calendarEvent) => {
-      let dates = getDatesBetween(
-        new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
-        new Date(Math.min(new Date(calendarEvent.endDate), endDate))
-      );
-
-      dates.forEach((date) => {
-        timeEntryCache.addEventForDate(
-          {
-            id: calendarEvent.id,
-            subject: calendarEvent.subject,
-            type: calendarEvent.type,
-          },
-          date
-        );
-      });
-    });
-  }
-
-  function initilizeSelectedWeekAndDate() {
-    // values for today button to come back to
-    initalDate.setHours(5, 0, 0, 0);
-    selectedDate = initalDate;
-    initalWeek = getWeekDaysFor(initalDate);
-    selectedWeek = initalWeek;
-  }
-
-  function reduceWeekClicked() {
-    if (timeEntryCache.isAtCacheBottom()) {
-      triggerBottomFetch();
-    } else {
-      reduceSelectedWeek();
-      updateUI();
-    }
-  }
-
-  function increaseWeekClicked() {
-    if (timeEntryCache.isAtCacheTop()) {
-      triggerTopFetch();
-    } else {
-      increaseSelectedWeek();
-      updateUI();
-    }
-  }
-
-  function reduceSelectedWeek() {
-    changeWeek(-1);
-    timeEntryCache.decreaseWeekIndex();
-  }
-
-  function increaseSelectedWeek() {
-    changeWeek(+1);
-    timeEntryCache.increaseWeekIndex();
-  }
-
-  function changeWeek(direction) {
-    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7 * direction));
-    setSelectedDate(addDaysToDate(selectedDate, 7 * direction));
-  }
-
-  function triggerBottomFetch() {
-    loadTimeEntries(
-      addDaysToDate(selectedWeek[0], -timeEntryCache.getIntervallInDays()),
-      addDaysToDate(selectedWeek[4], -7)
-    );
-  }
-
-  function triggerTopFetch() {
-    loadTimeEntries(
-      addDaysToDate(selectedWeek[0], 7),
-      addDaysToDate(selectedWeek[4], timeEntryCache.getIntervallInDays())
-    );
-  }
-
-  function todayClicked() {
-    timeEntryCache.weekIndex = 0;
-    setSelectedDate(initalDate);
-    selectedWeek = initalWeek;
-    updateUI();
-  }
-
-  function setSelectedDate(date) {
+  async function onSelectedDateChangedTo(date) {
+    entriesForSelectedDate = await troiController.getEntriesFor(date);
     selectedDate = date;
     setSelectedDayEvents();
+  }
+
+  function onSelectedWeekChangedTo(week) {
+    timesAndEventsOfSelectedWeek = troiController.getTimesAndEventsFor(week);
+    selectedWeek = week;
   }
 
   function setSelectedDayEvents() {
@@ -250,10 +83,7 @@
 
   async function onDeleteEntryClicked(entry, projectId) {
     isLoading = true;
-    await troiController.deleteEntry(entry, projectId, () => {
-      updateUI();
-      isLoading = false;
-    });
+    await troiController.deleteEntry(entry, projectId, updateUI);
   }
 
   async function onAddEntryClicked(project, hours, description) {
@@ -263,10 +93,7 @@
       project,
       hours,
       description,
-      () => {
-        updateUI();
-        isLoading = false;
-      }
+      updateUI
     );
   }
 
@@ -276,7 +103,6 @@
     await troiController.updateEntry(project, entry, () => {
       timeEntryEditState = { id: -1 };
       updateUI();
-      isLoading = false;
     });
   }
 </script>
@@ -286,13 +112,9 @@
 {/if}
 <section>
   <WeekView
-    {selectedWeek}
     {timesAndEventsOfSelectedWeek}
-    {selectedDate}
-    {setSelectedDate}
-    {reduceWeekClicked}
-    {increaseWeekClicked}
-    {todayClicked}
+    selectedDateChanged={onSelectedDateChangedTo}
+    selectedWeekChanged={onSelectedWeekChangedTo}
   />
 </section>
 

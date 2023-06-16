@@ -39,7 +39,7 @@ export function datesEqual(date1, date2) {
 export function getWeekDaysFor(date) {
     // calc Monday of current week
     const dateDayNumber = date.getDay() || 7; // get current day number, converting Sunday to 7
-    var monday = new Date();
+    var monday = new Date(date);
     if (dateDayNumber !== 1) monday.setHours(-24 * (dateDayNumber - 1)); // only manipulate the date if it isn't Monday
 
     // assign Monday to Friday based on Monday

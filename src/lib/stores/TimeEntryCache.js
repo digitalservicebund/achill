@@ -75,6 +75,24 @@ export default class TimeEntryCache {
   }
   // -----------------------
 
+  getEntriesForDate(date) {
+    const cacheDate = convertToCacheFormat(date);
+    let entriesForDate = {};
+
+    if (this.cache[cacheDate] == undefined) {
+      return entriesForDate;
+    }
+
+    Object.keys(this.cache[cacheDate]["projects"]).forEach((projectId) => {
+      entriesForDate[projectId] = this.entriesForProject(
+        date,
+        projectId
+      );
+    });
+
+    return entriesForDate;
+  }
+
   addEntries(project, entries) {
     entries.forEach((entry) => {
       this.addEntry(project, entry);
@@ -83,9 +101,7 @@ export default class TimeEntryCache {
 
   addEntry(project, entry, successCallback = () => { }) {
     // init if not present
-    if (!(entry.date in this.cache)) {
-      this.initStructureForDate(entry.date);
-    }
+    this.initStructureForDateIfNotPresent(entry.date);
 
     let projects = this._projectsFor(entry.date);
     // init if not present
@@ -130,9 +146,9 @@ export default class TimeEntryCache {
   }
 
   addEventForDate(event, date) {
-    const cacheDate = date = convertToCacheFormat(date);
-    this.initStructureForDate(cacheDate);
-    this.cache[date]["events"].push(event)
+    const cacheDate = convertToCacheFormat(date);
+    this.initStructureForDateIfNotPresent(cacheDate);
+    this.cache[cacheDate]["events"].push(event)
   }
 
   getEventsForDate(date) {
@@ -144,7 +160,7 @@ export default class TimeEntryCache {
     return []
   }
 
-  initStructureForDate(date) {
+  initStructureForDateIfNotPresent(date) {
     if (this.cache[date]) {
       return;
     }
@@ -204,9 +220,9 @@ export default class TimeEntryCache {
   }
 
   entriesForProject(date, projectId) {
-    date = convertToCacheFormat(date);
-    if (date in this.cache && projectId in this._getDay(date)["projects"]) {
-      return this._getDay(date)["projects"][projectId]["entries"];
+    const cacheDate = convertToCacheFormat(date);
+    if (cacheDate in this.cache && projectId in this._getDay(cacheDate)["projects"]) {
+      return this._getDay(cacheDate)["projects"][projectId]["entries"];
     } else {
       return [];
     }

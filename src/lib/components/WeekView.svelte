@@ -2,33 +2,48 @@
 <script>
   import { convertFloatTimeToHHMM } from "$lib/utils/timeConverter.js";
   import {
+    addDaysToDate,
     datesEqual,
-    getDayNumberFor,
+    getWeekDaysFor,
     getWeekNumberFor,
   } from "$lib/utils/dateUtils.js";
+  import { onMount } from "svelte";
 
   // @ts-nocheck
 
-  export let selectedWeek;
   export let timesAndEventsOfSelectedWeek = [];
-  export let selectedDate;
-  export let setSelectedDate;
-  export let reduceWeekClicked;
-  export let increaseWeekClicked;
-  export let todayClicked;
-
-  // both variables used to jump back when today button pressed
-  const todaysDate = new Date();
-
-  $: selectedWeekNumber = getWeekNumberFor(selectedDate);
+  export let selectedDateChanged;
+  export let selectedWeekChanged;
 
   const weekdays = ["M", "T", "W", "T", "F"];
+
+  let selectedDate = new Date();
+  let selectedWeek = [];
+
+  $: selectedWeekNumber = getWeekNumberFor(selectedDate);
+  $: {
+    selectedDateChanged(selectedDate);
+  }
+
+  $: {
+    selectedWeekChanged(selectedWeek);
+  }
+
+  onMount(() => {
+    selectedDate = new Date();
+    selectedWeek = getWeekDaysFor(selectedDate);
+  });
+
+  function changeWeek(direction) {
+    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7 * direction));
+    selectedDate = addDaysToDate(selectedDate, 7 * direction);
+  }
 
   function getDateClasses(index, selectedDate) {
     let dateClasses = "flex h-8 w-8 items-center justify-center rounded-full ";
     let date = selectedWeek[index];
 
-    if (datesEqual(date, todaysDate)) {
+    if (datesEqual(date, new Date())) {
       dateClasses += "outline-none ring-2 ring-black ring-offset-2 ";
     }
 
@@ -67,7 +82,7 @@
           <button
             aria-label="calendar backward"
             class="-ml-1.5 flex items-center justify-center text-gray-600 hover:text-gray-400"
-            on:click={() => reduceWeekClicked()}
+            on:click={() => changeWeek(-1)}
           >
             <span class="material-symbols-outlined"> chevron_left </span>
           </button>
@@ -80,7 +95,7 @@
           <button
             aria-label="calendar forward"
             class="flex items-center justify-center text-gray-600 hover:text-gray-400"
-            on:click={() => increaseWeekClicked()}
+            on:click={() => changeWeek(1)}
           >
             <span class="material-symbols-outlined"> chevron_right </span>
           </button>
@@ -88,7 +103,8 @@
             aria-label="today"
             class="min-w-[7ch] text-center font-bold text-blue-600 hover:text-blue-700"
             on:click={() => {
-              todayClicked();
+              selectedDate = new Date();
+              selectedWeek = getWeekDaysFor(selectedDate);
             }}
           >
             Today
@@ -132,7 +148,7 @@
                   <td>
                     <div
                       class="h-full w-full"
-                      on:click={() => setSelectedDate(date)}
+                      on:click={() => (selectedDate = date)}
                     >
                       <div
                         class="flex w-full cursor-pointer items-center justify-center rounded-full px-2 py-2 text-base font-medium"
