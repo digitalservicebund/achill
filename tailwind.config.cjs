@@ -1,22 +1,13 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   content: ["./src/**/*.{html,js,svelte,ts}"],
-  presets: [require("@digitalservice4germany/style-dictionary/tailwind")],
   theme: {
     extend: {
       fontFamily: {
-        sans: [
-          "BundesSansWeb",
-          "Calibri",
-          "Verdana",
-          "Arial",
-          "Helvetica",
-          "sans-serif",
-        ],
+        sans: ["Inter var", ...defaultTheme.fontFamily.sans],
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    require("@digitalservice4germany/angie"),
-  ],
+  plugins: [require("@tailwindcss/forms")],
 };
