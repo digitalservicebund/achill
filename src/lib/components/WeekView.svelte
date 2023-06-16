@@ -13,7 +13,6 @@
 
   export let timesAndEventsOfSelectedWeek = [];
   export let selectedDateChanged;
-  export let selectedWeekChanged;
 
   const weekdays = ["M", "T", "W", "T", "F"];
 
@@ -25,18 +24,14 @@
     selectedDateChanged(selectedDate);
   }
 
-  $: {
-    selectedWeekChanged(selectedWeek);
-  }
-
   onMount(() => {
     selectedDate = new Date();
     selectedWeek = getWeekDaysFor(selectedDate);
   });
 
   function changeWeek(direction) {
-    selectedWeek = selectedWeek.map((day) => addDaysToDate(day, 7 * direction));
     selectedDate = addDaysToDate(selectedDate, 7 * direction);
+    selectedWeek = getWeekDaysFor(selectedDate);
   }
 
   function getDateClasses(index, selectedDate) {

@@ -31,6 +31,7 @@
     await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
     projects = troiController.getProjects();
     updateUI();
+    hideLoadingSpinner();
   });
 
   function showLoadingSpinner() {
@@ -45,20 +46,14 @@
     entriesForSelectedDate = await troiController.getEntriesFor(selectedDate);
     timesAndEventsOfSelectedWeek =
       troiController.getTimesAndEventsFor(selectedWeek);
-    isLoading = false;
+    setSelectedDayEvents();
+    // isLoading = false;
   }
 
   async function onSelectedDateChangedTo(date) {
-    entriesForSelectedDate = await troiController.getEntriesFor(date);
     selectedDate = date;
-    timesAndEventsOfSelectedWeek =
-      troiController.getTimesAndEventsFor(selectedWeek);
-    setSelectedDayEvents();
-  }
-
-  function onSelectedWeekChangedTo(week) {
-    timesAndEventsOfSelectedWeek = troiController.getTimesAndEventsFor(week);
-    selectedWeek = week;
+    selectedWeek = getWeekDaysFor(selectedDate);
+    updateUI();
   }
 
   function setSelectedDayEvents() {
@@ -73,6 +68,7 @@
     );
   }
 
+  // TODO: move to controller
   function getProjectById(projectId) {
     const index = projects
       .map((project) => project.id)
@@ -81,12 +77,13 @@
   }
 
   async function onDeleteEntryClicked(entry, projectId) {
-    isLoading = true;
+    showLoadingSpinner();
     await troiController.deleteEntry(entry, projectId, updateUI);
+    hideLoadingSpinner();
   }
 
   async function onAddEntryClicked(project, hours, description) {
-    isLoading = true;
+    showLoadingSpinner();
     await troiController.addEntry(
       selectedDate,
       project,
@@ -94,15 +91,17 @@
       description,
       updateUI
     );
+    hideLoadingSpinner();
   }
 
   async function onUpdateEntryClicked(projectId, entry) {
-    isLoading = true;
+    showLoadingSpinner();
     const project = getProjectById(projectId);
     await troiController.updateEntry(project, entry, () => {
       timeEntryEditState = { id: -1 };
       updateUI();
     });
+    hideLoadingSpinner();
   }
 </script>
 
@@ -113,7 +112,6 @@
   <WeekView
     {timesAndEventsOfSelectedWeek}
     selectedDateChanged={onSelectedDateChangedTo}
-    selectedWeekChanged={onSelectedWeekChangedTo}
   />
 </section>
 
