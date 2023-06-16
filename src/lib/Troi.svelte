@@ -17,7 +17,6 @@
 
   let projects = [];
   let timesAndEventsOfSelectedWeek = [];
-  let calendarEvents = [];
   let selectedDayIsHoliday = false;
   let selectedDayIsVacation = false;
   let entriesForSelectedDate = {};
@@ -31,7 +30,6 @@
 
     await troiController.init($troiApi);
     projects = troiController.getProjects();
-    console.log("Try to trigger Initial reload of weekView");
     updateUI();
   });
 
@@ -54,24 +52,15 @@
   }
 
   function setSelectedDayEvents() {
-    const selectedDayCalendarEvents =
-      calendarEvents[(selectedDate.getDay() + 6) % 7];
+    const selectedDayCalendarEvents = troiController.getEventsFor(selectedDate);
 
-    if (selectedDayCalendarEvents == undefined) {
-      return;
-    }
-
-    const holidayEvent = selectedDayCalendarEvents.find(
-      (event) => event.type == "H"
+    selectedDayIsHoliday = selectedDayCalendarEvents.some(
+      (event) => event.type === "H"
     );
 
-    selectedDayIsHoliday = holidayEvent != undefined;
-
-    const vacationEvent = selectedDayCalendarEvents.find(
-      (event) => event.type == "P"
+    selectedDayIsVacation = selectedDayCalendarEvents.some(
+      (event) => event.type === "P"
     );
-
-    selectedDayIsVacation = vacationEvent != undefined;
   }
 
   function getProjectById(projectId) {

@@ -75,7 +75,7 @@ export default class TimeEntryCache {
   }
   // -----------------------
 
-  getEntriesForDate(date) {
+  getEntriesFor(date) {
     const cacheDate = convertToCacheFormat(date);
     let entriesForDate = {};
 
@@ -91,6 +91,15 @@ export default class TimeEntryCache {
     });
 
     return entriesForDate;
+  }
+
+  getEventsFor(date) {
+    const cacheDate = convertToCacheFormat(date);
+    if (this.cache[cacheDate] == undefined) {
+      return [];
+    }
+
+    return this.cache[cacheDate]["events"]
   }
 
   addEntries(project, entries) {

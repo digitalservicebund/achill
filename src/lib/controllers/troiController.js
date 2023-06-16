@@ -1,3 +1,4 @@
+// @ts-nocheck
 import TimeEntryCache, { convertToCacheFormat } from "$lib/stores/TimeEntryCache";
 import TroiApiWrapper from "$lib/apis/TroiApiWrapper";
 import { addDaysToDate, formatDateToYYYYMMDD, getDatesBetween, getWeekDaysFor } from "$lib/utils/dateUtils";
@@ -21,7 +22,6 @@ export default class TroiController {
         this._cacheTopBorder = addDaysToDate(currentWeek[4], intervallInDays);
 
         await this._loadEntriesAndEventsBetween(this._cacheBottomBorder, this._cacheTopBorder);
-        console.log("Troi controller init finished")
     }
 
     // --------- private functions ---------
@@ -34,7 +34,6 @@ export default class TroiController {
                 formatDateToYYYYMMDD(startDate),
                 formatDateToYYYYMMDD(endDate)
             );
-            console.log("Fetched entries for project %s between %s and %s\nEntries: %s", project.id, startDate, endDate, entries);
 
             timeEntryCache.addEntries(project, entries);
         };
@@ -68,11 +67,9 @@ export default class TroiController {
             });
         });
 
-        console.log("_loadCalendarEventsBetween finished")
     }
 
     async _loadEntriesAndEventsBetween(startDate, endDate) {
-        console.log("Loading entries and event between %s and %s", startDate, endDate);
         await this._loadEntriesBetween(startDate, endDate);
         await this._loadCalendarEventsBetween(startDate, endDate);
 
@@ -103,6 +100,9 @@ export default class TroiController {
         return timesAndEventsOfWeek;
     }
 
+    getEventsFor(date) {
+        return timeEntryCache.getEventsFor(date);
+    }
 
     // CRUD Functions for entries
 
@@ -122,7 +122,7 @@ export default class TroiController {
             await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
         }
 
-        return timeEntryCache.getEntriesForDate(date)
+        return timeEntryCache.getEntriesFor(date)
     }
 
     async addEntry(date, project, hours, description, successCallback) {
