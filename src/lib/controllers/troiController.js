@@ -1,10 +1,8 @@
 // @ts-nocheck
 import TimeEntryCache, { convertToCacheFormat } from "$lib/stores/TimeEntryCache";
-import TroiApiWrapper from "$lib/apis/TroiApiWrapper";
 import { addDaysToDate, formatDateToYYYYMMDD, getDatesBetween, getWeekDaysFor } from "$lib/utils/dateUtils";
 
 const timeEntryCache = new TimeEntryCache();
-const troiApiWrapper = new TroiApiWrapper();
 
 const intervallInWeeks = 6;
 const intervallInDays = intervallInWeeks * 7;
@@ -12,9 +10,9 @@ const intervallInDays = intervallInWeeks * 7;
 export default class TroiController {
 
     async init(troiApi) {
-        troiApiWrapper.init(troiApi)
+        this._troiApi = troiApi;
         // Load all stared projects when initializing the repository
-        this._projects = await troiApiWrapper.api.getCalculationPositions();
+        this._projects = await this._troiApi.getCalculationPositions();
 
         // Initially load entries and events 
         const currentWeek = getWeekDaysFor(new Date());
@@ -29,7 +27,7 @@ export default class TroiController {
     async _loadEntriesBetween(startDate, endDate) {
 
         for (const project of this._projects) {
-            const entries = await troiApiWrapper.api.getTimeEntries(
+            const entries = await this._troiApi.getTimeEntries(
                 project.id,
                 formatDateToYYYYMMDD(startDate),
                 formatDateToYYYYMMDD(endDate)
@@ -41,10 +39,7 @@ export default class TroiController {
 
     async _loadCalendarEventsBetween(startDate, endDate) {
 
-        // TODO: Don't specifiy type of event to fetch all types
-        // needs adaption in the troi api class (make type optional) 
-        const calendarEvents = await troiApiWrapper.api.getCalendarEvents(
-            "H",
+        const calendarEvents = await this._troiApi.getCalendarEvents(
             formatDateToYYYYMMDD(startDate),
             formatDateToYYYYMMDD(endDate)
         );
@@ -128,7 +123,7 @@ export default class TroiController {
     async addEntry(date, project, hours, description, successCallback) {
 
         const troiFormattedSelectedDate = convertToCacheFormat(date);
-        const result = await troiApiWrapper.addEntry(
+        const result = await this._troiApi.postTimeEntry(
             project.id,
             troiFormattedSelectedDate,
             hours,
@@ -146,7 +141,7 @@ export default class TroiController {
     }
 
     async deleteEntry(entry, projectId, successCallback) {
-        let result = await troiApiWrapper.api.deleteTimeEntryViaServerSideProxy(
+        let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
             entry.id
         );
         if (result.ok) {
@@ -155,7 +150,7 @@ export default class TroiController {
     }
 
     async updateEntry(project, entry, successCallback) {
-        const result = await troiApiWrapper.updateEntry(project.id, entry);
+        const result = await this._troiApi.updateTimeEntry(project.id, entry.date, entry.hours, entry.description, entry.id);
 
         const updatedEntry = {
             date: entry.date,
