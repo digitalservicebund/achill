@@ -9,9 +9,9 @@
     convertFloatTimeToHHMM,
     convertHHMMTimeToFloat,
   } from "$lib/utils/timeConverter.js";
-  import EntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
+  import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
   import { validateForm } from "./EntryForm/timeEntryFormValidator";
-  import TroiEntryForm from "$lib/components/NewTimeEntryForm.svelte";
+  import NewTimeEntryForm from "$lib/components/NewTimeEntryForm.svelte";
 
   export let projects;
   export let entries;
@@ -56,7 +56,7 @@
         {project.name}
       </h2>
       {#if !entries[project.id] || entries[project.id].length == 0}
-        <TroiEntryForm {project} onAddClick={onAddEntry} />
+        <NewTimeEntryForm {project} onAddClick={onAddEntry} />
       {:else}
         {#each entries[project.id] as entry}
           <div
@@ -66,7 +66,11 @@
             {#if entry.id == editState.id}
               <div data-test="entry-form" class="my-2 flex justify-center">
                 <div class="block w-full">
-                  <EntryForm {values} {errors} />
+                  <TimeEntryForm
+                    {values}
+                    {errors}
+                    enterPressed={() => saveClicked(project.id, entry)}
+                  />
                 </div>
               </div>
             {:else}

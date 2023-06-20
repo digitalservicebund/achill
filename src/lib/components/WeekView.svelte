@@ -67,7 +67,7 @@
       <a
         class="angie-link pb-8"
         href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
-        >Read about how to track your time in confluence</a
+        target="_blank">Read about how to track your time in confluence</a
       >
     </div>
     <div class="mt-8 flex gap-8">
