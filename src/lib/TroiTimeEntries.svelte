@@ -2,7 +2,7 @@
   import { troiApi } from "./troiApiService";
   import moment from "moment";
   import TroiEntryForm from "./TroiEntryForm.svelte";
-
+  import TroiEntryFormNew from "./TroiEntryFormNew.svelte";
   export let calculationPositionId;
   export let componentModel;
   export let startDate;
@@ -76,6 +76,12 @@
     on:submit={refresh}
     {calculationPositionId}
     {componentModel}
+  />
+  <TroiEntryFormNew
+          disabled={editEntryIndex != null}
+          on:submit={refresh}
+          {calculationPositionId}
+          {componentModel}
   />
   {#await entriesPromise}
     <p>Loading…</p>
