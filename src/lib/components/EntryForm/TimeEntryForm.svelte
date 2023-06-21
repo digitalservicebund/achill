@@ -27,13 +27,15 @@
 <div class="flex">
   <div class="basis-3/4 p-1">
     <div class="flex">
-      <div class="basis-1/4" />
-      <div class="mb-4 font-bold text-red-600">
-        {#each Object.values(errors) as error}
-          {error}
-          <br />
-        {/each}
-      </div>
+      {#if Object.values(errors).length > 0}
+        <div class="basis-1/4" />
+        <div class="mb-4 font-bold text-red-600">
+          {#each Object.values(errors) as error}
+            {error}
+            <br />
+          {/each}
+        </div>
+      {/if}
     </div>
     <div class="my-1 flex place-items-center justify-start">
       <label for="hours" class="basis-1/4">Hours</label>

@@ -108,7 +108,7 @@
 {#if isLoading}
   <LoadingOverlay message={"Please wait..."} />
 {/if}
-<section>
+<section class="sticky top-0 w-full bg-white">
   <WeekView
     {timesAndEventsOfSelectedWeek}
     selectedDateChanged={onSelectedDateChangedTo}
