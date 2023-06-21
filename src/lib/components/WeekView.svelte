@@ -8,6 +8,7 @@
     getWeekNumberFor,
   } from "$lib/utils/dateUtils.js";
   import { onMount } from "svelte";
+  import { clear_loops } from "svelte/internal";
 
   // @ts-nocheck
 
@@ -157,9 +158,12 @@
                 {/each}
               </tr>
               <tr>
-                {#each timesAndEventsOfSelectedWeek as data}
+                {#each timesAndEventsOfSelectedWeek as data, index}
                   <td>
-                    <div class="flex min-w-[6ch] justify-center px-2 py-2">
+                    <div
+                      class="flex min-w-[6ch] cursor-pointer justify-center px-2 py-2"
+                      on:click={() => (selectedDate = selectedWeek[index])}
+                    >
                       {#if data.events.length && data.events[0].type === "H"}
                         <span class="material-symbols-outlined">
                           wb_sunny
