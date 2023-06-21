@@ -71,7 +71,7 @@
         target="_blank">Read about how to track your time in confluence</a
       >
     </div>
-    <div class="mt-8 flex gap-8">
+    <div class="mt-8 flex flex-wrap gap-8">
       <!-- Date Label Box -->
       <div class="min-w-[30ch]">
         <div class="mb-3 flex items-center">
