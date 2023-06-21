@@ -10,10 +10,12 @@
   export let enterPressed;
 
   const inputClass =
-    "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400 ";
+    "w-auto basis-3/4 rounded px-1 py-0.5 text-sm placeholder:italic placeholder:text-gray-400";
   const normalAppearance =
     inputClass + "border-1 border-b-[1px] border-gray-300";
-  const errorAppearance = inputClass + "border border-b-2 border-red-500";
+  const errorAppearance =
+    inputClass +
+    "border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500";
 
   function onKeyDown(e) {
     if (e.keyCode === 13) {
@@ -22,8 +24,17 @@
   }
 </script>
 
-<div class="flex flex-row">
+<div class="flex">
   <div class="basis-3/4 p-1">
+    <div class="flex">
+      <div class="basis-1/4" />
+      <div class="mb-4 font-bold text-red-600">
+        {#each Object.values(errors) as error}
+          {error}
+          <br />
+        {/each}
+      </div>
+    </div>
     <div class="my-1 flex place-items-center justify-start">
       <label for="hours" class="basis-1/4">Hours</label>
       <input
@@ -37,7 +48,7 @@
       />
     </div>
     <div class="my-1 flex place-items-center justify-start">
-      <label for="description" class="basis-1/4">What</label>
+      <label for="description" class="basis-1/4">Description</label>
       <textarea
         bind:value={values.description}
         on:keydown={onKeyDown}

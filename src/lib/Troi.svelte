@@ -138,8 +138,7 @@
 <section class="mt-8 text-xs text-gray-600">
   <p>
     Project not showing up? Make sure it's available in Troi and marked as a
-    "favorite". <br />
-    The "Suggest" function is not intended for actual use, it is just a fun feature.
+    "favorite".
   </p>
 </section>
 

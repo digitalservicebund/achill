@@ -3,9 +3,13 @@ import * as yup from "yup";
 export const entryFormValidationScheme = yup.object().shape({
   hours: yup
     .string()
-    .required("Format must be either 5:30 or 5.5 or 5,5")
-    .matches(/^(\d?\d|\d?\d[:,.]\d\d?)$/),
-  description: yup.string().required("Description is required"),
+    .required()
+    .matches(/^(\d?\d|\d?\d[:,.]\d\d?)$/, {
+      message: "hours format must be either 5:30 or 5.5 or 5,5",
+    }),
+  description: yup.string().required().matches(/\w+/, {
+    message: "provide a description",
+  }),
 });
 
 export async function validateForm(values) {
