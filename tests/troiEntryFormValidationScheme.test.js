@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { troiEntryFormValidationScheme } from "../src/lib/TroiEntryForm/troiEntryFormValidationScheme.js";
+import { entryFormValidationScheme } from "../src/lib/components/EntryForm/timeEntryFormValidator.js";
 
-test.describe("troiEntryFormValidationScheme", async () => {
+test.describe("entryFormValidationScheme", async () => {
 
     // Description tests
 
@@ -11,7 +11,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: ""
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeFalsy();
     });
 
@@ -21,7 +21,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeTruthy();
     });
 
@@ -33,7 +33,17 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
+        expect(result).toBeFalsy();
+    });
+
+    test("Validation fails forbidden string", async () => {
+        const testData = {
+            hours: "23:43b",
+            description: "Test Description"
+        }
+
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeFalsy();
     });
 
@@ -43,7 +53,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeFalsy();
     });
 
@@ -53,7 +63,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeFalsy();
     });
 
@@ -63,7 +73,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeFalsy();
     });
 
@@ -73,7 +83,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeTruthy();
     });
 
@@ -83,7 +93,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeTruthy();
     });
 
@@ -93,7 +103,7 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeTruthy();
     });
 
@@ -103,7 +113,27 @@ test.describe("troiEntryFormValidationScheme", async () => {
             description: "Test Description"
         }
 
-        const result = await troiEntryFormValidationScheme.isValid(testData);
+        const result = await entryFormValidationScheme.isValid(testData);
+        expect(result).toBeTruthy();
+    });
+
+    test("Validation succeeds on float hours 1,4", async () => {
+        const testData = {
+            hours: "1,4",
+            description: "Test Description"
+        }
+
+        const result = await entryFormValidationScheme.isValid(testData);
+        expect(result).toBeTruthy();
+    });
+
+    test("Validation succeeds on float hours 1.4", async () => {
+        const testData = {
+            hours: "1.4",
+            description: "Test Description"
+        }
+
+        const result = await entryFormValidationScheme.isValid(testData);
         expect(result).toBeTruthy();
     });
 });

@@ -1,6 +1,6 @@
 <script>
   import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
-  import { convertHHMMTimeToFloat } from "$lib/utils/timeConverter.js";
+  import { convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
   import AchillButton from "$lib/components/TroiButton.svelte";
   import { buttonBlue } from "$lib/components/colors.js";
   import { validateForm } from "$lib/components/EntryForm/timeEntryFormValidator.js";
@@ -18,7 +18,7 @@
     errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
-      const convertedHours = convertHHMMTimeToFloat(values.hours);
+      const convertedHours = convertTimeStringToFloat(values.hours);
       onAddClick(project, convertedHours, values.description);
       values.hours = "";
       values.description = "";

@@ -7,7 +7,7 @@
   import AchillButton from "$lib/components/TroiButton.svelte";
   import {
     convertFloatTimeToHHMM,
-    convertHHMMTimeToFloat,
+    convertTimeStringToFloat,
   } from "$lib/utils/timeConverter.js";
   import TimeEntryForm from "$lib/components/EntryForm/TimeEntryForm.svelte";
   import { validateForm } from "./EntryForm/timeEntryFormValidator";
@@ -38,7 +38,7 @@
     errors = await validateForm(values);
 
     if (Object.keys(errors).length === 0) {
-      entry.hours = convertHHMMTimeToFloat(values.hours);
+      entry.hours = convertTimeStringToFloat(values.hours);
       entry.description = values.description;
       onUpdateEntry(projectId, entry);
     }

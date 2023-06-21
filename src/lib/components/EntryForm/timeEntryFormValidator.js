@@ -1,10 +1,9 @@
 import * as yup from "yup";
 
-const entryFormValidationScheme = yup.object().shape({
+export const entryFormValidationScheme = yup.object().shape({
   hours: yup
     .string()
     .required("Format must be either 5:30 or 5.5 or 5,5")
-    // .matches(/^(\d?\d|\d?\d:\d\d?)$/),
     .matches(/^(\d?\d|\d?\d[:,.]\d\d?)$/),
   description: yup.string().required("Description is required"),
 });

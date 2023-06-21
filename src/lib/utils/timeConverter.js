@@ -11,7 +11,7 @@ export const convertFloatTimeToHHMM = (time) => {
   return `${Math.floor(time)}:${padLeadingZeros(displayMinutes, 2)}`;
 };
 
-export const convertHHMMTimeToFloat = (time) => {
+export const convertTimeStringToFloat = (time) => {
   if (time.includes(":")) {
     let [hours, minutes] = time.split(":");
 
@@ -22,7 +22,9 @@ export const convertHHMMTimeToFloat = (time) => {
     let minuteFractions = Number(minutes) / 60;
 
     return Number(hours) + minuteFractions;
+  } else if (time.includes(",")) {
+    return Number(time.replace(",", "."))
   } else {
-    return time
+    return Number(time)
   }
 };

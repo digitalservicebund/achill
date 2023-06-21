@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { convertFloatTimeToHHMM, convertHHMMTimeToFloat } from "../src/lib/timeConverter.js";
+import { convertFloatTimeToHHMM, convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
 
 test.describe("convertFloatTimeToHHMM", async () => {
   test("1 returns 1:00", () => {
@@ -31,36 +31,56 @@ test.describe("convertFloatTimeToHHMM", async () => {
   });
 });
 
-test.describe("convertHHMMTimeToFloat", async () => {
+test.describe("convertTimeStringToFloat", async () => {
   test("1:00 returns 1", () => {
-    expect(convertHHMMTimeToFloat("1:00")).toBe(1);
+    expect(convertTimeStringToFloat("1:00")).toBe(1);
   });
 
   test("5:00 returns 5", () => {
-    expect(convertHHMMTimeToFloat("5:00")).toBe(5);
+    expect(convertTimeStringToFloat("5:00")).toBe(5);
   });
 
   test("1:30 returns 1.5", () => {
-    expect(convertHHMMTimeToFloat("1:30")).toBe(1.5);
+    expect(convertTimeStringToFloat("1:30")).toBe(1.5);
   });
 
   test("0:20 returns 0.2", () => {
-    expect(convertHHMMTimeToFloat("0:12")).toBe(0.2);
+    expect(convertTimeStringToFloat("0:12")).toBe(0.2);
   });
 
   test("0:20 returns 0.33333", () => {
-    expect(convertHHMMTimeToFloat("0:20")).toBe(1 / 3);
+    expect(convertTimeStringToFloat("0:20")).toBe(1 / 3);
   });
 
   test("2:03 returns 2.05", () => {
-    expect(convertHHMMTimeToFloat("2:03")).toBe(2.05);
+    expect(convertTimeStringToFloat("2:03")).toBe(2.05);
   });
 
   test("0:01 returns 0.0166", () => {
-    expect(convertHHMMTimeToFloat("0:01")).toBe(1 / 60);
+    expect(convertTimeStringToFloat("0:01")).toBe(1 / 60);
   });
 
   test("1:3 returns 1.5", () => {
-    expect(convertHHMMTimeToFloat("1:3")).toBe(1.5);
+    expect(convertTimeStringToFloat("1:3")).toBe(1.5);
+  });
+
+  test("0,5 returns 0.5", () => {
+    expect(convertTimeStringToFloat("0,5")).toBe(0.5);
+  });
+
+  test("1,34563 returns 1.34563", () => {
+    expect(convertTimeStringToFloat("1,34563")).toBe(1.34563);
+  });
+
+  test("21,34563 returns 21.34563", () => {
+    expect(convertTimeStringToFloat("21,34563")).toBe(21.34563);
+  });
+
+  test("1.34563 returns 1.34563", () => {
+    expect(convertTimeStringToFloat("1.34563")).toBe(1.34563);
+  });
+
+  test("21.34563 returns 21.34563", () => {
+    expect(convertTimeStringToFloat("21.34563")).toBe(21.34563);
   });
 });
