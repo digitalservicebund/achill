@@ -107,7 +107,14 @@
 {#if isLoading}
   <LoadingOverlay message={"Please wait..."} />
 {/if}
-<section class="sticky top-0 w-full bg-white">
+<section class="p-4">
+  <a
+    class="angie-link"
+    href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
+    target="_blank">Read about how to track your time in confluence</a
+  >
+</section>
+<section class="w-full bg-white md:sticky md:top-0">
   <WeekView
     {timesAndEventsOfSelectedWeek}
     selectedDateChanged={onSelectedDateChangedTo}

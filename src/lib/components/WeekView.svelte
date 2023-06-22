@@ -64,14 +64,7 @@
 <div class="flex p-4">
   <div class="w-full">
     <div>
-      <a
-        class="angie-link pb-8"
-        href="https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Time+Tracking"
-        target="_blank">Read about how to track your time in confluence</a
-      >
-    </div>
-    <div>
-      <div class="mt-8 flex flex-wrap gap-8">
+      <div class="flex flex-wrap gap-8">
         <!-- Date Label Box -->
         <div class="min-w-[30ch]">
           <div class="mb-3 flex items-center">
