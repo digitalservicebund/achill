@@ -69,7 +69,10 @@
                   <TimeEntryForm
                     {values}
                     {errors}
+                    errorTestId={`error-${project.name}`}
                     enterPressed={() => saveClicked(project.id, entry)}
+                    hoursTestId={"hours-" + project.name}
+                    descriptionTestId={"description-" + project.name}
                   />
                 </div>
               </div>
@@ -85,26 +88,26 @@
                 {#if entry.id == editState.id}
                   <AchillButton
                     text={"Cancel"}
-                    testId={"TODO"}
+                    testId={`cancel-${project.name}`}
                     onClick={() => (editState = { id: -1 })}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Save"}
-                    testId={"TODO"}
+                    testId={`save-${project.name}`}
                     onClick={() => saveClicked(project.id, entry)}
                     color={buttonGreen}
                   />
                 {:else}
                   <AchillButton
                     text={"Delete"}
-                    testId={"TODO"}
+                    testId={`delete-${project.name}`}
                     onClick={() => deleteClicked(entry, project.id)}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Edit"}
-                    testId={"TODO"}
+                    testId={`edit-${project.name}`}
                     onClick={() => editClicked(entry)}
                     color={buttonBlue}
                   />

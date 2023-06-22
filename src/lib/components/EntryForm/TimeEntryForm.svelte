@@ -3,6 +3,7 @@
     hours: "",
     description: "",
   };
+  export let errorTestId = "";
 
   export let errors = {};
   export let hoursTestId = "hours";
@@ -28,7 +29,7 @@
   <div class="basis-3/4 p-1">
     <div class="flex">
       {#if Object.values(errors).length > 0}
-        <div class="basis-1/4" />
+        <div class="basis-1/4" data-testid={errorTestId} />
         <div class="mb-4 font-bold text-red-600">
           {#each Object.values(errors) as error}
             {error}

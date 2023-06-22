@@ -28,9 +28,7 @@
     // make sure $troiApi from store is not used before it is initialized
     if ($troiApi == undefined) return;
 
-    console.log("BEFORE INIT");
     await troiController.init($troiApi, showLoadingSpinner, hideLoadingSpinner);
-    console.log("AFTER INIT");
     projects = troiController.getProjects();
     updateUI();
     hideLoadingSpinner();

@@ -33,6 +33,7 @@
         <TimeEntryForm
           {values}
           {errors}
+          errorTestId={`error-${project.name}`}
           enterPressed={handleSubmit}
           hoursTestId={"hours-" + project.name}
           descriptionTestId={"description-" + project.name}

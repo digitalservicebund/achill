@@ -1,298 +1,263 @@
 import { expect, test } from "@playwright/test";
 import LoginPage from "./TestHelper/LoginPage";
-import TimeEntriesPage from "./TestHelper/TimeEntriesPage";
 import { initializeTestSetup } from "./TestHelper/TestHelper";
 import TroiApiStub from "./TestHelper/TroiApiStub";
 import { username, password } from "./TestHelper/TroiApiStub";
 
-// let mockApi;
-
-// test.beforeEach(async ({ context, page }) => {
-//   mockApi = new TroiApiStub();
-//   initilaizeTestSetup(context, mockApi);
-//   await new LoginPage(page).logIn(correctUser, correctPassword);
-// });
-
-/*
-  a real entry coming from live api: 
-    date: "2023-05-17";
-    description: "test";
-    hours: 2;
-    id: 17431;    
-*/
-
-test.describe("show existing entry", async () => {
-  test("load entry", async ({ context, page }) => {
-    // https://playwright.dev/docs/api/class-consolemessage
-    page.on("console", (msg) => console.log(msg.text()));
-
-    const apiEntry = {
-      id: 17431,
-      Date: new Date(),
-      Quantity: "4:45",
-      Remark: "a task",
-    };
-
-    let mockApi = new TroiApiStub();
-    mockApi.addEntry(apiEntry);
-
-    initializeTestSetup(context, mockApi);
-    await new LoginPage(page).logIn(username, password);
-
-    const existingEntry = {
-      project: "My Project",
-      time: "4:45",
-      description: "a task",
-    };
-
-    // const timeEntriesPage = new TimeEntriesPage(page);
-
-    // await expect(page.getByTestId("loadingOverlay")).toBeVisible()
-    // await expect(page.getByTestId("loadingOverlay")).toBeHidden()
-
-    const entryCard = page.locator(
-      "data-testid=entryCard-" + existingEntry.project
-    );
-    const enrtyCardContent = entryCard.locator(
-      "data-testid=entry-card-content"
-    );
-    const expectedText =
-      existingEntry.time + " Hour(s) " + existingEntry.description;
-    await expect(enrtyCardContent).toHaveText(expectedText);
-  });
+test.beforeEach(async ({ page }) => {
+  // https://playwright.dev/docs/api/class-consolemessage
+  page.on("console", (msg) => console.log(msg.text()));
 });
 
-// test("add entry", async ({ context, page }) => {
-//   let mockApi = new TroiApiStub();
-//   initializeTestSetup(context, mockApi);
-//   await new LoginPage(page).logIn(username, password);
+test("load entry", async ({ context, page }) => {
+  const apiEntry = {
+    id: 17431,
+    Date: "2023-06-22",
+    Quantity: 4.75,
+    Remark: "a task",
+  };
 
-//   const entryToAdd = {
-//     project: "My Project",
-//     time: "4:45",
-//     description: "a task",
-//   };
+  let mockApi = new TroiApiStub();
+  mockApi.addEntry(apiEntry);
 
-//   const timeEntriesPage = new TimeEntriesPage(page);
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-//   await expect(page.getByTestId("loadingOverlay")).toBeVisible();
-//   await expect(page.getByTestId("loadingOverlay")).toBeHidden();
+  const existingEntry = {
+    project: "My Project",
+    time: "4:45",
+    description: "a task",
+  };
 
-//   await timeEntriesPage.fillForm(entryToAdd);
-//   await timeEntriesPage.submitForm(entryToAdd.project);
+  await expectLoading(page);
 
-//   await expect(page.getByTestId("loadingOverlay")).toBeVisible();
-//   await expect(page.getByTestId("loadingOverlay")).toBeHidden();
+  const entryCard = page.locator(
+    "data-testid=entryCard-" + existingEntry.project
+  );
+  const enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
+  const expectedText =
+    existingEntry.time + " Hour(s) " + existingEntry.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
+});
 
-//   const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
-//   const enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
-//   const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description;
-//   await expect(enrtyCardContent).toHaveText(expectedText);
+test("add entry works", async ({ context, page }) => {
+  let mockApi = new TroiApiStub();
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-//   const hoursTestId = "hours-" + entryToAdd.project;
-//   const descriptionTestId = "description-" + entryToAdd.project;
-//   await expect(page.getByTestId(hoursTestId)).toBeHidden();
-//   await expect(page.getByTestId(descriptionTestId)).toBeHidden();
-// });
+  const entryToAdd = {
+    project: "My Project",
+    time: "4:45",
+    description: "a task",
+  };
 
-// test("add entry - with enter", async ({ context, page }) => {
+  await expectLoading(page);
 
-//   let mockApi = new TroiApiStub();
-//   initializeTestSetup(context, mockApi);
-//   await new LoginPage(page).logIn(username, password);
+  await fillForm(entryToAdd, page);
+  await submitForm(entryToAdd.project, page);
 
-//   const entryToAdd = {
-//     project: "My Project",
-//     time: "4:45",
-//     description: "a task"
-//   }
+  await expectLoading(page);
 
-//   const timeEntriesPage = new TimeEntriesPage(page);
+  const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+  const enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
+  const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
 
-//   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
-//   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+  const hoursTestId = "hours-" + entryToAdd.project;
+  const descriptionTestId = "description-" + entryToAdd.project;
+  await expect(page.getByTestId(hoursTestId)).toBeHidden();
+  await expect(page.getByTestId(descriptionTestId)).toBeHidden();
+});
 
-//   await timeEntriesPage.fillForm(entryToAdd);
-//   await timeEntriesPage.submitForm(entryToAdd.project, true);
+test("add entry with enter works", async ({ context, page }) => {
+  let mockApi = new TroiApiStub();
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-//   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
-//   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+  const entryToAdd = {
+    project: "My Project",
+    time: "4:45",
+    description: "a task",
+  };
 
-//   const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
-//   const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
-//   const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
-//   await expect(enrtyCardContent).toHaveText(expectedText);
+  await expectLoading(page);
 
-//   const hoursTestId = "hours-" + entryToAdd.project;
-//   const descriptionTestId = "description-" + entryToAdd.project;
-//   await expect(page.getByTestId(hoursTestId)).toBeHidden()
-//   await expect(page.getByTestId(descriptionTestId)).toBeHidden()
-// });
+  await fillForm(entryToAdd, page);
+  await submitForm(entryToAdd.project, page, true);
 
-// test("add entry with secondary hour fraction format", async ({ page }) => {
+  await expectLoading(page);
 
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "2.333333333333333",
-//     "a task"
-//   );
+  const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+  const enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
+  const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+  const hoursTestId = "hours-" + entryToAdd.project;
+  const descriptionTestId = "description-" + entryToAdd.project;
+  await expect(page.getByTestId(hoursTestId)).toBeHidden();
+  await expect(page.getByTestId(descriptionTestId)).toBeHidden();
+});
 
-//   const card = page.locator("data-test=entry-card");
-//   await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 2:20 Hours");
-// });
+test("add entry with invalid data shows error", async ({ context, page }) => {
+  let mockApi = new TroiApiStub();
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-// test("add entry without a leading hour format - minutes only", async ({
-//   page,
-// }) => {
+  const entryToAdd = {
+    project: "My Project",
+    time: "a",
+    description: "",
+  };
 
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "February",
-//     "14",
-//     ":30",
-//     "a task"
-//   );
+  await expectLoading(page);
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+  await fillForm(entryToAdd, page);
+  await expect(page.getByTestId(`error-${entryToAdd.project}`)).toBeHidden();
+  await submitForm(entryToAdd.project, page);
+  await expect(page.getByTestId("loadingOverlay")).toBeHidden();
+  await expect(page.getByTestId("error-" + entryToAdd.project)).toBeVisible();
+});
 
-//   const card = page.locator("data-test=entry-card");
-//   await expect(card.locator("h5")).toHaveText("Mon 14.02.2022 - 0:30 Hours");
-// });
+test("delete existing entry works", async ({ context, page }) => {
+  const apiEntry = {
+    id: 17431,
+    Date: "2023-06-22",
+    Quantity: 4.75,
+    Remark: "a task",
+  };
 
-// test("add entry - invalid data", async ({ page }) => {
+  let mockApi = new TroiApiStub();
+  mockApi.addEntry(apiEntry);
 
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "4:5t",
-//     ""
-//   );
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-//   const form = page.locator("data-test=entry-form");
-//   await expect(form.locator("data-testid=hours")).toHaveCSS(
-//     "border-color",
-//     "rgb(239, 68, 68)"
-//   );
-//   await expect(form.locator("id=description")).toHaveCSS(
-//     "border-color",
-//     "rgb(239, 68, 68)"
-//   );
-// });
+  await expectLoading(page);
 
-// test("edit entry", async ({ page }) => {
+  const existingEntry = {
+    project: "My Project",
+    time: "4:45",
+    description: "a task",
+  };
 
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "1:00",
-//     "a task"
-//   );
-//   await new TimeEntriesPage(page).editEntry(
-//     "2022",
-//     "January",
-//     "18",
-//     "2:00",
-//     "a task - edited"
-//   );
+  let entryCard = page.locator(
+    "data-testid=entryCard-" + existingEntry.project
+  );
+  let enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
+  let expectedText =
+    existingEntry.time + " Hour(s) " + existingEntry.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+  await expect(page.getByTestId(`add-${existingEntry.project}`)).toBeHidden();
+  await expect(page.getByTestId(`edit-${existingEntry.project}`)).toBeVisible();
+  await expect(
+    page.getByTestId(`delete-${existingEntry.project}`)
+  ).toBeVisible();
 
-//   const card = page.locator("data-test=entry-card");
-//   await expect(card.locator("h5")).toHaveText("Tue 18.01.2022 - 2:00 Hours");
-//   await expect(card.locator("p")).toHaveText("a task - edited");
-// });
+  await deleteEntry(existingEntry.project, page);
+  await expectLoading(page);
 
-// test("edit entry - invalid data", async ({ page }) => {
+  await expect(page.getByTestId(`add-${existingEntry.project}`)).toBeVisible();
+  await expect(page.getByTestId(`edit-${existingEntry.project}`)).toBeHidden();
+  await expect(
+    page.getByTestId(`delete-${existingEntry.project}`)
+  ).toBeHidden();
+});
 
-//   // fixme - the to selection does not close anymore
-//   // await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "1:00",
-//     "a task"
-//   );
-//   await new TimeEntriesPage(page).editEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "4:5t",
-//     ""
-//   );
+test("edit entry works", async ({ context, page }) => {
+  const apiEntry = {
+    id: 17431,
+    Date: "2023-06-22",
+    Quantity: 4.75,
+    Remark: "a task",
+  };
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(0);
-//   await expect(page.locator("data-test=entry-form")).toHaveCount(2);
+  let mockApi = new TroiApiStub();
+  mockApi.addEntry(apiEntry);
 
-//   const form = page.locator("data-test=entry-form").nth(1);
-//   await expect(form.locator("data-testid=hours")).toHaveCSS(
-//     "border-color",
-//     "rgb(239, 68, 68)"
-//   );
-//   await expect(form.locator("id=description")).toHaveCSS(
-//     "border-color",
-//     "rgb(239, 68, 68)"
-//   );
-// });
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
 
-// test("edit entry - with enter", async ({ page }) => {
+  await expectLoading(page);
 
-//   // fixme - the to selection does not close anymore
-//   // await new TimeEntriesPage(page).setFromTo("2022-01-01", "2022-12-31");
-//   await new TimeEntriesPage(page).addEntry(
-//     "2022",
-//     "January",
-//     "17",
-//     "4:45",
-//     "a task"
-//   );
-//   await new TimeEntriesPage(page).editEntry(
-//     "2022",
-//     "January",
-//     "18",
-//     "2:00",
-//     "a task - edited",
-//     true
-//   );
+  const existingEntry = {
+    project: "My Project",
+    time: "4:45",
+    description: "a task",
+  };
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(1);
-//   await expect(page.locator("data-test=entry-form")).toHaveCount(1);
+  const newEntry = {
+    project: "My Project",
+    time: "3:10",
+    description: "i got edited",
+  };
 
-//   const card = page.locator("data-test=entry-card");
-//   await expect(card.locator("h5")).toHaveText("Tue 18.01.2022 - 2:00 Hours");
-//   await expect(card.locator("p")).toHaveText("a task - edited");
-// });
+  let entryCard = page.locator(
+    "data-testid=entryCard-" + existingEntry.project
+  );
+  let enrtyCardContent = entryCard.locator("data-testid=entry-card-content");
+  let expectedText =
+    existingEntry.time + " Hour(s) " + existingEntry.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
 
-// test("delete entry", async ({ page }) => {
+  await expect(page.getByTestId(`add-${existingEntry.project}`)).toBeHidden();
+  await expect(page.getByTestId(`edit-${existingEntry.project}`)).toBeVisible();
+  await expect(
+    page.getByTestId(`delete-${existingEntry.project}`)
+  ).toBeVisible();
 
-//   apiStub.addEntry({
-//     id: 1,
-//     Date: "2022-01-22",
-//     Quantity: 1.25,
-//     Remark: "delete me",
-//   });
+  await editEntry(existingEntry.project, page);
 
-//   await page.click('text="Delete"');
+  await expect(
+    page.getByTestId(`cancel-${existingEntry.project}`)
+  ).toBeVisible();
+  await expect(page.getByTestId(`save-${existingEntry.project}`)).toBeVisible();
 
-//   await expect(page.locator("data-test=entry-card")).toHaveCount(0);
-//   await expect(page.locator("data-test=time-entries")).not.toContainText(
-//     "delete me"
-//   );
-// });
+  await fillForm(newEntry, page);
+  await saveEntry(newEntry.project, page);
 
-// test("generate entry", async ({ page }) => {
+  await expectLoading(page);
 
-//   const form = page.locator("data-test=entry-form");
-//   await expect(form.locator('[placeholder="Working the work…"]')).toBeEmpty();
-//   await page.click('text="Suggest"');
+  await expect(page.getByTestId(`edit-${existingEntry.project}`)).toBeVisible();
+  await expect(
+    page.getByTestId(`delete-${existingEntry.project}`)
+  ).toBeVisible();
 
-//   await expect(
-//     form.locator('[placeholder="Working the work…"]')
-//   ).not.toBeEmpty();
-// });
+  expectedText = newEntry.time + " Hour(s) " + newEntry.description;
+  await expect(enrtyCardContent).toHaveText(expectedText);
+});
+
+async function expectLoading(page) {
+  await expect(page.getByTestId("loadingOverlay")).toBeVisible();
+  await expect(page.getByTestId("loadingOverlay")).toBeHidden();
+}
+
+async function editEntry(projectName, page) {
+  await page.getByTestId(`edit-${projectName}`).click();
+}
+
+async function saveEntry(projectName, page) {
+  await page.getByTestId(`save-${projectName}`).click();
+}
+
+async function deleteEntry(projectName, page) {
+  await page.getByTestId(`delete-${projectName}`).click();
+}
+
+async function fillForm(entry, page) {
+  const hoursTestId = "hours-" + entry.project;
+  const descriptionTestId = "description-" + entry.project;
+
+  await page.getByTestId(hoursTestId).fill(entry.time);
+  await page.getByTestId(descriptionTestId).fill(entry.description);
+}
+
+async function submitForm(projectName, page, useEnter = false) {
+  const addButtonTestId = "add-" + projectName;
+
+  if (useEnter) {
+    await page.keyboard.press("Enter");
+  } else {
+    await page.getByTestId(addButtonTestId).click();
+  }
+}

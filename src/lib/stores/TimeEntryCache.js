@@ -106,34 +106,24 @@ export default class TimeEntryCache {
   }
 
   addEntry(project, entry, successCallback = () => {}) {
-    console.log("project", project);
-    console.log("entry", entry);
-    console.log("successCallback", successCallback);
-    try {
-      // init if not present
-      this.initStructureForDateIfNotPresent(entry.date);
+    // init if not present
+    this.initStructureForDateIfNotPresent(entry.date);
 
-      let projects = this._projectsFor(entry.date);
-      // init if not present
-      if (!(project.id in projects)) {
-        this.initStructureForProject(entry.date, project);
-      }
-
-      // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
-      const existingEntry = this._findEntryWithSameDescription(
-        entry,
-        project.id
-      );
-      if (existingEntry) {
-        this.deleteEntry(existingEntry, project.id);
-      }
-
-      this._entriesFor(entry.date, project.id).push(entry);
-      this._getDay(entry.date).sum += entry.hours;
-      successCallback();
-    } catch (e) {
-      console.error(e);
+    let projects = this._projectsFor(entry.date);
+    // init if not present
+    if (!(project.id in projects)) {
+      this.initStructureForProject(entry.date, project);
     }
+
+    // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
+    const existingEntry = this._findEntryWithSameDescription(entry, project.id);
+    if (existingEntry) {
+      this.deleteEntry(existingEntry, project.id);
+    }
+
+    this._entriesFor(entry.date, project.id).push(entry);
+    this._getDay(entry.date).sum += entry.hours;
+    successCallback();
   }
 
   deleteEntry(entry, projectId, successCallback = () => {}) {
