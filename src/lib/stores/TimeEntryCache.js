@@ -84,10 +84,7 @@ export default class TimeEntryCache {
     }
 
     Object.keys(this.cache[cacheDate]["projects"]).forEach((projectId) => {
-      entriesForDate[projectId] = this.entriesForProject(
-        date,
-        projectId
-      );
+      entriesForDate[projectId] = this.entriesForProject(date, projectId);
     });
 
     return entriesForDate;
@@ -99,7 +96,7 @@ export default class TimeEntryCache {
       return [];
     }
 
-    return this.cache[cacheDate]["events"]
+    return this.cache[cacheDate]["events"];
   }
 
   addEntries(project, entries) {
@@ -108,28 +105,38 @@ export default class TimeEntryCache {
     });
   }
 
-  addEntry(project, entry, successCallback = () => { }) {
-    // init if not present
-    this.initStructureForDateIfNotPresent(entry.date);
+  addEntry(project, entry, successCallback = () => {}) {
+    console.log("project", project);
+    console.log("entry", entry);
+    console.log("successCallback", successCallback);
+    try {
+      // init if not present
+      this.initStructureForDateIfNotPresent(entry.date);
 
-    let projects = this._projectsFor(entry.date);
-    // init if not present
-    if (!(project.id in projects)) {
-      this.initStructureForProject(entry.date, project);
+      let projects = this._projectsFor(entry.date);
+      // init if not present
+      if (!(project.id in projects)) {
+        this.initStructureForProject(entry.date, project);
+      }
+
+      // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
+      const existingEntry = this._findEntryWithSameDescription(
+        entry,
+        project.id
+      );
+      if (existingEntry) {
+        this.deleteEntry(existingEntry, project.id);
+      }
+
+      this._entriesFor(entry.date, project.id).push(entry);
+      this._getDay(entry.date).sum += entry.hours;
+      successCallback();
+    } catch (e) {
+      console.error(e);
     }
-
-    // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
-    const existingEntry = this._findEntryWithSameDescription(entry, project.id);
-    if (existingEntry) {
-      this.deleteEntry(existingEntry, project.id);
-    }
-
-    this._entriesFor(entry.date, project.id).push(entry);
-    this._getDay(entry.date).sum += entry.hours;
-    successCallback();
   }
 
-  deleteEntry(entry, projectId, successCallback = () => { }) {
+  deleteEntry(entry, projectId, successCallback = () => {}) {
     const entries = this._entriesFor(entry.date, projectId);
     const index = entries.map((entry) => entry.id).indexOf(entry.id);
 
@@ -143,7 +150,7 @@ export default class TimeEntryCache {
     successCallback();
   }
 
-  updateEntry(project, entry, successCallback = () => { }) {
+  updateEntry(project, entry, successCallback = () => {}) {
     // if description already exists, delete "old entry" bc. troi api adds hours to entry and does not create new one
     const existingEntry = this._findEntryWithSameDescription(entry, project.id);
     if (existingEntry) {
@@ -157,16 +164,16 @@ export default class TimeEntryCache {
   addEventForDate(event, date) {
     const cacheDate = convertToCacheFormat(date);
     this.initStructureForDateIfNotPresent(cacheDate);
-    this.cache[cacheDate]["events"].push(event)
+    this.cache[cacheDate]["events"].push(event);
   }
 
   getEventsForDate(date) {
     const cacheDate = convertToCacheFormat(date);
     if (this.cache[cacheDate]) {
-      return this.cache[cacheDate]["events"]
+      return this.cache[cacheDate]["events"];
     }
 
-    return []
+    return [];
   }
 
   initStructureForDateIfNotPresent(date) {
@@ -177,7 +184,7 @@ export default class TimeEntryCache {
     this.cache[date] = {
       projects: {},
       sum: 0,
-      events: []
+      events: [],
     };
   }
 
@@ -230,7 +237,10 @@ export default class TimeEntryCache {
 
   entriesForProject(date, projectId) {
     const cacheDate = convertToCacheFormat(date);
-    if (cacheDate in this.cache && projectId in this._getDay(cacheDate)["projects"]) {
+    if (
+      cacheDate in this.cache &&
+      projectId in this._getDay(cacheDate)["projects"]
+    ) {
       return this._getDay(cacheDate)["projects"][projectId]["entries"];
     } else {
       return [];

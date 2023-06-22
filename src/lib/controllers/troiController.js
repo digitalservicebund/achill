@@ -1,6 +1,13 @@
 // @ts-nocheck
-import TimeEntryCache, { convertToCacheFormat } from "$lib/stores/TimeEntryCache";
-import { addDaysToDate, formatDateToYYYYMMDD, getDatesBetween, getWeekDaysFor } from "$lib/utils/dateUtils";
+import TimeEntryCache, {
+  convertToCacheFormat,
+} from "$lib/stores/TimeEntryCache";
+import {
+  addDaysToDate,
+  formatDateToYYYYMMDD,
+  getDatesBetween,
+  getWeekDaysFor,
+} from "$lib/utils/dateUtils";
 
 const timeEntryCache = new TimeEntryCache();
 
@@ -8,168 +15,167 @@ const intervallInWeeks = 6;
 const intervallInDays = intervallInWeeks * 7;
 
 export default class TroiController {
+  async init(troiApi, willStartLoadingCallback, finishedLoadingCallback) {
+    this._troiApi = troiApi;
+    this._willStartLoadingCallback = willStartLoadingCallback;
+    this._finishedLoadingCallback = finishedLoadingCallback;
 
-    async init(troiApi, willStartLoadingCallback, finishedLoadingCallback) {
-        this._troiApi = troiApi;
-        this._willStartLoadingCallback = willStartLoadingCallback;
-        this._finishedLoadingCallback = finishedLoadingCallback;
-        // Load all stared projects when initializing the repository
-        console.log("BEFORE GET CALCUALAIODHFLIDA");
-        this._projects = await this._troiApi.getCalculationPositions();
-        console.log("AFTER GET CALCUALAIODHFLIDA");
+    const currentWeek = getWeekDaysFor(new Date());
+    this._cacheBottomBorder = addDaysToDate(currentWeek[0], -intervallInDays);
+    this._cacheTopBorder = addDaysToDate(currentWeek[4], intervallInDays);
 
-        // Initially load entries and events 
-        const currentWeek = getWeekDaysFor(new Date());
-        this._cacheBottomBorder = addDaysToDate(currentWeek[0], -intervallInDays);
-        this._cacheTopBorder = addDaysToDate(currentWeek[4], intervallInDays);
+    this._projects = await this._troiApi.getCalculationPositions();
 
-        await this._loadEntriesAndEventsBetween(this._cacheBottomBorder, this._cacheTopBorder);
+    await this._loadEntriesAndEventsBetween(
+      this._cacheBottomBorder,
+      this._cacheTopBorder
+    );
+  }
+
+  // --------- private functions ---------
+
+  async _loadEntriesBetween(startDate, endDate) {
+    for (const project of this._projects) {
+      const entries = await this._troiApi.getTimeEntries(
+        project.id,
+        formatDateToYYYYMMDD(startDate),
+        formatDateToYYYYMMDD(endDate)
+      );
+
+      timeEntryCache.addEntries(project, entries);
     }
+  }
 
-    // --------- private functions ---------
+  async _loadCalendarEventsBetween(startDate, endDate) {
+    const calendarEvents = await this._troiApi.getCalendarEvents(
+      formatDateToYYYYMMDD(startDate),
+      formatDateToYYYYMMDD(endDate)
+    );
 
-    async _loadEntriesBetween(startDate, endDate) {
+    calendarEvents.forEach((calendarEvent) => {
+      let dates = getDatesBetween(
+        new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
+        new Date(Math.min(new Date(calendarEvent.endDate), endDate))
+      );
 
-        for (const project of this._projects) {
-            const entries = await this._troiApi.getTimeEntries(
-                project.id,
-                formatDateToYYYYMMDD(startDate),
-                formatDateToYYYYMMDD(endDate)
-            );
-
-            timeEntryCache.addEntries(project, entries);
-        };
-    }
-
-    async _loadCalendarEventsBetween(startDate, endDate) {
-
-        const calendarEvents = await this._troiApi.getCalendarEvents(
-            formatDateToYYYYMMDD(startDate),
-            formatDateToYYYYMMDD(endDate)
+      dates.forEach((date) => {
+        timeEntryCache.addEventForDate(
+          {
+            id: calendarEvent.id,
+            subject: calendarEvent.subject,
+            type: calendarEvent.type,
+          },
+          date
         );
+      });
+    });
+  }
 
-        calendarEvents.forEach((calendarEvent) => {
-            let dates = getDatesBetween(
-                new Date(Math.max(new Date(calendarEvent.startDate), startDate)),
-                new Date(Math.min(new Date(calendarEvent.endDate), endDate))
-            );
+  async _loadEntriesAndEventsBetween(startDate, endDate) {
+    await this._loadEntriesBetween(startDate, endDate);
+    await this._loadCalendarEventsBetween(startDate, endDate);
 
-            dates.forEach((date) => {
-                timeEntryCache.addEventForDate(
-                    {
-                        id: calendarEvent.id,
-                        subject: calendarEvent.subject,
-                        type: calendarEvent.type,
-                    },
-                    date
-                );
-            });
-        });
+    this._cacheBottomBorder = new Date(
+      Math.min(new Date(this._cacheBottomBorder), startDate)
+    );
+    this._cacheTopBorder = new Date(
+      Math.max(new Date(this._cacheTopBorder), endDate)
+    );
+  }
 
+  // -------------------------------------
+
+  getProjects() {
+    return this._projects;
+  }
+
+  getTimesAndEventsFor(week) {
+    let timesAndEventsOfWeek = [];
+
+    week.forEach((date) => {
+      timesAndEventsOfWeek.push({
+        hours: timeEntryCache.totalHoursOf(date),
+        events: timeEntryCache.getEventsForDate(date),
+      });
+    });
+
+    return timesAndEventsOfWeek;
+  }
+
+  getEventsFor(date) {
+    return timeEntryCache.getEventsFor(date);
+  }
+
+  // CRUD Functions for entries
+
+  async getEntriesFor(date) {
+    if (date > this._cacheTopBorder) {
+      console.log("AT CACHE TOP BORDER");
+      this._willStartLoadingCallback();
+      const fetchStartDate = getWeekDaysFor(date)[0];
+      const fetchEndDate = addDaysToDate(fetchStartDate, intervallInDays - 3);
+
+      await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
+      this._finishedLoadingCallback();
     }
 
-    async _loadEntriesAndEventsBetween(startDate, endDate) {
-        console.log("BEFORE _loadEntriesBetween");
-        await this._loadEntriesBetween(startDate, endDate);
-        console.log("AFTER  _loadEntriesBetween");
-        console.log("BEFORE _loadCalendarEventsBetween");
-        await this._loadCalendarEventsBetween(startDate, endDate);
-        console.log("AFTER _loadCalendarEventsBetween");
+    if (date < this._cacheBottomBorder) {
+      console.log("AT CACHE BOTTOM BORDER");
+      this._willStartLoadingCallback();
+      const fetchEndDate = getWeekDaysFor(date)[4];
+      const fetchStartDate = addDaysToDate(fetchEndDate, -intervallInDays + 3);
 
-        this._cacheBottomBorder = new Date(Math.min(new Date(this._cacheBottomBorder), startDate))
-        this._cacheTopBorder = new Date(Math.max(new Date(this._cacheTopBorder), endDate))
+      await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
+      this._finishedLoadingCallback();
     }
 
+    return timeEntryCache.getEntriesFor(date);
+  }
 
-    // -------------------------------------
+  async addEntry(date, project, hours, description, successCallback) {
+    const troiFormattedSelectedDate = convertToCacheFormat(date);
+    const result = await this._troiApi.postTimeEntry(
+      project.id,
+      troiFormattedSelectedDate,
+      hours,
+      description
+    );
 
-    getProjects() {
-        return this._projects
+    const entry = {
+      date: troiFormattedSelectedDate,
+      description: result.Name,
+      hours: Number(result.Quantity),
+      id: result.Id,
+    };
+
+    timeEntryCache.addEntry(project, entry, successCallback);
+  }
+
+  async deleteEntry(entry, projectId, successCallback) {
+    let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
+      entry.id
+    );
+    if (result.ok) {
+      timeEntryCache.deleteEntry(entry, projectId, successCallback);
     }
+  }
 
-    getTimesAndEventsFor(week) {
-        let timesAndEventsOfWeek = [];
+  async updateEntry(project, entry, successCallback) {
+    const result = await this._troiApi.updateTimeEntry(
+      project.id,
+      entry.date,
+      entry.hours,
+      entry.description,
+      entry.id
+    );
 
-        week.forEach((date) => {
-            timesAndEventsOfWeek.push({
-                hours: timeEntryCache.totalHoursOf(date),
-                events: timeEntryCache.getEventsForDate(date),
-            });
-        });
+    const updatedEntry = {
+      date: entry.date,
+      description: result.Name,
+      hours: Number(result.Quantity),
+      id: result.Id,
+    };
 
-        return timesAndEventsOfWeek;
-    }
-
-    getEventsFor(date) {
-        return timeEntryCache.getEventsFor(date);
-    }
-
-    // CRUD Functions for entries
-
-    async getEntriesFor(date) {
-
-        if (date > this._cacheTopBorder) {
-            console.log("AT CACHE TOP BORDER");
-            this._willStartLoadingCallback();
-            const fetchStartDate = getWeekDaysFor(date)[0]
-            const fetchEndDate = addDaysToDate(fetchStartDate, intervallInDays - 3);
-
-            await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
-            this._finishedLoadingCallback();
-        }
-
-        if (date < this._cacheBottomBorder) {
-            console.log("AT CACHE BOTTOM BORDER");
-            this._willStartLoadingCallback();
-            const fetchEndDate = getWeekDaysFor(date)[4];
-            const fetchStartDate = addDaysToDate(fetchEndDate, -intervallInDays + 3);
-
-            await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
-            this._finishedLoadingCallback();
-        }
-
-        return timeEntryCache.getEntriesFor(date)
-    }
-
-    async addEntry(date, project, hours, description, successCallback) {
-
-        const troiFormattedSelectedDate = convertToCacheFormat(date);
-        const result = await this._troiApi.postTimeEntry(
-            project.id,
-            troiFormattedSelectedDate,
-            hours,
-            description
-        );
-
-        const entry = {
-            date: troiFormattedSelectedDate,
-            description: result.Name,
-            hours: Number(result.Quantity),
-            id: result.Id,
-        };
-
-        timeEntryCache.addEntry(project, entry, successCallback);
-    }
-
-    async deleteEntry(entry, projectId, successCallback) {
-        let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
-            entry.id
-        );
-        if (result.ok) {
-            timeEntryCache.deleteEntry(entry, projectId, successCallback);
-        }
-    }
-
-    async updateEntry(project, entry, successCallback) {
-        const result = await this._troiApi.updateTimeEntry(project.id, entry.date, entry.hours, entry.description, entry.id);
-
-        const updatedEntry = {
-            date: entry.date,
-            description: result.Name,
-            hours: Number(result.Quantity),
-            id: result.Id,
-        };
-
-        timeEntryCache.updateEntry(project, updatedEntry, successCallback);
-    }
+    timeEntryCache.updateEntry(project, updatedEntry, successCallback);
+  }
 }
