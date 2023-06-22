@@ -1,8 +1,8 @@
 import md5 from "crypto-js/md5.js";
 import { sleep } from "./TestHelper";
 
-export const correctUser = "user.name";
-export const correctPassword = "s3cr3t";
+export const username = "user.name";
+export const password = "s3cr3t";
 
 const mockData = {
     client: {
@@ -16,6 +16,7 @@ const mockData = {
         DisplayPath: "My Project",
         Id: 789,
     },
+    calendarEvents: []
 };
 
 export default class TroiApiStub {
@@ -24,7 +25,7 @@ export default class TroiApiStub {
         this.entries = [];
 
         this.correctAuthnHeader = `Basic ${btoa(
-            `${correctUser}:${md5(correctPassword)}`
+            `${username}:${md5(password)}`
         )}`;
     }
 
@@ -60,7 +61,7 @@ export default class TroiApiStub {
             method === "GET" &&
             pathname.endsWith("/employees") &&
             params.get("clientId") === mockData.client.Id.toString() &&
-            params.get("employeeLoginName") === correctUser
+            params.get("employeeLoginName") === username
         ) {
             return this._response({ jsonBody: [mockData.employee] });
         } else if (
@@ -104,6 +105,11 @@ export default class TroiApiStub {
                 Remark: postData.Remark,
             });
             return this._response({});
+        } else if (
+            method === "GET" &&
+            pathname.endsWith("/calendarEvents")
+        ) {
+            return this._response({ jsonBody: mockData.calendarEvents });
         } else {
             return null;
         }
@@ -111,7 +117,7 @@ export default class TroiApiStub {
 
     async _response({ status = 200, jsonBody = {} }) {
         // Simulate trois api delay
-        await sleep(500);
+        await sleep(100);
         return {
             status: status,
             headers: { "Access-Control-Allow-Origin": "*" },

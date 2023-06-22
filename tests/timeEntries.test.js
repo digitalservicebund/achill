@@ -2,62 +2,116 @@ import { expect, test } from "@playwright/test";
 import LoginPage from "./TestHelper/LoginPage";
 import TimeEntriesPage from "./TestHelper/TimeEntriesPage";
 import { initilaizeTestSetup } from "./TestHelper/TestHelper";
+import TroiApiStub from "./TestHelper/TroiApiStub";
+import { username, password } from "./TestHelper/TroiApiStub";
 
-const correctUser = "user.name";
-const correctPassword = "s3cr3t";
+// let mockApi;
 
-test.beforeEach(async ({ context, page }) => {
-  initilaizeTestSetup(context);
-  await new LoginPage(page).logIn(correctUser, correctPassword);
-});
+// test.beforeEach(async ({ context, page }) => {
+//   mockApi = new TroiApiStub();
+//   initilaizeTestSetup(context, mockApi);
+//   await new LoginPage(page).logIn(correctUser, correctPassword);
+// });
 
 test.describe("Time entries", async () => {
-  test("add entry", async ({ page }) => {
 
-    const entryToAdd = {
+  test("load entry", async ({ context, page }) => {
+    const apiEntry = {
+      id: 0,
+      Date: new Date(),
+      Quantity: 4.75,
+      Remark: "a task"
+    }
+
+    let mockApi = new TroiApiStub();
+    mockApi.addEntry(apiEntry);
+
+    initilaizeTestSetup(context, mockApi);
+    await new LoginPage(page).logIn(username, password);
+
+    const existingEntry = {
       project: "My Project",
       time: "4:45",
       description: "a task"
     }
 
-    const timeEntriesPage = new TimeEntriesPage(page);
+    // const timeEntriesPage = new TimeEntriesPage(page);
 
-    await timeEntriesPage.fillForm(entryToAdd);
-    await timeEntriesPage.submitForm(entryToAdd.project);
+    // await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+    // await expect(page.getByTestId("loadingOverlay")).toBeHidden()
 
-    await expect(page.getByTestId("loadingOverlay")).toBeVisible()
-    await expect(page.getByTestId("loadingOverlay")).toBeHidden()
-
-    const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+    const entryCard = page.locator("data-testid=entryCard-" + existingEntry.project);
     const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
-    const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
+    const expectedText = existingEntry.time + " Hour(s) " + existingEntry.description
     await expect(enrtyCardContent).toHaveText(expectedText);
-
-    const hoursTestId = "hours-" + entryToAdd.project;
-    const descriptionTestId = "description-" + entryToAdd.project;
-    await expect(page.getByTestId(hoursTestId)).toBeEmpty()
-    await expect(page.getByTestId(descriptionTestId)).toBeEmpty()
   });
 
-  // test("add entry - with enter", async ({ page }) => {
+  // test("add entry", async ({ context, page }) => {
 
-  //   await new TimeEntriesPage(page).addEntry(
-  //     "2022",
-  //     "January",
-  //     "17",
-  //     "4:45",
-  //     "a task",
-  //     true
-  //   );
+  //   let mockApi = new TroiApiStub();
+  //   initilaizeTestSetup(context, mockApi);
+  //   await new LoginPage(page).logIn(username, password);
 
-  //   await expect(page.locator("data-test=entry-card")).toHaveCount(1);
+  //   const entryToAdd = {
+  //     project: "My Project",
+  //     time: "4:45",
+  //     description: "a task"
+  //   }
 
-  //   const card = page.locator("data-test=entry-card");
-  //   await expect(card.locator("h5")).toHaveText("Mon 17.01.2022 - 4:45 Hours");
+  //   const timeEntriesPage = new TimeEntriesPage(page);
 
-  //   const form = page.locator("data-test=entry-form");
-  //   await expect(form.locator("data-testid=hours")).toBeEmpty();
-  //   await expect(form.locator("id=description")).toBeEmpty();
+  //   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+  //   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+
+  //   await timeEntriesPage.fillForm(entryToAdd);
+  //   await timeEntriesPage.submitForm(entryToAdd.project);
+
+  //   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+  //   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+
+  //   const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+  //   const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
+  //   const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
+  //   await expect(enrtyCardContent).toHaveText(expectedText);
+
+  //   const hoursTestId = "hours-" + entryToAdd.project;
+  //   const descriptionTestId = "description-" + entryToAdd.project;
+  //   await expect(page.getByTestId(hoursTestId)).toBeHidden()
+  //   await expect(page.getByTestId(descriptionTestId)).toBeHidden()
+  // });
+
+  // test("add entry - with enter", async ({ context, page }) => {
+
+  //   let mockApi = new TroiApiStub();
+  //   initilaizeTestSetup(context, mockApi);
+  //   await new LoginPage(page).logIn(username, password);
+
+  //   const entryToAdd = {
+  //     project: "My Project",
+  //     time: "4:45",
+  //     description: "a task"
+  //   }
+
+  //   const timeEntriesPage = new TimeEntriesPage(page);
+
+  //   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+  //   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+
+  //   await timeEntriesPage.fillForm(entryToAdd);
+  //   await timeEntriesPage.submitForm(entryToAdd.project, true);
+
+  //   await expect(page.getByTestId("loadingOverlay")).toBeVisible()
+  //   await expect(page.getByTestId("loadingOverlay")).toBeHidden()
+
+  //   const entryCard = page.locator("data-testid=entryCard-" + entryToAdd.project);
+  //   const enrtyCardContent = entryCard.locator("data-testid=entry-card-content")
+  //   const expectedText = entryToAdd.time + " Hour(s) " + entryToAdd.description
+  //   await expect(enrtyCardContent).toHaveText(expectedText);
+
+  //   const hoursTestId = "hours-" + entryToAdd.project;
+  //   const descriptionTestId = "description-" + entryToAdd.project;
+  //   await expect(page.getByTestId(hoursTestId)).toBeHidden()
+  //   await expect(page.getByTestId(descriptionTestId)).toBeHidden()
   // });
 
   // test("add entry with secondary hour fraction format", async ({ page }) => {

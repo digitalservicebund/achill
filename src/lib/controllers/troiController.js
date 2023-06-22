@@ -14,7 +14,9 @@ export default class TroiController {
         this._willStartLoadingCallback = willStartLoadingCallback;
         this._finishedLoadingCallback = finishedLoadingCallback;
         // Load all stared projects when initializing the repository
+        console.log("BEFORE GET CALCUALAIODHFLIDA");
         this._projects = await this._troiApi.getCalculationPositions();
+        console.log("AFTER GET CALCUALAIODHFLIDA");
 
         // Initially load entries and events 
         const currentWeek = getWeekDaysFor(new Date());
@@ -67,8 +69,12 @@ export default class TroiController {
     }
 
     async _loadEntriesAndEventsBetween(startDate, endDate) {
+        console.log("BEFORE _loadEntriesBetween");
         await this._loadEntriesBetween(startDate, endDate);
+        console.log("AFTER  _loadEntriesBetween");
+        console.log("BEFORE _loadCalendarEventsBetween");
         await this._loadCalendarEventsBetween(startDate, endDate);
+        console.log("AFTER _loadCalendarEventsBetween");
 
         this._cacheBottomBorder = new Date(Math.min(new Date(this._cacheBottomBorder), startDate))
         this._cacheTopBorder = new Date(Math.max(new Date(this._cacheTopBorder), endDate))

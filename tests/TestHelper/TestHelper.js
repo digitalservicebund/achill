@@ -5,8 +5,8 @@ export async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export async function initilaizeTestSetup(context) {
-    const apiStub = new TroiApiStub();
+export async function initilaizeTestSetup(context, apiStub) {
+    // const apiStub = new TroiApiStub();
 
     await context.route(
         "https://digitalservice.troi.software/api/v2/rest/**",
@@ -23,6 +23,7 @@ export async function initilaizeTestSetup(context) {
             const matchedResponse = await apiStub.match(method, pathname, params, postData);
 
             if (matchedResponse !== null) {
+                console.log("Fulfilling route %s with response: %s", pathname, matchedResponse);
                 route.fulfill(matchedResponse);
             } else {
                 console.log({ matchedResponse, method, pathname, params, postData });

@@ -14,7 +14,7 @@ export default class TimeEntriesPage {
     }
 
     async submitForm(projectName, useEnter = false) {
-        const addButtonTestId = "button-" + projectName;
+        const addButtonTestId = "add-" + projectName;
 
         if (useEnter) {
             await this.page.keyboard.press("Enter");
@@ -22,31 +22,6 @@ export default class TimeEntriesPage {
             await this.page.getByTestId(addButtonTestId).click();
         }
     }
-
-    // async addEntry(year, month, date, hours, description, useEnter = false) {
-    //     await this.page.locator('[placeholder="2022-01-01"]').click();
-    //     await this.page
-    //         .locator('[placeholder="2022-01-01"] + .picker >> select')
-    //         .first()
-    //         .selectOption({ label: month });
-    //     await this.page
-    //         .locator('[placeholder="2022-01-01"] + .picker >> select')
-    //         .nth(2)
-    //         .selectOption(year);
-    //     await this.page
-    //         .locator(`[placeholder="2022-01-01"] + .picker >> span >> text="${date}"`)
-    //         .nth(0)
-    //         .click();
-    //     await this.page.locator('[placeholder="2:15"]').fill(hours);
-    //     await this.page
-    //         .locator('[placeholder="Working the work…"]')
-    //         .fill(description);
-    //     if (useEnter) {
-    //         await this.page.keyboard.press("Enter");
-    //     } else {
-    //         await this.page.locator("button >> text=ADD").click();
-    //     }
-    // }
 
     async editEntry(year, month, date, hours, description, useEnter = false) {
         await this.page.locator("text=Edit").nth(0).click();

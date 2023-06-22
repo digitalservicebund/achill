@@ -41,7 +41,7 @@
       <div>
         <AchillButton
           text={"Add"}
-          testId={"-" + project.name}
+          testId={"add-" + project.name}
           onClick={handleSubmit}
           color={buttonBlue}
         />
