@@ -123,7 +123,11 @@
 
 {#if !selectedDayIsHoliday}
   {#if selectedDayIsVacation}
-    <InfoBanner text={"You are on vacation."} symbol={"beach_access"} />
+    <InfoBanner
+      text={"You are on vacation."}
+      symbol={"beach_access"}
+      testId={"vacation-banner"}
+    />
   {/if}
   <TroiTimeEntries
     {projects}
@@ -138,6 +142,7 @@
   <InfoBanner
     text={"Public holiday, working impossible."}
     symbol={"wb_sunny"}
+    testId={"holiday-banner"}
   />
 {/if}
 

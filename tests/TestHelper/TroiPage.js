@@ -92,6 +92,18 @@ export default class TroiPage {
         await this.page.getByTestId("btn-next-week").click()
     }
 
+    async clickOnToday() {
+        await this.page.getByTestId("btn-today").click()
+    }
+
+    async expectHoldiayBannerToBeVisible() {
+        await expect(this.page.getByTestId("holiday-banner")).toBeVisible()
+    }
+
+    async expectVacationBannerToBeVisible() {
+        await expect(this.page.getByTestId("vacation-banner")).toBeVisible()
+    }
+
     async expectSelectedDateToBe(dateString) {
         await expect(this.page.getByTestId("date")).toHaveText(dateString)
     }

@@ -1,5 +1,6 @@
 import md5 from "crypto-js/md5.js";
 import { sleep } from "./TestHelper";
+import moment from "moment";
 
 export const username = "user.name";
 export const password = "s3cr3t";
@@ -16,7 +17,22 @@ const mockData = {
     DisplayPath: "My Project",
     Id: 789,
   },
-  calendarEvents: [],
+  calendarEvents: [
+    {
+      "id": "12826",
+      "Start": "2023-05-29 00:00:00",
+      "End": "2023-05-29 23:59:59",
+      "Subject": "Pfingstmontag",
+      "Type": "H"
+    },
+    {
+      "id": "P6646",
+      "Start": "2023-06-15 09:00:00",
+      "End": "2023-06-16 18:00:00",
+      "Subject": "Bezahlter Urlaub",
+      "Type": "P"
+    }
+  ],
 };
 
 export default class TroiApiStub {
@@ -110,7 +126,21 @@ export default class TroiApiStub {
         },
       });
     } else if (method === "GET" && pathname.endsWith("/calendarEvents")) {
-      return this._response({ jsonBody: mockData.calendarEvents });
+      const startDate = moment(params.get("start"), "YYYYMMDD").toDate()
+      const endDate = moment(params.get("end"), "YYYYMMDD").toDate()
+      const type = params.get("type")
+
+      const result = mockData.calendarEvents.filter(calEvent => {
+        const calEventStart = Date.parse(calEvent["Start"])
+        const calEventEnd = Date.parse(calEvent["Start"])
+        const isInRange = (calEventStart >= startDate && calEventStart <= endDate) ||
+          (calEventEnd >= startDate && calEventEnd <= endDate)
+        const typeMatches = type == "" ? true : calEvent["Type"] == type
+
+        return isInRange && typeMatches
+      })
+
+      return this._response({ jsonBody: result });
     } else {
       return null;
     }

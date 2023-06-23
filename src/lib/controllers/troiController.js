@@ -17,8 +17,8 @@ const intervallInDays = intervallInWeeks * 7;
 export default class TroiController {
   async init(troiApi, willStartLoadingCallback, finishedLoadingCallback) {
     this._troiApi = troiApi;
-    this._willStartLoadingCallback = willStartLoadingCallback;
-    this._finishedLoadingCallback = finishedLoadingCallback;
+    this._startLoadingCallback = willStartLoadingCallback;
+    this._stopLoadingCallback = finishedLoadingCallback;
 
     const currentWeek = getWeekDaysFor(new Date());
     this._cacheBottomBorder = addDaysToDate(currentWeek[0], -intervallInDays);
@@ -110,23 +110,21 @@ export default class TroiController {
 
   async getEntriesFor(date) {
     if (date > this._cacheTopBorder) {
-      console.log("AT CACHE TOP BORDER");
-      this._willStartLoadingCallback();
+      this._startLoadingCallback();
       const fetchStartDate = getWeekDaysFor(date)[0];
       const fetchEndDate = addDaysToDate(fetchStartDate, intervallInDays - 3);
 
       await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
-      this._finishedLoadingCallback();
+      this._stopLoadingCallback();
     }
 
     if (date < this._cacheBottomBorder) {
-      console.log("AT CACHE BOTTOM BORDER");
-      this._willStartLoadingCallback();
+      this._startLoadingCallback();
       const fetchEndDate = getWeekDaysFor(date)[4];
       const fetchStartDate = addDaysToDate(fetchEndDate, -intervallInDays + 3);
 
       await this._loadEntriesAndEventsBetween(fetchStartDate, fetchEndDate);
-      this._finishedLoadingCallback();
+      this._stopLoadingCallback();
     }
 
     return timeEntryCache.getEntriesFor(date);
