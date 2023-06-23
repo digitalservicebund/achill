@@ -3,14 +3,13 @@ export async function sleep(ms) {
 }
 
 export async function initializeTestSetup(context, apiStub) {
-  // const apiStub = new TroiApiStub();
 
   await context.route(
     "https://digitalservice.troi.software/api/v2/rest/**",
     async (route) => {
       const authnHeader = await route.request().headerValue("Authorization");
       if (!apiStub.isAuthorized(authnHeader)) {
-        route.fulfill(apiStub.unauthorizedResponse());
+        route.fulfill(await apiStub.unauthorizedResponse());
         return;
       }
 
@@ -25,11 +24,6 @@ export async function initializeTestSetup(context, apiStub) {
       );
 
       if (matchedResponse !== null) {
-        // console.log(
-        //   "Fulfilling route %s with response: %s",
-        //   pathname,
-        //   matchedResponse
-        // );
         route.fulfill(matchedResponse);
       } else {
         console.log({ matchedResponse, method, pathname, params, postData });

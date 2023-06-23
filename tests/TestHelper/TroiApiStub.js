@@ -74,7 +74,7 @@ export default class TroiApiStub {
       params.get("clientId") === mockData.client.Id.toString() &&
       params.get("employeeId") === mockData.employee.Id.toString() &&
       params.get("calculationPositionId") ===
-        mockData.calculationPosition.Id.toString()
+      mockData.calculationPosition.Id.toString()
     ) {
       return this._response({ jsonBody: this.entries });
     } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
