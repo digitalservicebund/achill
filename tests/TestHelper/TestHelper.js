@@ -1,3 +1,5 @@
+export const fixedCurrentDate = new Date("June 7 2023 5:00:00");
+
 export async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -47,4 +49,23 @@ export async function initializeTestSetup(context, apiStub) {
       route.continue();
     }
   });
+}
+
+export async function setFixedCurrentDate(page) {
+  await page.addInitScript(`{
+  // Extend Date constructor to default to fakeNow
+  Date = class extends Date {
+    constructor(...args) {
+      if (args.length === 0) {
+        super(${fixedCurrentDate.valueOf()});
+      } else {
+        super(...args);
+      }
+    }
+  }
+  // Override Date.now() to start from fakeNow
+  const __DateNowOffset = ${fixedCurrentDate.valueOf()} - Date.now();
+  const __DateNow = Date.now;
+  Date.now = () => __DateNow() + __DateNowOffset;
+}`);
 }
