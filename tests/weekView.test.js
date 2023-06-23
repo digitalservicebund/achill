@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
     troiPage = new TroiPage(page);
 });
 
-test("select date in current week works", async ({ context, page }) => {
+test("select day in current week works", async ({ context, page }) => {
 
     const apiEntry0 = {
         id: 17431,
@@ -53,9 +53,103 @@ test("select date in current week works", async ({ context, page }) => {
     await troiPage.expectLoading();
 
     await troiPage.expectEntryVisible(existingEntry1);
+    await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
     await troiPage.clickOnWeekDay(0); // Select the monday
 
     await troiPage.expectEntryVisible(existingEntry0);
+    await troiPage.expectSelectedDateToBe("Monday, 5 June 2023");
+});
+
+test("go to previous week works", async ({ context, page }) => {
+
+    const apiEntry0 = {
+        id: 17431,
+        Date: convertToCacheFormat(addDaysToDate(fixedCurrentDate, -7)), // Wednesday the week before
+        Quantity: 4.75,
+        Remark: "a task",
+    };
+
+    const apiEntry1 = {
+        id: 17431,
+        Date: convertToCacheFormat(fixedCurrentDate), // Wednesday
+        Quantity: 3.0,
+        Remark: "Some task",
+    };
+
+    let mockApi = new TroiApiStub();
+    mockApi.addEntry(apiEntry0);
+    mockApi.addEntry(apiEntry1);
+
+    initializeTestSetup(context, mockApi);
+    await new LoginPage(page).logIn(username, password);
+
+    const existingEntry0 = {
+        project: "My Project",
+        time: "4:45",
+        description: "a task",
+    };
+
+    const existingEntry1 = {
+        project: "My Project",
+        time: "3:00",
+        description: "Some task",
+    };
+
+    await troiPage.expectLoading();
+
+    await troiPage.expectEntryVisible(existingEntry1);
+    await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
+    await troiPage.clickOnPreviousWeek();
+
+    await troiPage.expectEntryVisible(existingEntry0);
+    await troiPage.expectSelectedDateToBe("Wednesday, 31 May 2023");
+
+});
+
+test("go to next week works", async ({ context, page }) => {
+
+    const apiEntry0 = {
+        id: 17431,
+        Date: convertToCacheFormat(addDaysToDate(fixedCurrentDate, 7)), // Wednesday the week before
+        Quantity: 4.75,
+        Remark: "a task",
+    };
+
+    const apiEntry1 = {
+        id: 17431,
+        Date: convertToCacheFormat(fixedCurrentDate), // Wednesday
+        Quantity: 3.0,
+        Remark: "Some task",
+    };
+
+    let mockApi = new TroiApiStub();
+    mockApi.addEntry(apiEntry0);
+    mockApi.addEntry(apiEntry1);
+
+    initializeTestSetup(context, mockApi);
+    await new LoginPage(page).logIn(username, password);
+
+    const existingEntry0 = {
+        project: "My Project",
+        time: "4:45",
+        description: "a task",
+    };
+
+    const existingEntry1 = {
+        project: "My Project",
+        time: "3:00",
+        description: "Some task",
+    };
+
+    await troiPage.expectLoading();
+
+    await troiPage.expectEntryVisible(existingEntry1);
+    await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
+    await troiPage.clickOnNextWeek();
+
+    await troiPage.expectEntryVisible(existingEntry0);
+    await troiPage.expectSelectedDateToBe("Wednesday, 14 June 2023");
+
 });
 
 

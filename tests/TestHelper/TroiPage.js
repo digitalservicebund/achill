@@ -84,6 +84,18 @@ export default class TroiPage {
         await this.page.getByTestId(testId).click()
     }
 
+    async clickOnPreviousWeek() {
+        await this.page.getByTestId("btn-previous-week").click()
+    }
+
+    async clickOnNextWeek() {
+        await this.page.getByTestId("btn-next-week").click()
+    }
+
+    async expectSelectedDateToBe(dateString) {
+        await expect(this.page.getByTestId("date")).toHaveText(dateString)
+    }
+
     async editEntry(projectName) {
         await this.page.getByTestId(`edit-${projectName}`).click();
     }
