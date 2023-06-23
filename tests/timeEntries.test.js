@@ -3,6 +3,7 @@ import LoginPage from "./TestHelper/LoginPage";
 import { initializeTestSetup } from "./TestHelper/TestHelper";
 import TroiApiStub from "./TestHelper/TroiApiStub";
 import { username, password } from "./TestHelper/TroiApiStub";
+import { convertToCacheFormat } from "../src/lib/stores/TimeEntryCache.js";
 
 test.beforeEach(async ({ page }) => {
   // https://playwright.dev/docs/api/class-consolemessage
@@ -12,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 test("load entry", async ({ context, page }) => {
   const apiEntry = {
     id: 17431,
-    Date: "2023-06-22",
+    Date: convertToCacheFormat(new Date()),
     Quantity: 4.75,
     Remark: "a task",
   };
@@ -121,7 +122,7 @@ test("add entry with invalid data shows error", async ({ context, page }) => {
 test("delete existing entry works", async ({ context, page }) => {
   const apiEntry = {
     id: 17431,
-    Date: "2023-06-22",
+    Date: convertToCacheFormat(new Date()),
     Quantity: 4.75,
     Remark: "a task",
   };
@@ -167,7 +168,7 @@ test("delete existing entry works", async ({ context, page }) => {
 test("edit entry works", async ({ context, page }) => {
   const apiEntry = {
     id: 17431,
-    Date: "2023-06-22",
+    Date: convertToCacheFormat(new Date()),
     Quantity: 4.75,
     Remark: "a task",
   };
