@@ -33,16 +33,16 @@
         <TimeEntryForm
           {values}
           {errors}
-          errorTestId={`error-${project.name}`}
+          errorTestId={`error-${project.id}`}
           enterPressed={handleSubmit}
-          hoursTestId={"hours-" + project.name}
-          descriptionTestId={"description-" + project.name}
+          hoursTestId={"hours-" + project.id}
+          descriptionTestId={"description-" + project.id}
         />
       </div>
       <div>
         <AchillButton
           text={"Add"}
-          testId={"add-" + project.name}
+          testId={"add-" + project.id}
           onClick={handleSubmit}
           color={buttonBlue}
         />

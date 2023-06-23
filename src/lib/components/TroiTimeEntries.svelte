@@ -51,7 +51,7 @@
       <h2
         class="mb-4 text-lg font-semibold text-gray-900"
         title="Position ID: {project.id}"
-        data-testid="project-heading-{project.name}"
+        data-testid="project-heading-{project.id}"
       >
         {project.name}
       </h2>
@@ -61,7 +61,7 @@
         {#each entries[project.id] as entry}
           <div
             class="block w-full rounded-lg bg-gray-100 p-4 shadow-lg"
-            data-testid="entryCard-{project.name}"
+            data-testid="entryCard-{project.id}"
           >
             {#if entry.id == editState.id}
               <div data-test="entry-form" class="my-2 flex justify-center">
@@ -69,10 +69,10 @@
                   <TimeEntryForm
                     {values}
                     {errors}
-                    errorTestId={`error-${project.name}`}
+                    errorTestId={`error-${project.id}`}
                     enterPressed={() => saveClicked(project.id, entry)}
-                    hoursTestId={"hours-" + project.name}
-                    descriptionTestId={"description-" + project.name}
+                    hoursTestId={"hours-" + project.id}
+                    descriptionTestId={"description-" + project.id}
                   />
                 </div>
               </div>
@@ -88,26 +88,26 @@
                 {#if entry.id == editState.id}
                   <AchillButton
                     text={"Cancel"}
-                    testId={`cancel-${project.name}`}
+                    testId={`cancel-${project.id}`}
                     onClick={() => (editState = { id: -1 })}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Save"}
-                    testId={`save-${project.name}`}
+                    testId={`save-${project.id}`}
                     onClick={() => saveClicked(project.id, entry)}
                     color={buttonGreen}
                   />
                 {:else}
                   <AchillButton
                     text={"Delete"}
-                    testId={`delete-${project.name}`}
+                    testId={`delete-${project.id}`}
                     onClick={() => deleteClicked(entry, project.id)}
                     color={buttonRed}
                   />
                   <AchillButton
                     text={"Edit"}
-                    testId={`edit-${project.name}`}
+                    testId={`edit-${project.id}`}
                     onClick={() => editClicked(entry)}
                     color={buttonBlue}
                   />

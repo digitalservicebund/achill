@@ -3,11 +3,11 @@
     hours: "",
     description: "",
   };
-  export let errorTestId = "";
 
   export let errors = {};
   export let hoursTestId = "hours";
   export let descriptionTestId = "description";
+  export let errorTestId = "";
   export let enterPressed;
 
   const inputClass =

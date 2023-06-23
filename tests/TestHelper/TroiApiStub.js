@@ -13,47 +13,60 @@ const mockData = {
   employee: {
     Id: 456,
   },
-  calculationPosition: {
-    DisplayPath: "My Project",
-    Id: 789,
-  },
-  calendarEvents: [
+  calculationPositions: [
     {
-      "id": "12826",
-      "Start": "2023-05-29 00:00:00",
-      "End": "2023-05-29 23:59:59",
-      "Subject": "Pfingstmontag",
-      "Type": "H"
+      DisplayPath: "FirstProject",
+      Id: 100,
     },
     {
-      "id": "P6646",
-      "Start": "2023-06-15 09:00:00",
-      "End": "2023-06-16 18:00:00",
-      "Subject": "Bezahlter Urlaub",
-      "Type": "P"
-    }
+      DisplayPath: "SecondProject",
+      Id: 101,
+    },
+  ],
+  calendarEvents: [
+    {
+      id: "12826",
+      Start: "2023-05-29 00:00:00",
+      End: "2023-05-29 23:59:59",
+      Subject: "Pfingstmontag",
+      Type: "H",
+    },
+    {
+      id: "P6646",
+      Start: "2023-06-15 09:00:00",
+      End: "2023-06-16 18:00:00",
+      Subject: "Bezahlter Urlaub",
+      Type: "P",
+    },
   ],
 };
 
 export default class TroiApiStub {
   constructor() {
-    this.entries = [];
+    this.entries = {};
+    mockData.calculationPositions.forEach((project) => {
+      this.entries[project.Id] = [];
+    });
 
     this.correctAuthnHeader = `Basic ${btoa(`${username}:${md5(password)}`)}`;
   }
 
-  addEntry(entry) {
-    this.entries.push(entry);
+  addEntry(projectId, entry) {
+    this.entries[projectId].push(entry);
   }
 
   deleteEntry(id) {
-    this.entries = this.entries.filter((entry) => entry.id !== id);
+    mockData.calculationPositions.forEach((project) => {
+      this.entries[project.Id] = this.entries[project.Id].filter(
+        (entry) => entry.Id !== id
+      );
+    });
   }
 
-  updateEntry(id, data) {
-    this.entries = this.entries.map((entry) => {
+  updateEntry(projectId, id, updatedEntry) {
+    this.entries[projectId] = this.entries[projectId].map((entry) => {
       if (entry.id === id) {
-        return data;
+        return updatedEntry;
       }
       return entry;
     });
@@ -83,26 +96,30 @@ export default class TroiApiStub {
       params.get("clientId") === mockData.client.Id.toString() &&
       params.get("favoritesOnly") === "true"
     ) {
-      return this._response({ jsonBody: [mockData.calculationPosition] });
+      return this._response({ jsonBody: mockData.calculationPositions });
     } else if (
       method === "GET" &&
       pathname.endsWith("/billings/hours") &&
       params.get("clientId") === mockData.client.Id.toString() &&
-      params.get("employeeId") === mockData.employee.Id.toString() &&
-      params.get("calculationPositionId") ===
-      mockData.calculationPosition.Id.toString()
+      params.get("employeeId") === mockData.employee.Id.toString()
     ) {
-      return this._response({ jsonBody: this.entries });
+      return this._response({
+        jsonBody: this.entries[params.get("calculationPositionId")],
+      });
     } else if (method === "POST" && pathname.endsWith("/billings/hours")) {
-      this.addEntry({
-        id: this.entries.length,
+      const projectId = parseInt(
+        postData.CalculationPosition.Path.split("/").at(-1)
+      );
+      const newEntryId = `${projectId}${this.entries[projectId].length}`;
+      this.addEntry(projectId, {
+        id: newEntryId,
         Date: postData.Date,
         Quantity: postData.Quantity,
         Remark: postData.Remark,
       });
       return this._response({
         jsonBody: {
-          id: this.entries.length,
+          id: newEntryId,
           Date: postData.Date,
           Quantity: postData.Quantity,
           Name: postData.Remark,
@@ -110,35 +127,39 @@ export default class TroiApiStub {
       });
     } else if (method === "PUT" && pathname.indexOf("/billings/hours") > -1) {
       const splittedPath = pathname.split("/");
-      const id = parseInt(splittedPath[splittedPath.length - 1], 10);
-      this.updateEntry(id, {
-        id,
+      const entryId = parseInt(splittedPath[splittedPath.length - 1], 10);
+      const projectId = parseInt(
+        postData.CalculationPosition.Path.split("/").at(-1)
+      );
+      this.updateEntry(projectId, entryId, {
+        entryId,
         Date: postData.Date,
         Quantity: postData.Quantity,
         Remark: postData.Remark,
       });
       return this._response({
         jsonBody: {
-          id: id,
+          id: entryId,
           Date: postData.Date,
           Quantity: postData.Quantity,
           Name: postData.Remark,
         },
       });
     } else if (method === "GET" && pathname.endsWith("/calendarEvents")) {
-      const startDate = moment(params.get("start"), "YYYYMMDD").toDate()
-      const endDate = moment(params.get("end"), "YYYYMMDD").toDate()
-      const type = params.get("type")
+      const startDate = moment(params.get("start"), "YYYYMMDD").toDate();
+      const endDate = moment(params.get("end"), "YYYYMMDD").toDate();
+      const type = params.get("type");
 
-      const result = mockData.calendarEvents.filter(calEvent => {
-        const calEventStart = Date.parse(calEvent["Start"])
-        const calEventEnd = Date.parse(calEvent["Start"])
-        const isInRange = (calEventStart >= startDate && calEventStart <= endDate) ||
-          (calEventEnd >= startDate && calEventEnd <= endDate)
-        const typeMatches = type == "" ? true : calEvent["Type"] == type
+      const result = mockData.calendarEvents.filter((calEvent) => {
+        const calEventStart = Date.parse(calEvent["Start"]);
+        const calEventEnd = Date.parse(calEvent["Start"]);
+        const isInRange =
+          (calEventStart >= startDate && calEventStart <= endDate) ||
+          (calEventEnd >= startDate && calEventEnd <= endDate);
+        const typeMatches = type == "" ? true : calEvent["Type"] == type;
 
-        return isInRange && typeMatches
-      })
+        return isInRange && typeMatches;
+      });
 
       return this._response({ jsonBody: result });
     } else {
