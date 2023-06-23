@@ -69,6 +69,7 @@
         <div class="min-w-[30ch]">
           <div class="mb-3 flex items-center">
             <button
+              data-testid="btn-previous-week"
               aria-label="calendar backward"
               class="-ml-1.5 flex items-center justify-center text-gray-600 hover:text-gray-400"
               on:click={() => changeWeek(-1)}
@@ -82,6 +83,7 @@
               Week {selectedWeekNumber}
             </div>
             <button
+              data-testid="btn-next-week"
               aria-label="calendar forward"
               class="flex items-center justify-center text-gray-600 hover:text-gray-400"
               on:click={() => changeWeek(1)}
@@ -89,6 +91,7 @@
               <span class="material-symbols-outlined"> chevron_right </span>
             </button>
             <button
+              data-testid="btn-today"
               aria-label="today"
               class="min-w-[7ch] text-center font-bold text-blue-600 hover:text-blue-700"
               on:click={() => {
@@ -100,6 +103,7 @@
             </button>
           </div>
           <div
+            data-testid="date"
             tabindex="0"
             class="text-base font-bold text-gray-800 focus:outline-none"
           >
@@ -137,6 +141,13 @@
                     <td>
                       <div
                         class="h-full w-full"
+                        data-testid={[
+                          "btn-mon",
+                          "btn-tue",
+                          "btn-wed",
+                          "btn-thu",
+                          "btn-fri",
+                        ][index]}
                         on:click={() => (selectedDate = date)}
                       >
                         <div
@@ -167,6 +178,13 @@
                           </span>
                         {:else}
                           <p
+                            data-testid={[
+                              "hours-mon",
+                              "hours-tue",
+                              "hours-wed",
+                              "hours-thu",
+                              "hours-fri",
+                            ][index]}
                             class="text-base font-medium {data.hours == 0
                               ? 'text-gray-500'
                               : 'text-blue-600'}"
