@@ -4,7 +4,6 @@ import {
   fixedCurrentDate,
   initializeTestSetup,
   setFixedCurrentDate,
-  sleep,
 } from "./TestHelper/TestHelper";
 import TroiApiStub from "./TestHelper/TroiApiStub";
 import { username, password } from "./TestHelper/TroiApiStub";
@@ -58,10 +57,57 @@ test("select day in current week works", async ({ context, page }) => {
 
   await troiPage.expectEntryVisible(existingEntry1);
   await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
+  await troiPage.expectHoursOfWeekdayToBe(2, existingEntry1.time);
   await troiPage.clickOnWeekDay(0); // Select the monday
 
   await troiPage.expectEntryVisible(existingEntry0);
   await troiPage.expectSelectedDateToBe("Monday, 5 June 2023");
+  await troiPage.expectHoursOfWeekdayToBe(0, existingEntry0.time);
+});
+
+test("displays correct hours sum of two projects", async ({
+  context,
+  page,
+}) => {
+  const firstProjectEntry = {
+    id: 1000,
+    Date: convertToCacheFormat(fixedCurrentDate),
+    Quantity: 4.75,
+    Remark: "first task",
+  };
+
+  const secondProjectEntry = {
+    id: 1010,
+    Date: convertToCacheFormat(fixedCurrentDate),
+    Quantity: 3,
+    Remark: "second task",
+  };
+
+  let mockApi = new TroiApiStub();
+  mockApi.addEntry(100, firstProjectEntry);
+  mockApi.addEntry(101, secondProjectEntry);
+
+  initializeTestSetup(context, mockApi);
+  await new LoginPage(page).logIn(username, password);
+
+  const firstValidationEntry = {
+    projectId: 100,
+    time: "4:45",
+    description: "first task",
+  };
+
+  const secondValidationEntry = {
+    projectId: 101,
+    time: "3:00",
+    description: "second task",
+  };
+
+  await troiPage.expectLoading();
+
+  await troiPage.expectEntryVisible(firstValidationEntry);
+  await troiPage.expectEntryVisible(secondValidationEntry);
+  await troiPage.expectSelectedDateToBe("Wednesday, 7 June 2023");
+  await troiPage.expectHoursOfWeekdayToBe(2, "7:45");
 });
 
 test("go to previous week works", async ({ context, page }) => {

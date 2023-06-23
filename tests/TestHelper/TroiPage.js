@@ -105,6 +105,18 @@ export default class TroiPage {
     await expect(this.page.getByTestId("date")).toHaveText(dateString);
   }
 
+  async expectHoursOfWeekdayToBe(dayIndex, hours) {
+    const testId = [
+      "hours-mon",
+      "hours-tue",
+      "hours-wed",
+      "hours-thu",
+      "hours-fri",
+    ][dayIndex];
+
+    await expect(this.page.getByTestId(testId)).toHaveText(hours);
+  }
+
   async editEntry(projectId) {
     await this.page.getByTestId(`edit-${projectId}`).click();
   }
