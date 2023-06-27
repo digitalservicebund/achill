@@ -76,8 +76,11 @@
     </div>
 
     <div class="mt-4 w-full">
-      <label for="password" class="mb-2 block text-sm text-gray-600"
-        >Troi password</label
+      <label
+        title="Troi → security center → API v2 / Troi App → Token"
+        for="password"
+        class="mb-2 block text-sm text-gray-600"
+        >Troi password or Troi v2 token ⓘ</label
       >
       <Input
         bind:value={password}
