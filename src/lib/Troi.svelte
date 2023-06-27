@@ -8,7 +8,7 @@
   import LoadingOverlay from "$lib/components/LoadingOverlay.svelte";
   import { getWeekDaysFor } from "$lib/utils/dateUtils";
   import InfoBanner from "$lib/components/InfoBanner.svelte";
-  import TroiController from "$lib/controllers/TroiController";
+  import TroiController from "$lib/troiController";
 
   const troiController = new TroiController();
 
