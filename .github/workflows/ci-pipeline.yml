@@ -91,8 +91,9 @@ jobs:
       packages: read
     environment: staging
     steps:
+      - uses: chainguard-dev/actions/setup-gitsign@ac42db4c9c2e2bd9f66aadf3290c5995891d91a3
       - name: Deploy new image
-        uses: digitalservicebund/github-actions/argocd-deploy@cba5d14610f69a7cc9b0aea25e3c2ed96e5425a1
+        uses: digitalservicebund/github-actions/argocd-deploy@9b15fba0ce0e874d9af5be33ebeea7d476f808d0
         with:
           environment: staging
           version: ${{ github.sha }}
