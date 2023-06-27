@@ -95,7 +95,8 @@
   <p>
     Project not showing up? Make sure it's available in Troi and marked as a
     "favorite". <br />
-    The "Suggest" function is not intended for actual use, it is just a fun feature.
+    The "Suggest" function is not intended for actual use, it is just a very fun
+    feature.
   </p>
 </section>
 
