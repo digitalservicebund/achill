@@ -5,7 +5,6 @@ export async function sleep(ms) {
 }
 
 export async function initializeTestSetup(context, apiStub) {
-
   await context.route(
     "https://digitalservice.troi.software/api/v2/rest/**",
     async (route) => {

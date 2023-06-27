@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { convertFloatTimeToHHMM, convertTimeStringToFloat } from "$lib/utils/timeConverter.js";
+import {
+  convertFloatTimeToHHMM,
+  convertTimeStringToFloat,
+} from "$lib/utils/timeConverter.js";
 
 test.describe("convertFloatTimeToHHMM", async () => {
   test("1 returns 1:00", () => {

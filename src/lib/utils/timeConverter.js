@@ -23,8 +23,8 @@ export const convertTimeStringToFloat = (time) => {
 
     return Number(hours) + minuteFractions;
   } else if (time.includes(",")) {
-    return Number(time.replace(",", "."))
+    return Number(time.replace(",", "."));
   } else {
-    return Number(time)
+    return Number(time);
   }
 };
