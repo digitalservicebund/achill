@@ -34,7 +34,31 @@ export default class TroiController {
 
   // --------- private functions ---------
 
+  // TODO: remove
+  // quick fix when clientId or employeeId is undefined
+  _verifyTroiApiCredentials() {
+    if (
+      this._troiApi.clientId == undefined ||
+      this._troiApi.employeeId == undefined
+    ) {
+      console.log(
+        "clientId:",
+        this._troiApi.clientId,
+        "employeeId:",
+        this._troiApi.employeeId
+      );
+      alert("An error in Troi occured, please reload track-your-time!");
+      return false;
+    }
+    return true;
+  }
+
   async _loadEntriesBetween(startDate, endDate) {
+    // TODO: remove quick fix
+    if (!this._verifyTroiApiCredentials) {
+      return;
+    }
+
     for (const project of this._projects) {
       const entries = await this._troiApi.getTimeEntries(
         project.id,
@@ -47,6 +71,10 @@ export default class TroiController {
   }
 
   async _loadCalendarEventsBetween(startDate, endDate) {
+    // TODO: remove quick fix
+    if (!this._verifyTroiApiCredentials) {
+      return;
+    }
     const calendarEvents = await this._troiApi.getCalendarEvents(
       formatDateToYYYYMMDD(startDate),
       formatDateToYYYYMMDD(endDate)
@@ -131,6 +159,10 @@ export default class TroiController {
   }
 
   async addEntry(date, project, hours, description, successCallback) {
+    // TODO: remove quick fix
+    if (!this._verifyTroiApiCredentials) {
+      return;
+    }
     const troiFormattedSelectedDate = convertToCacheFormat(date);
     const result = await this._troiApi.postTimeEntry(
       project.id,
@@ -150,6 +182,10 @@ export default class TroiController {
   }
 
   async deleteEntry(entry, projectId, successCallback) {
+    // TODO: remove quick fix
+    if (!this._verifyTroiApiCredentials) {
+      return;
+    }
     let result = await this._troiApi.deleteTimeEntryViaServerSideProxy(
       entry.id
     );
@@ -159,6 +195,10 @@ export default class TroiController {
   }
 
   async updateEntry(project, entry, successCallback) {
+    // TODO: remove quick fix
+    if (!this._verifyTroiApiCredentials) {
+      return;
+    }
     const result = await this._troiApi.updateTimeEntry(
       project.id,
       entry.date,
