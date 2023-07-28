@@ -198,7 +198,9 @@
         </h2>
         <TroiTimeEntries
           calculationPositionId={project.id}
-          {componentModel}
+          phaseTasks={componentModel.phaseTasks}
+          recurringTasks={componentModel.recurringTasks}
+          position={project}
           startDate={moment(startDate).format("YYYYMMDD")}
           endDate={moment(endDate).format("YYYYMMDD")}
         />

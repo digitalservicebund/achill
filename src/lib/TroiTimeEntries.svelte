@@ -4,10 +4,12 @@
   import TroiEntryForm from "./TroiEntryForm.svelte";
   import TroiEntryFormNew from "./TroiEntryFormNew.svelte";
   export let calculationPositionId;
-  export let componentModel;
   export let startDate;
   export let endDate;
 
+  export let phaseTasks;
+  export let recurringTasks;
+  export let position;
   let entriesPromise;
   let editEntryIndex;
   let dateHeaders = [];
@@ -71,31 +73,36 @@
 </script>
 
 <div data-test="time-entries">
-  <TroiEntryForm
+  <!-- <TroiEntryForm
     disabled={editEntryIndex != null}
     on:submit={refresh}
     {calculationPositionId}
     {componentModel}
-  />
+  /> -->
   <TroiEntryFormNew
-          disabled={editEntryIndex != null}
-          on:submit={refresh}
-          {calculationPositionId}
-          {componentModel}
+    disabled={editEntryIndex != null}
+    on:submit={refresh}
+    {calculationPositionId}
+    {phaseTasks}
+    {recurringTasks}
+    {position}
   />
   {#await entriesPromise}
     <p>Loading…</p>
   {:then entries}
     {#each entries.sort((a, b) => (a.date > b.date ? -1 : 1)) as entry, index}
       {#if editEntryIndex === index}
-        <TroiEntryForm
+        <TroiEntryFormNew
           on:submit={refresh}
           on:cancelEdit={cancelEdit}
           {calculationPositionId}
-          {componentModel}
+          {phaseTasks}
+          {recurringTasks}
+          {position}
           {entry}
           editMode={true}
           updateEntryCallback={refresh}
+          disabled={false}
         />{:else}
         {#if getDateHeader(entry)}
           <h1 class="font-medium leading-tight text-lg mt-2 ml-2 text-blue-600">

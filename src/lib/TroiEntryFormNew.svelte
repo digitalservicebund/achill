@@ -7,7 +7,9 @@
   import { formatHours } from "./formatHours.js";
 
   export let calculationPositionId;
-  export let componentModel;
+  export let phaseTasks;
+  export let recurringTasks;
+  export let position;
   export let entry;
   export let editMode;
   export let updateEntryCallback;
@@ -108,19 +110,25 @@
   let onRecurringTaskChange = (event) => {
     if (event.target.checked) {
       values.description = values.description
-              ? values.description + ", " + event.target.id
-              : event.target.id;
+        ? values.description + ", " + event.target.id
+        : event.target.id;
     } else {
       if (values.description.startsWith(event.target.id)) {
         if (values.description.length > event.target.id.length) {
-          values.description = values.description.replace(event.target.id + ", ", "")
+          values.description = values.description.replace(
+            event.target.id + ", ",
+            ""
+          );
         } else {
-          values.description = values.description.replace(event.target.id, "")
+          values.description = values.description.replace(event.target.id, "");
         }
       } else if (values.description.includes(event.target.id)) {
-          values.description = values.description.replace(", " + event.target.id, "")
+        values.description = values.description.replace(
+          ", " + event.target.id,
+          ""
+        );
       }
-      console.log(values.description)
+      console.log(values.description);
     }
   };
 
@@ -192,7 +200,7 @@
       : generatedEntry;
   };
 
-  console.log(componentModel);
+  console.log(position);
 </script>
 
 <div
@@ -205,7 +213,7 @@
     <div class="flex flex-row">
       <div class="basis-3/4 p-1">
         <h5 class="mb-1 text-base font-medium leading-tight text-gray-900">
-          TODO pass project name
+          {position.name}
         </h5>
         <div class="my-1 flex place-items-center justify-start">
           <label for="hours" class="basis-1/4">Hours</label>
@@ -226,47 +234,35 @@
         <div class="my-1 flex flex-col justify-start">
           <label for="hours" class="basis-1/4">Recurring Tasks</label>
           <div>
-            {#if componentModel.recurringTasks}
-              {#each componentModel.recurringTasks as entry}
-                <input
-                        id={entry.name}
-                        type="checkbox"
-                        on:change={onRecurringTaskChange}
-                />
-                <label>{entry.name}</label>
-              {/each}
-            {:else}
-              Loading ...
-            {/if}
+            {#each recurringTasks as entry}
+              <input
+                id={entry.name}
+                type="checkbox"
+                on:change={onRecurringTaskChange}
+              />
+              <label>{entry.name}</label>
+            {/each}
           </div>
         </div>
         <div>
-          {#if componentModel.positions}
-            {#each componentModel.positions as position}
-              {#if position.id === calculationPositionId && position.phases}
-                {#each position.phases as phase}
-                  <details>
-                    <summary>
-                      {phase}
-                    </summary>
-                    {#if componentModel.phaseTasks}
-                      {#each componentModel.phaseTasks as task}
-                        <p>{task.name}</p>
-                      {/each}
-                    {/if}
-                  </details>
-                  <div class="accordion-container">
-                  </div>
-                {/each}
-              {/if}
+          {#if position.phases}
+            {#each position.phases as phase}
+              <details>
+                <summary>
+                  {phase}
+                </summary>
+                {#if phaseTasks}
+                  {#each phaseTasks as task}
+                    <p>{task.name}</p>
+                  {/each}
+                {/if}
+              </details>
+              <div class="accordion-container" />
             {/each}
-          {:else}
-            Loading ...
           {/if}
         </div>
         <div class="my-1 flex place-items-center justify-start">
-          <div>
-          </div>
+          <div />
           <textarea
             on:keydown={keydownHandler}
             bind:value={values.description}
