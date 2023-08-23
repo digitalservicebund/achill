@@ -31,7 +31,7 @@
   "dependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.83",
     "moment": "^2.29.4",
-    "troi-library": "^1.2.0",
+    "troi-library": "^1.3.0",
     "yup": "^0.32.11"
   },
   "type": "module"
