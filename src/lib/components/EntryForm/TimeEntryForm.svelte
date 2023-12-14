@@ -182,7 +182,7 @@
     }
   }
 
-  let phases;
+  let phases = [];
 
   onMount(async () => {
     const phaseNames = await pollPhaseNames(position.id, position.subproject);
