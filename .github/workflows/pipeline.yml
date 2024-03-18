@@ -256,7 +256,7 @@ jobs:
           deploying_repo: achill
           infra_repo: achill-infra
           deploy_key: ${{ secrets.DEPLOY_KEY }}
-          app: achill
+          app: achill-staging
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
           argocd_sync_timeout: 300
