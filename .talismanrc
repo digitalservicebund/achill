@@ -1,8 +1,8 @@
 fileignoreconfig:
   - filename: .github/workflows/pipeline.yml
-    checksum: db589e5d87d59b8b0e559f566e93e59226d1f8fb96dc3e7b1a6ede9706d095a9
+    checksum: b3c1a77e1d38b54aaa82a06c4621e3e44be19a9bafcfdf7466a314af5da662cf
   - filename: .github/workflows/scan.yml
-    checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
+    checksum: 6df385ee6a47c2ee7cb782e862e6934edd3b6573befc9312eed8655d192d560d
   - filename: .env.example
     checksum: 170cc4aa3c0d4c3f9f62ddadae84a5cc82b02f70297b91d7f36333df039b2c88
   - filename: start.sh
