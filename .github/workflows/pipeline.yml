@@ -2,14 +2,14 @@ name: Pipeline
 
 on:
   push:
-    branches: [main, remix-migration]
+    branches: [main]
   pull_request:
     branches: [main]
   # Allow to run this workflow manually
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ${{ github.repository }}-remix
+  IMAGE_NAME: ${{ github.repository }}
   NOCODB_BASE_URL: "https://metrics.ds4g.dev:38081"
 
 jobs:
@@ -175,7 +175,6 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/remix-migration' }}
     needs:
       - build
       - audit-licenses
@@ -243,7 +242,6 @@ jobs:
 
   deploy:
     needs: [build-and-push-image]
-    if: github.ref == 'refs/heads/remix-migration'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -255,10 +253,10 @@ jobs:
         with:
           environment: staging
           version: ${{ github.sha }}
-          deploying_repo: achill-remix
+          deploying_repo: achill
           infra_repo: achill-infra
           deploy_key: ${{ secrets.DEPLOY_KEY }}
-          app: achill-staging
+          app: achill
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
           argocd_sync_timeout: 300
