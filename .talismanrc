@@ -1,0 +1,48 @@
+fileignoreconfig:
+  - filename: .github/workflows/pipeline.yml
+    checksum: db589e5d87d59b8b0e559f566e93e59226d1f8fb96dc3e7b1a6ede9706d095a9
+  - filename: .github/workflows/scan.yml
+    checksum: 14fd20b334e55e9f6ee23d13fa82d2c17d94cb59928b7dd5828e8adca40cf1d8
+  - filename: .env.example
+    checksum: 170cc4aa3c0d4c3f9f62ddadae84a5cc82b02f70297b91d7f36333df039b2c88
+  - filename: start.sh
+    checksum: d76c4c0800d2aa78836b64ce524279ba962f9b85db1577f80936385483408a06
+  - filename: README.md
+    checksum: a97f4c4e3820f1d0966f0beb56520fddf2fbc07a9fe4c90b3475275511485169
+  - filename: public/fonts/BundesSerifWeb-Italic.woff
+    checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
+  - filename: public/fonts/BundesSansWeb-BoldItalic.woff
+    checksum: 446eff0044854604c36e380d186aab48077af382668430ad518ef49b37d4fa02
+  - filename: SECURITY.md
+    checksum: b1743150cdd537be3a66f5308f887d130f0f320ab21628b63713808090a84e3f
+  - filename: app/tasks/nocodbClient.server.ts
+    checksum: f4bcc85b1fbacd2a8dd8da7675849a40024fb1f7d909b4692954412aa2473319
+  - filename: app/mocks/stubs/calculationPositions.json
+    checksum: 4013141db60d72f20e9867642310c167f9f32d55406e7d9b788995eeac3c2111
+  - filename: tests/e2e/login.spec.ts
+    checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
+  - filename: app/apis/troi/TroiApiController.ts
+    checksum: f8709710336165224767e01abda2c34c370a42ac7109f1315c65c8ce51c45355
+  - filename: app/apis/personio/PersonioApiController.ts
+    checksum: 395f42dae92181ab32abbdd5f6d9390bd58cbaa5fe1acddd095dca47c83247b0
+  - filename: app/routes/login.tsx
+    allowed_patterns: [password, troiPassword]
+  - filename: app/components/troi.tsx
+    allowed_patterns: [/wiki/spaces/\w+/pages/\d+]
+  - filename: tests/unit/transformCalendarEvents.test.ts
+    allowed_patterns: [key]
+  - filename: tests/e2e/LoginPage.ts
+    allowed_patterns: [password]
+  - filename: app/sessions.server.ts
+    allowed_patterns: [sessionCookieSecret, SESSION_COOKIE_SECRET]
+  - filename: app/personio/PersonioApiController.ts
+    allowed_patterns: [PERSONIO_CLIENT_SECRET, client_secret, process.env.PERSONIO_CLIENT_ID, process.env.PERSONIO_CLIENT_SECRET]
+  - filename: app/troi/TroiApiController.ts
+    allowed_patterns: [session.get("troiPassword")]
+version: ""
+scopeconfig:
+  - scope: node
+allowed_patterns:
+  - uses:\ ([A-z0-9\-]+\/)*[A-z0-9\-]+@[a-fA-F0-9]{40}
+  - key
+  - Key

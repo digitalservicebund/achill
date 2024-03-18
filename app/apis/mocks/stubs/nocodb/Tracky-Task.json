@@ -1,0 +1,130 @@
+{
+  "list": [
+    {
+      "Id": 14,
+      "CreatedAt": "2023-01-20 13:49:16+00:00",
+      "UpdatedAt": "2023-01-20 13:49:17+00:00",
+      "name": "Daily",
+      "type": "RECURRING"
+    },
+    {
+      "Id": 15,
+      "CreatedAt": "2023-01-20 13:49:21+00:00",
+      "UpdatedAt": "2023-01-20 13:49:23+00:00",
+      "name": "Weekly",
+      "type": "RECURRING"
+    },
+    {
+      "Id": 16,
+      "CreatedAt": "2023-01-20 13:49:26+00:00",
+      "UpdatedAt": "2023-01-20 13:49:28+00:00",
+      "name": "Refinement",
+      "type": "RECURRING"
+    },
+    {
+      "Id": 17,
+      "CreatedAt": "2023-01-20 13:49:32+00:00",
+      "UpdatedAt": "2023-01-20 13:49:34+00:00",
+      "name": "Retro",
+      "type": "RECURRING"
+    },
+    {
+      "Id": 18,
+      "CreatedAt": "2023-08-04 14:40:59+00:00",
+      "UpdatedAt": "2023-08-04 14:41:06+00:00",
+      "name": "Stakeholder Management",
+      "type": "RECURRING"
+    },
+    {
+      "Id": 19,
+      "CreatedAt": "2023-10-09 12:56:34+00:00",
+      "UpdatedAt": "2023-10-09 12:56:40+00:00",
+      "name": "Absprache",
+      "type": "PHASE"
+    },
+    {
+      "Id": 20,
+      "CreatedAt": "2023-10-09 12:56:47+00:00",
+      "UpdatedAt": "2023-10-09 12:56:50+00:00",
+      "name": "Besprechung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 21,
+      "CreatedAt": "2023-10-09 12:56:57+00:00",
+      "UpdatedAt": "2023-10-09 12:57:05+00:00",
+      "name": "Einarbeitung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 22,
+      "CreatedAt": "2023-10-09 12:57:10+00:00",
+      "UpdatedAt": "2023-10-09 12:57:14+00:00",
+      "name": "Vorbereitung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 23,
+      "CreatedAt": "2023-10-09 12:57:19+00:00",
+      "UpdatedAt": "2023-10-09 12:57:24+00:00",
+      "name": "Durchführung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 24,
+      "CreatedAt": "2023-10-09 12:57:28+00:00",
+      "UpdatedAt": "2023-10-09 12:57:31+00:00",
+      "name": "Umsetzung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 25,
+      "CreatedAt": "2023-10-09 12:57:37+00:00",
+      "UpdatedAt": "2023-10-09 12:57:42+00:00",
+      "name": "Konzeption",
+      "type": "PHASE"
+    },
+    {
+      "Id": 26,
+      "CreatedAt": "2023-10-09 12:57:46+00:00",
+      "UpdatedAt": "2023-10-09 12:57:51+00:00",
+      "name": "Design",
+      "type": "PHASE"
+    },
+    {
+      "Id": 27,
+      "CreatedAt": "2023-10-09 12:57:53+00:00",
+      "UpdatedAt": "2023-10-09 12:57:56+00:00",
+      "name": "Recherche",
+      "type": "PHASE"
+    },
+    {
+      "Id": 28,
+      "CreatedAt": "2023-10-09 12:58:09+00:00",
+      "UpdatedAt": "2023-10-09 12:58:14+00:00",
+      "name": "Entwicklung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 29,
+      "CreatedAt": "2023-10-09 12:58:20+00:00",
+      "UpdatedAt": "2023-10-09 12:58:25+00:00",
+      "name": "Nachbereitung",
+      "type": "PHASE"
+    },
+    {
+      "Id": 30,
+      "CreatedAt": "2023-10-09 12:58:30+00:00",
+      "UpdatedAt": "2023-10-09 12:58:33+00:00",
+      "name": "Dokumentation",
+      "type": "PHASE"
+    }
+  ],
+  "pageInfo": {
+    "totalRows": 17,
+    "page": 1,
+    "pageSize": 25,
+    "isFirstPage": true,
+    "isLastPage": true
+  }
+}

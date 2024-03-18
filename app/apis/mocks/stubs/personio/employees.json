@@ -1,0 +1,54 @@
+{
+  "success": true,
+  "data": [
+    {
+      "type": "Employee",
+      "attributes": {
+        "id": {
+          "label": "ID",
+          "value": 19,
+          "type": "integer",
+          "universal_id": "id"
+        },
+        "first_name": {
+          "label": "First name",
+          "value": "Max",
+          "type": "standard",
+          "universal_id": "first_name"
+        },
+        "last_name": {
+          "label": "Last name",
+          "value": "Mustermann",
+          "type": "standard",
+          "universal_id": "last_name"
+        },
+        "email": {
+          "label": "Email",
+          "value": "max.mustermann@digitalservice.bund.de",
+          "type": "standard",
+          "universal_id": "email"
+        },
+        "work_schedule": {
+          "label": "Work schedule",
+          "value": {
+            "type": "WorkSchedule",
+            "attributes": {
+              "id": 1100000000000000100,
+              "name": "Vollzeit, 40h, mit Zeiterfassung",
+              "valid_from": "2023-01-01",
+              "monday": "08:00",
+              "tuesday": "08:00",
+              "wednesday": "08:00",
+              "thursday": "08:00",
+              "friday": "08:00",
+              "saturday": "00:00",
+              "sunday": "00:00"
+            }
+          },
+          "type": "standard",
+          "universal_id": "work_schedule"
+        }
+      }
+    }
+  ]
+}

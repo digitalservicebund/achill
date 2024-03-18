@@ -1,0 +1,29 @@
+{
+  "list": [
+    {
+      "Id": 8,
+      "Phase ID": 1,
+      "Phase Name": "Fokusthema 1",
+      "Divider": null
+    },
+    {
+      "Id": 9,
+      "Phase ID": 2,
+      "Phase Name": "Fokusthema B",
+      "Divider": null
+    },
+    {
+      "Id": 10,
+      "Phase ID": 3,
+      "Phase Name": "Topic Y",
+      "Divider": null
+    }
+  ],
+  "pageInfo": {
+    "totalRows": 3,
+    "page": 1,
+    "pageSize": 25,
+    "isFirstPage": true,
+    "isLastPage": true
+  }
+}

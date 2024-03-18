@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "DigitalService GmbH des Bundes",
+    "Number": null,
+    "IsActive": true,
+    "Contact": {
+      "Type": "ApiContact:Company",
+      "Name": "DigitalService GmbH des Bundes",
+      "IsFavorite": false,
+      "IsPrintable": false,
+      "ParentPath": "",
+      "ReeEmployeeId": 0,
+      "ReeCpId": 0,
+      "ReeSubProjectId": 0,
+      "ReeProjectId": 0,
+      "ReeQuantity": 0,
+      "ReeDate": null,
+      "ReeServiceId": 0,
+      "id": 1,
+      "Id": 1,
+      "Path": "/contacts/1",
+      "ETag": "20240101010203",
+      "IsDeleted": false,
+      "AccessGroup": 0,
+      "ClassName": "ApiSyncItem"
+    },
+    "DatevAccountNumberLength": 0,
+    "DatevConsultantNumber": 1,
+    "DatevClientNumber": 1,
+    "id": 1,
+    "Id": 1,
+    "Path": "/clients/1",
+    "ETag": "20240101010203",
+    "IsDeleted": false,
+    "ClassName": "ApiClient"
+  }
+]

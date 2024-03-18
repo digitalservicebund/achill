@@ -1,0 +1,26 @@
+{
+  "list": [
+    {
+      "Id": 25,
+      "Phase ID": 1,
+      "Position ID": "1"
+    },
+    {
+      "Id": 26,
+      "Phase ID": 2,
+      "Position ID": "2"
+    },
+    {
+      "Id": 27,
+      "Phase ID": 3,
+      "Position ID": "2"
+    }
+  ],
+  "pageInfo": {
+    "totalRows": 3,
+    "page": 1,
+    "pageSize": 25,
+    "isFirstPage": true,
+    "isLastPage": true
+  }
+}

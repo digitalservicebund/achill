@@ -1,0 +1,26 @@
+{
+  "list": [
+    {
+      "Id": 10,
+      "Phase ID": 1,
+      "Subproject ID": 1
+    },
+    {
+      "Id": 11,
+      "Phase ID": 2,
+      "Subproject ID": 2
+    },
+    {
+      "Id": 12,
+      "Phase ID": 3,
+      "Subproject ID": 2
+    }
+  ],
+  "pageInfo": {
+    "totalRows": 3,
+    "page": 1,
+    "pageSize": 25,
+    "isFirstPage": true,
+    "isLastPage": true
+  }
+}

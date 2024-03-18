@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.angie-link {
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  /* identical to box height, or 129% */
+
+  letter-spacing: 0.16px;
+  text-decoration-line: underline;
+
+  /* text/label */
+
+  color: #4e596a;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
+}
+
+@layer base {
+  input[type="text"],
+  input[type="time"],
+  input[type="password"],
+  textarea {
+    @apply border border-b-[1px] border-gray-300 placeholder:text-gray-400 rounded;
+  }
+
+  input[type="text"],
+  input[type="time"] {
+    @apply py-1 px-2 lg:px-3 lg:py-2;
+  }
+}
+
+@layer components {
+  .tracky-btn {
+    @apply rounded px-4 md:px-6 py-2.5 font-medium text-white shadow-md transition duration-150 ease-in-out hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800;
+  }
+
+  .danger {
+    @apply bg-red-600 hover:bg-red-700 focus:bg-red-700 active:bg-red-800;
+  }
+
+  .change-time-btn {
+    @apply m-1 lg:m-2 border rounded-full border-gray-800;
+  }
+}
+
+@layer utilities {
+  input.error,
+  textarea.error {
+    @apply border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+
+  .disabled-overlay {
+    @apply absolute top-0 bottom-0 right-0 left-0 bg-white opacity-50 z-10;
+  }
+}
