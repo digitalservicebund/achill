@@ -63,6 +63,14 @@ export async function action({ request }: ActionFunctionArgs) {
       return json({
         message: "Login failed! Please check your username & password.",
       });
+    } else if (
+      error instanceof Error &&
+      error.message === "Personio employee not found"
+    ) {
+      return json({
+        message:
+          "Personio employee not found, make sure that your Troi username matches your Digitalservice email address.",
+      });
     } else {
       throw error;
     }
