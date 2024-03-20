@@ -118,15 +118,6 @@ export async function initializePersonioApi(
   let employeeData = await fetchWithPersonioAuth(url);
 
   if (!employeeData.success) {
-    // Try with switched first and last name
-    const [lastName, firstName] = username.split(".");
-    const mailAddress = `${firstName}.${lastName}@${DIGITALSERVICE_MAIL_DOMAIN}`;
-    url.searchParams.set("email", mailAddress);
-
-    employeeData = await fetchWithPersonioAuth(url);
-  }
-
-  if (!employeeData.success) {
     throw new Error("Personio employee not found");
   }
 
