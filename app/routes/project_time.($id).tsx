@@ -136,7 +136,7 @@ export function ProjectTimeForm({
 
   function saveForm() {
     if (!formRef.current) return;
-    const method = isCreate ? "PUT" : "POST";
+    const method = isCreate ? "POST" : "PUT";
     const formData = new FormData(formRef.current);
     formData.append("_action", method);
     fetcher.submit(formData, {
