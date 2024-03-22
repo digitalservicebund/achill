@@ -1,46 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import LoginPage from "tests/e2e/LoginPage";
 
 test.describe("project time actions", () => {
   test("should add, edit and delete project time", async ({ page }) => {
     await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
 
     // Add project time
-    await page.getByLabel("Hours").click();
     await page.getByLabel("Hours").fill("4");
-    await page
-      .locator("form")
-      .filter({
-        hasText:
-          "DigitalService / DS_23_0001 / A cool Project / Regular EngineeringHoursSave",
-      })
-      .getByPlaceholder("Working the work…")
-      .click();
-    await page
-      .locator("form")
-      .filter({
-        hasText:
-          "DigitalService / DS_23_0001 / A cool Project / Regular EngineeringHoursSave",
-      })
-      .getByPlaceholder("Working the work…")
-      .fill("Meeting");
-
-    await page
-      .locator("form")
-      .filter({
-        hasText: "DigitalService / DS_23_0001 / A cool Project / Regular",
-      })
-      .getByRole("button")
-      .click();
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await projectLocator.getByRole("button").click();
 
     await expect(page.getByRole("table")).toContainText("4:00");
-
-    await expect(page.getByTestId("projectTime-card-content")).toContainText(
-      "4 Hour(s)",
-    );
-    await expect(page.getByTestId("projectTime-card-content")).toContainText(
-      "Meeting",
-    );
+    await expect(projectLocator).toContainText("4 Hour(s)");
+    await expect(projectLocator).toContainText("Meeting");
 
     // Edit project time
     await page.getByRole("button", { name: "Edit" }).click();
@@ -50,22 +23,38 @@ test.describe("project time actions", () => {
     await page.getByRole("button", { name: "Update" }).click();
 
     await expect(page.getByRole("table")).toContainText("5:00");
-    await expect(page.getByTestId("projectTime-card-content")).toContainText(
-      "5 Hour(s)",
-    );
-    await expect(page.getByTestId("projectTime-card-content")).toContainText(
-      "Daily",
-    );
+    await expect(projectLocator).toContainText("5 Hour(s)");
+    await expect(projectLocator).toContainText("Daily");
 
     // Delete project time
     await page.getByRole("button", { name: "Delete" }).click();
 
     await expect(page.getByRole("table")).not.toContainText("5:00");
-    await expect(
-      page.getByTestId("projectTime-card-content"),
-    ).not.toContainText("5 Hour(s)");
-    await expect(
-      page.getByTestId("projectTime-card-content"),
-    ).not.toContainText("Daily");
+    await expect(projectLocator).not.toContainText("5 Hour(s)");
+    await expect(projectLocator).not.toContainText("Daily");
+  });
+
+  test("add and update with enter", async ({ page }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+
+    // Add project time
+    await page.getByLabel("Hours").fill("4");
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await page.getByText("Meeting").press("Enter");
+
+    await expect(page.getByRole("table")).toContainText("4:00");
+    await expect(projectLocator).toContainText("4 Hour(s)");
+    await expect(projectLocator).toContainText("Meeting");
+
+    // Edit project time
+    await page.getByRole("button", { name: "Edit" }).click();
+    await page.getByLabel("Hours").fill("5");
+    await page.getByText("Meeting").fill("Daily");
+    await page.getByText("Daily").press("Enter");
+
+    await expect(page.getByRole("table")).toContainText("5:00");
+    await expect(projectLocator).toContainText("5 Hour(s)");
+    await expect(projectLocator).toContainText("Daily");
   });
 });
