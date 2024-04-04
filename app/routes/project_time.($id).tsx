@@ -133,7 +133,14 @@ export function ProjectTimeForm({
           break;
       }
     }
-  }, [fetcher.state]);
+  }, [
+    fetcher.data,
+    fetcher.formData,
+    fetcher.state,
+    onAddProjectTime,
+    onDeleteProjectTime,
+    onUpdateProjectTime,
+  ]);
 
   function saveForm() {
     if (!formRef.current) return;
