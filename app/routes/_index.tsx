@@ -144,7 +144,12 @@ export default function TrackYourTime() {
         </nav>
         <div>
           <Section>
-            <a className="angie-link" href={HOW_TO_URL} target="_blank">
+            <a
+              className="angie-link"
+              href={HOW_TO_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
               Read about how to track your time in confluence
             </a>
           </Section>
@@ -188,8 +193,14 @@ export default function TrackYourTime() {
           <Section>
             <p className="text-xs text-gray-600">
               Project not showing up?{" "}
-              <a className="angie-link" href={SET_UP_URL} target="_blank">
-                Make sure it's available in Troi and marked as a "favorite".
+              <a
+                className="angie-link"
+                href={SET_UP_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Make sure it&apos;s available in Troi and marked as a
+                &quot;favorite&quot;.
               </a>
             </p>
           </Section>
