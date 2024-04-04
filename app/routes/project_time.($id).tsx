@@ -20,12 +20,12 @@ import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
-  const formDataObject = Object.fromEntries(formData.entries());
+  const { _action, ...formDataObj } = Object.fromEntries(formData.entries());
 
   try {
-    switch (formDataObject._action) {
+    switch (_action) {
       case "POST": {
-        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObj);
         return await addProjectTime(session, parsedData);
       }
       case "PUT": {
@@ -33,7 +33,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           throw new Response("ProjectTime ID is required.", { status: 400 });
         }
         const id = parseInt(params.id);
-        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObj);
         return await updateProjectTime(session, id, parsedData);
       }
       case "DELETE": {
