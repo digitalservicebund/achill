@@ -18,8 +18,6 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
