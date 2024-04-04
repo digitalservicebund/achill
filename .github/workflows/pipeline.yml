@@ -84,10 +84,6 @@ jobs:
           name: playwright-a11y-test-results
           path: tests/a11y/playwright-report
 
-      - name: Build an image from Dockerfile
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} . --build-arg COMMIT_SHA=${{ github.sha }}
-
       - name: Send failure to Slack
         uses: digitalservicebund/github-actions/notify-on-failure@a9479ef95842280372a310120ce42dc49c4735e1
         if: ${{ failure() }}
