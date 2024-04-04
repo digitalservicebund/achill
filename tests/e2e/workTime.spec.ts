@@ -71,4 +71,35 @@ test.describe("work time form", () => {
     await clickWorkTimeButton(page, "Delete");
     expectFormToBeEnabled();
   });
+
+  test("should function with less or equal to 6h work and no break", async ({
+    page,
+  }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "00:00", "14:00");
+    await expect(page.getByText("6:00")).toBeVisible();
+  });
+
+  test("should show error with 6h - 9h work and break less than 30min", async ({
+    page,
+  }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "00:15", "17:00");
+    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+  });
+
+  test("should show error with more than 9h work and break less than 45min", async ({
+    page,
+  }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "00:30", "19:00");
+    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+  });
+
+  test("should show error with more than 10h work", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "01:00", "22:00");
+    await expect(page.getByText("&#x26A0; Work time too short")).toBeVisible();
+  });
+
+  test("should show error with break longer than work", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "02:00", "09:00");
+    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+  });
 });
