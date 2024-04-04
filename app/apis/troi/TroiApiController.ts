@@ -18,12 +18,13 @@ async function fetchWithTroiAuth<T>(
   const url = new URL(input);
   const username = session.get("username");
   const password = session.get("troiPassword");
+  const authByteString = btoa(`${username}:${md5(password)}`);
 
   const response = await fetch(url, {
     ...init,
     headers: {
       ...init?.headers,
-      Authorization: `Basic ${btoa(`${username}:${md5(password)}`)}`,
+      Authorization: `Basic ${authByteString}`,
     },
   });
 
