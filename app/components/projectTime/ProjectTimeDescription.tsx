@@ -91,7 +91,7 @@ export default function ProjectTimeDescription({
   }
 
   function hasDuplicatedCommas(description: string) {
-    return description.match(/\,\s*\,/g) !== null;
+    return description.match(/,\s*,/g) !== null;
   }
 
   function handleDescriptionChange(
