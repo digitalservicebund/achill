@@ -1,8 +1,8 @@
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
   json,
   redirect,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
@@ -17,8 +17,6 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "Hello DigitalService!" },
   ];
 };
-
-const troiBaseUrl = "https://digitalservice.troi.software/api/v2/rest";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -62,6 +60,14 @@ export async function action({ request }: ActionFunctionArgs) {
     if (error instanceof Error && error.message === "Invalid credentials") {
       return json({
         message: "Login failed! Please check your username & password.",
+      });
+    } else if (
+      error instanceof Error &&
+      error.message === "Personio employee not found"
+    ) {
+      return json({
+        message:
+          "Personio employee not found, make sure that your Troi username matches your Digitalservice email address.",
       });
     } else {
       throw error;

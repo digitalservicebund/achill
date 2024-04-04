@@ -1,10 +1,11 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { ZodError } from "zod";
-import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
-import { TrackyTask } from "~/apis/tasks/TrackyTask";
+import type { TrackyPhase } from "~/apis/tasks/TrackyPhase";
+import type { TrackyTask } from "~/apis/tasks/TrackyTask";
 import type { CalculationPosition, ProjectTime } from "~/apis/troi/Troi.types";
 import {
   addProjectTime,
@@ -19,12 +20,12 @@ import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
 export async function action({ request, params }: ActionFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
-  const formDataObject = Object.fromEntries(formData.entries());
+  const { _action, ...formDataObj } = Object.fromEntries(formData.entries());
 
   try {
-    switch (formDataObject._action) {
+    switch (_action) {
       case "POST": {
-        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObj);
         return await addProjectTime(session, parsedData);
       }
       case "PUT": {
@@ -32,7 +33,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           throw new Response("ProjectTime ID is required.", { status: 400 });
         }
         const id = parseInt(params.id);
-        const parsedData = projectTimeSaveFormSchema.parse(formDataObject);
+        const parsedData = projectTimeSaveFormSchema.parse(formDataObj);
         return await updateProjectTime(session, id, parsedData);
       }
       case "DELETE": {
@@ -71,9 +72,8 @@ interface Props {
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   phases: TrackyPhase[];
-  onAddProjectTime?: (projectTime: ProjectTime) => void;
-  onUpdateProjectTime?: (projectTime: ProjectTime) => void;
-  onDeleteProjectTime?: (projectTimeId: number) => void;
+  setProjectTimes: React.Dispatch<React.SetStateAction<ProjectTime[]>>;
+  projectTimes: ProjectTime[];
 }
 export function ProjectTimeForm({
   date,
@@ -87,10 +87,9 @@ export function ProjectTimeForm({
   recurringTasks,
   phaseTasks,
   phases,
-  onAddProjectTime,
-  onUpdateProjectTime,
-  onDeleteProjectTime,
-}: Props) {
+  setProjectTimes,
+  projectTimes,
+}: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -121,22 +120,33 @@ export function ProjectTimeForm({
 
       switch (fetcher.formData.get("_action")) {
         case "POST":
-          onAddProjectTime!(submittedProjectTime as ProjectTime);
+          setProjectTimes((prevProjectTimes) => [
+            ...prevProjectTimes,
+            submittedProjectTime as ProjectTime,
+          ]);
           break;
         case "PUT":
-          onUpdateProjectTime!(submittedProjectTime as ProjectTime);
+          setProjectTimes((prevProjectTimes) =>
+            prevProjectTimes.map((pt) =>
+              pt.id === submittedProjectTime.id
+                ? (submittedProjectTime as ProjectTime)
+                : pt,
+            ),
+          );
           setIsEdit(false);
           break;
         case "DELETE":
-          onDeleteProjectTime!(submittedProjectTime.id);
+          setProjectTimes((prevProjectTimes) =>
+            prevProjectTimes.filter((pt) => pt.id !== submittedProjectTime.id),
+          );
           break;
       }
     }
-  }, [fetcher.state]);
+  }, [fetcher.data, fetcher.formData, fetcher.state, setProjectTimes]);
 
   function saveForm() {
     if (!formRef.current) return;
-    const method = isCreate ? "PUT" : "POST";
+    const method = isCreate ? "POST" : "PUT";
     const formData = new FormData(formRef.current);
     formData.append("_action", method);
     fetcher.submit(formData, {

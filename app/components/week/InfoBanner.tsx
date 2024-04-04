@@ -2,13 +2,13 @@ import {
   getDescriptionForEventType,
   getItemForEventType,
 } from "~/utils/calendarEventUtils";
-import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
   event: TransformedCalendarEvent;
 }
 
-export function InfoBanner({ event }: Props) {
+export function InfoBanner({ event }: Readonly<Props>) {
   const symbol = getItemForEventType(event.type);
 
   let text = "";

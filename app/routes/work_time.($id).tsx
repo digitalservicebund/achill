@@ -1,8 +1,8 @@
 import {
-  ActionFunctionArgs,
-  TypedResponse,
   json,
   redirect,
+  type ActionFunctionArgs,
+  type TypedResponse,
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
@@ -34,11 +34,12 @@ export async function action({
   const id = params.id;
 
   try {
-    const { date, startTime, breakTime, endTime, _action } =
-      workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
+    const { _action, ...formDataObj } = Object.fromEntries(formData.entries());
 
     switch (_action) {
-      case "POST":
+      case "POST": {
+        const { date, startTime, breakTime, endTime } =
+          workTimeFormDataSchema.parse(formDataObj);
         return await postAttendance(
           request,
           date,
@@ -46,11 +47,15 @@ export async function action({
           endTime,
           breakTime,
         );
-      case "PATCH":
+      }
+      case "PATCH": {
         if (!id) {
           throw new Response("Attendance ID is required.", { status: 400 });
         }
+        const { date, startTime, breakTime, endTime } =
+          workTimeFormDataSchema.parse(formDataObj);
         return await patchAttendance(id, date, startTime, endTime, breakTime);
+      }
       case "DELETE":
         if (!id) {
           throw new Response("Attendance ID is required.", { status: 400 });
@@ -99,7 +104,7 @@ export function WorkTimeForm({
   workingHours,
   attendances,
   setAttendances,
-}: Props) {
+}: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
 
   const attendanceOfSelectedDate = attendances.find(
@@ -156,15 +161,15 @@ export function WorkTimeForm({
       switch (fetcher.formData.get("_action")) {
         case "POST":
           setIsEdit(false);
-          setAttendances([
-            ...attendances,
+          setAttendances((prevAttendances) => [
+            ...prevAttendances,
             submittedAttendance as PersonioAttendance,
           ]);
           break;
         case "PATCH":
           setIsEdit(false);
-          setAttendances(
-            attendances.map((attendance) =>
+          setAttendances((prevAttendances) =>
+            prevAttendances.map((attendance) =>
               attendance.id === submittedAttendance.id
                 ? (submittedAttendance as PersonioAttendance)
                 : attendance,
@@ -173,8 +178,8 @@ export function WorkTimeForm({
           break;
         case "DELETE":
           setIsEdit(true);
-          setAttendances(
-            attendances.filter(
+          setAttendances((prevAttendances) =>
+            prevAttendances.filter(
               (attendance) => attendance.id !== submittedAttendance.id,
             ),
           );
@@ -183,7 +188,7 @@ export function WorkTimeForm({
           break;
       }
     }
-  }, [fetcher.state]);
+  }, [fetcher.state, fetcher.data, fetcher.formData, setAttendances]);
 
   function setTime(time: string, setter: Dispatch<SetStateAction<string>>) {
     setter(time);
@@ -215,7 +220,7 @@ export function WorkTimeForm({
           onChange={(time) => setTime(time, setBreakTime)}
           label="Break"
           readOnly={!isEdit}
-          hasError={!!validationErrors.allTimes}
+          hasError={!!validationErrors.allTimes || !!validationErrors.breakTime}
         />
         <TimeInput
           name="endTime"
@@ -233,7 +238,7 @@ export function WorkTimeForm({
         hidden
       />
       {Object.entries(validationErrors).length > 0 && (
-        <ul className="font-bold text-red-600 absolute right-4">
+        <ul className="font-bold text-red-600 absolute -top-6 right-4">
           {Object.entries(validationErrors).map(([key, value]) => (
             <li key={key}>&#x26A0; {value}</li>
           ))}

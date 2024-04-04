@@ -2,11 +2,11 @@ export default function Section({
   children,
   title,
   extraClasses,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   title?: string;
   extraClasses?: string;
-}) {
+}>) {
   return (
     <section className={`mt-4 ${extraClasses ?? ""}`}>
       {title && (

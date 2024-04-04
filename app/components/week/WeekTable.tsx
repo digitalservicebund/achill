@@ -1,13 +1,13 @@
 import moment from "moment";
-import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
 import {
+  convertFloatTimeToHHMM,
   datesEqual,
   getWeekDaysFor,
   minutesToTime,
-  convertFloatTimeToHHMM,
 } from "~/utils/dateTimeUtils";
-import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
   timesAndEventsOfSelectedWeek: {
@@ -24,8 +24,8 @@ export function WeekTable({
   selectedDate,
   onSelectDate,
   attendancesOfSelectedWeek,
-}: Props) {
-  const weekdays = ["M", "T", "W", "T", "F"];
+}: Readonly<Props>) {
+  const weekdays = ["Mo", "Tu", "We", "Th", "Fr"];
   const selectedWeek = getWeekDaysFor(selectedDate);
 
   function getDateClassNames(index: number, selectedDate: Date) {
@@ -79,11 +79,11 @@ export function WeekTable({
       <table className="w-full">
         <thead>
           <tr>
-            {weekdays.map((weekday, index) => (
-              <th key={index}>
+            {weekdays.map((weekday) => (
+              <th key={weekday}>
                 <div className="flex w-full justify-center">
                   <p className="text-center text-base font-medium text-gray-600">
-                    {weekday}
+                    {weekday.at(0)}
                   </p>
                 </div>
               </th>

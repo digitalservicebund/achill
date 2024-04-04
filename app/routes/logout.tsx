@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { redirect, type ActionFunctionArgs } from "@remix-run/node";
 import { destroySession, getSession } from "~/sessions.server";
 
 export async function action({ request }: ActionFunctionArgs) {

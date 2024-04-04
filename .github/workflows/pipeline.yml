@@ -170,6 +170,7 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs:
       - build
       - audit-licenses
@@ -229,20 +230,15 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Sign the published Docker image
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
         run: cosign sign --yes ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Attest the vulnerability scan
-        env:
-          COSIGN_EXPERIMENTAL: "true"
         run: cosign attest --yes --replace --predicate vulnerabilities.json --type vuln ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy:
     needs: [build-and-push-image]
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
     timeout-minutes: 10
     permissions:
       packages: read

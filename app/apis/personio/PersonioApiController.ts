@@ -115,9 +115,11 @@ export async function initializePersonioApi(
   const mailAddress = `${username}@${DIGITALSERVICE_MAIL_DOMAIN}`;
   url.searchParams.set("email", mailAddress);
 
-  const employeeData = (await fetchWithPersonioAuth(
-    url,
-  )) as PersonioApiEmployees;
+  let employeeData = await fetchWithPersonioAuth(url);
+
+  if (!employeeData.success) {
+    throw new Error("Personio employee not found");
+  }
 
   const schedule =
     employeeData.data[0].attributes.work_schedule.value.attributes;

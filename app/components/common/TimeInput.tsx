@@ -16,7 +16,7 @@ export function TimeInput({
   label,
   readOnly = false,
   hasError = false,
-}: WorkingTimeInputProps) {
+}: Readonly<WorkingTimeInputProps>) {
   function addMinutesToTime(minutes: number) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
   }
@@ -42,7 +42,7 @@ export function TimeInput({
           type="time"
           value={time}
           step={900}
-          readOnly={readOnly}
+          disabled={readOnly}
           onChange={(e) => {
             onChange(e.target.value);
           }}

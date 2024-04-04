@@ -99,7 +99,7 @@ function _synthesiseMultiDayEvents(
   );
 
   datesBetween.forEach((date) => {
-    const event = Object.assign({}, eventInApiFormat);
+    const event = { ...eventInApiFormat };
     if (
       utcMidnightDateFromString(eventInApiFormat.startDate).getTime() ===
       date.getTime()

@@ -2,9 +2,9 @@ import moment from "moment";
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 
-const HH_MM_FORMAT_WITH_LEADING_0 = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+const HH_MM_FORMAT_WITH_LEADING_0 = /^(0\d|1\d|2[0-3]):([0-5]\d)$/;
 export const YYYY_MM_DD_FORMAT =
-  /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+  /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2]\d|3[0-1])$/;
 
 export const START_DATE = addDaysToDate(new Date(), -366);
 export const END_DATE = addDaysToDate(new Date(), 366);
@@ -100,8 +100,8 @@ export function addDaysToDate(date: Date, days: number) {
 }
 
 export function getDatesBetween(startDate: Date, endDate: Date) {
-  var dateArray = [];
-  var currentDate = startDate;
+  const dateArray = [];
+  let currentDate = startDate;
   while (currentDate <= endDate) {
     dateArray.push(convertToUTCMidnight(currentDate));
     currentDate = addDaysToDate(currentDate, 1);
@@ -121,7 +121,7 @@ export function datesEqual(date1: Date, date2: Date) {
 export function getWeekDaysFor(date: Date) {
   // calc Monday of current week
   const dateDayNumber = date.getDay() || 7; // get current day number, converting Sunday to 7
-  var monday = new Date(date);
+  const monday = new Date(date);
   if (dateDayNumber !== 1) monday.setHours(-24 * (dateDayNumber - 1)); // only manipulate the date if it isn't Monday
 
   // assign Monday to Friday based on Monday
@@ -144,10 +144,10 @@ export function getDayNumberFor(date: Date) {
  * ISO-8601 week number
  */
 export function getWeekNumberFor(date: Date) {
-  var tdt: Date = new Date(date.valueOf());
-  var dayn = getDayNumberFor(date);
+  const tdt: Date = new Date(date.valueOf());
+  const dayn = getDayNumberFor(date);
   tdt.setDate(tdt.getDate() - dayn + 3);
-  var firstThursday = tdt.valueOf();
+  const firstThursday = tdt.valueOf();
   tdt.setMonth(0, 1);
   if (tdt.getDay() !== 4) {
     tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));

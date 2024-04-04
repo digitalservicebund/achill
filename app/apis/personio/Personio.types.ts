@@ -1,4 +1,4 @@
-import { Time } from "~/utils/dateTimeUtils";
+import type { Time } from "~/utils/dateTimeUtils";
 
 export type WorkingHours = {
   monday: number;

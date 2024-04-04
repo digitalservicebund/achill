@@ -2,13 +2,13 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
-import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import {
+  getPhasesPerCalculationPosition,
   loadPhases,
   loadPositionPhases,
   loadSubprojectPhases,
-  getPhasesPerCalculationPosition,
 } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
@@ -24,10 +24,8 @@ import { WorkTimeForm } from "~/routes/work_time.($id)";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
-import {
-  transformCalendarEvent,
-  TransformedCalendarEvent,
-} from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
 const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
 const SET_UP_URL = "https://digitalservicebund.atlassian.net/wiki/x/T4BfJg";
@@ -112,7 +110,9 @@ export default function TrackYourTime() {
   const [attendances, setAttendances] = useState<PersonioAttendance[]>(
     mergeAttendendancesForDays(loaderData.attendances),
   );
-  const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);
+  const [projectTimes, setProjectTimes] = useState<ProjectTime[]>(
+    loaderData.projectTimes,
+  );
 
   // set state to loader data after loading
   const [prevTimestamp, setPrevTimestamp] = useState(loaderData.timestamp);
@@ -146,7 +146,12 @@ export default function TrackYourTime() {
         </nav>
         <div>
           <Section>
-            <a className="angie-link" href={HOW_TO_URL} target="_blank">
+            <a
+              className="angie-link"
+              href={HOW_TO_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
               Read about how to track your time in confluence
             </a>
           </Section>
@@ -190,8 +195,14 @@ export default function TrackYourTime() {
           <Section>
             <p className="text-xs text-gray-600">
               Project not showing up?{" "}
-              <a className="angie-link" href={SET_UP_URL} target="_blank">
-                Make sure it's available in Troi and marked as a "favorite".
+              <a
+                className="angie-link"
+                href={SET_UP_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Make sure it&apos;s available in Troi and marked as a
+                &quot;favorite&quot;.
               </a>
             </p>
           </Section>

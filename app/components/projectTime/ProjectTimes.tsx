@@ -7,7 +7,6 @@ import {
 import type { CalculationPosition, ProjectTime } from "~/apis/troi/Troi.types";
 import { findProjectTimesOfDate } from "~/routes/_index";
 import { ProjectTimeForm } from "~/routes/project_time.($id)";
-import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 
 interface Props {
   selectedDate: Date;
@@ -15,7 +14,7 @@ interface Props {
   tasks: TrackyTask[];
   phasesPerCalculationPosition: Record<number, TrackyPhase[]>;
   projectTimes: ProjectTime[];
-  setProjectTimes: (projectTimes: ProjectTime[]) => void;
+  setProjectTimes: React.Dispatch<React.SetStateAction<ProjectTime[]>>;
 }
 export function ProjectTimes({
   selectedDate,
@@ -24,21 +23,7 @@ export function ProjectTimes({
   phasesPerCalculationPosition,
   projectTimes,
   setProjectTimes,
-}: Props) {
-  function addProjectTime(projectTime: ProjectTime) {
-    setProjectTimes([...projectTimes, projectTime]);
-  }
-
-  function updateProjectTime(projectTime: ProjectTime) {
-    setProjectTimes(
-      projectTimes.map((pt) => (pt.id === projectTime.id ? projectTime : pt)),
-    );
-  }
-
-  function deleteProjectTime(projectTimeId: number) {
-    setProjectTimes(projectTimes.filter((pt) => pt.id !== projectTimeId));
-  }
-
+}: Readonly<Props>) {
   const projectTimesForSelectedDate = findProjectTimesOfDate(
     projectTimes,
     selectedDate,
@@ -65,8 +50,8 @@ export function ProjectTimes({
           recurringTasks={recurringTasks}
           phaseTasks={phaseTasks}
           phases={phasesPerCalculationPosition[position.id]}
-          onUpdateProjectTime={updateProjectTime}
-          onDeleteProjectTime={deleteProjectTime}
+          setProjectTimes={setProjectTimes}
+          projectTimes={projectTimes}
         />
       ))
     ) : (
@@ -77,7 +62,8 @@ export function ProjectTimes({
         recurringTasks={recurringTasks}
         phaseTasks={phaseTasks}
         phases={phasesPerCalculationPosition[position.id]}
-        onAddProjectTime={addProjectTime}
+        setProjectTimes={setProjectTimes}
+        projectTimes={projectTimes}
       />
     ),
   );
