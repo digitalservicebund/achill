@@ -4,7 +4,6 @@ import LoginPage from "./LoginPage";
 test.describe("work time actions", () => {
   test("should add, edit and delete work time", async ({ page }) => {
     await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
-    await expect(page.locator("text=Total working hours")).toBeVisible();
 
     // Input start time, break and end time and submit form
     await page.getByLabel("Start time").fill("08:00");
@@ -42,5 +41,25 @@ test.describe("work time actions", () => {
 
     // Check if the work time is no longer visible
     await expect(page.getByText("7:00")).not.toBeVisible();
+  });
+
+  test("work time form should be disabled after submitting", async ({
+    page,
+  }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+
+    // Input start time, break and end time and submit form
+    await page.getByLabel("Start time").fill("08:00");
+    await page.getByLabel("Break").fill("01:00");
+    await page.getByLabel("End time").fill("17:00");
+    await page
+      .locator("#work-time-form button")
+      .filter({ hasText: "Save" })
+      .click();
+
+    // Check if the form is disabled
+    for (const label of ["Start time", "Break", "End time"]) {
+      await expect(page.getByLabel(label)).toBeDisabled();
+    }
   });
 });
