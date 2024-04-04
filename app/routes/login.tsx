@@ -39,8 +39,8 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  const cookieHeader = request.headers.get("Cookie");
-  const session = await getSession(cookieHeader);
+  const cookie = request.headers.get("Cookie");
+  const session = await getSession(cookie);
 
   try {
     session.set("username", username);

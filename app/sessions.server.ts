@@ -1,7 +1,7 @@
 import type { Cookie, Session } from "@remix-run/node";
 import {
   createCookie,
-  createFileSessionStorage,
+  createCookieSessionStorage,
   createMemorySessionStorage,
   redirect,
 } from "@remix-run/node";
@@ -22,8 +22,7 @@ function createSessionStorage(cookie: Cookie) {
     });
   }
 
-  return createFileSessionStorage<SessionData>({
-    dir: "./sessions",
+  return createCookieSessionStorage<SessionData>({
     cookie,
   });
 }
