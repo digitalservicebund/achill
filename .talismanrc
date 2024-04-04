@@ -22,7 +22,7 @@ fileignoreconfig:
   - filename: tests/e2e/login.spec.ts
     checksum: 1a0d9ceaf8e4a6d76c7c9c0df4fcaca85edf5bd08344dd7a02cafa17cf01031a
   - filename: app/apis/troi/TroiApiController.ts
-    checksum: f8709710336165224767e01abda2c34c370a42ac7109f1315c65c8ce51c45355
+    checksum: 1ee59d6fc975e26e9c0e47d2c83a9a88c2598a69d08a277f316debd7ef62fc66
   - filename: app/apis/personio/PersonioApiController.ts
     checksum: 789b99c3d10efad50ece27efbf03d6ee06257d0a6af173ba9e153121d7f0b0eb
   - filename: app/routes/login.tsx
