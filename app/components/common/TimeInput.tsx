@@ -42,7 +42,7 @@ export function TimeInput({
           type="time"
           value={time}
           step={900}
-          readOnly={readOnly}
+          disabled={readOnly}
           onChange={(e) => {
             onChange(e.target.value);
           }}
