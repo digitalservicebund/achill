@@ -36,7 +36,7 @@ export default function ProjectTimeDescription({
   onKeyDown,
   hasErrors,
   resetErrors,
-}: ProjectTimeDescriptionProps) {
+}: Readonly<ProjectTimeDescriptionProps>) {
   const id = useId();
 
   const descriptionSegments = descriptionToSegments(description);

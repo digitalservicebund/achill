@@ -31,7 +31,7 @@ export function WeekView({
   onSelectDate,
   attendances,
   selectedDayEvents,
-}: Props) {
+}: Readonly<Props>) {
   const selectedWeek = getWeekDaysFor(selectedDate);
   const timesAndEventsOfSelectedWeek = selectedWeek.map((weekday) => ({
     hours: calcHoursOfDate(projectTimes, weekday),

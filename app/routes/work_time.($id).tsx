@@ -99,7 +99,7 @@ export function WorkTimeForm({
   workingHours,
   attendances,
   setAttendances,
-}: Props) {
+}: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
 
   const attendanceOfSelectedDate = attendances.find(

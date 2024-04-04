@@ -91,7 +91,7 @@ export function ProjectTimeForm({
   onAddProjectTime,
   onUpdateProjectTime,
   onDeleteProjectTime,
-}: Props) {
+}: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);
 

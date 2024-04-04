@@ -16,7 +16,7 @@ export function TimeInput({
   label,
   readOnly = false,
   hasError = false,
-}: WorkingTimeInputProps) {
+}: Readonly<WorkingTimeInputProps>) {
   function addMinutesToTime(minutes: number) {
     return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
   }

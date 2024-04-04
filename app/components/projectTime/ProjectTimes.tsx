@@ -23,7 +23,7 @@ export function ProjectTimes({
   phasesPerCalculationPosition,
   projectTimes,
   setProjectTimes,
-}: Props) {
+}: Readonly<Props>) {
   function addProjectTime(projectTime: ProjectTime) {
     setProjectTimes([...projectTimes, projectTime]);
   }

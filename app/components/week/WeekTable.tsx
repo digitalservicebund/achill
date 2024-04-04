@@ -24,7 +24,7 @@ export function WeekTable({
   selectedDate,
   onSelectDate,
   attendancesOfSelectedWeek,
-}: Props) {
+}: Readonly<Props>) {
   const weekdays = ["M", "T", "W", "T", "F"];
   const selectedWeek = getWeekDaysFor(selectedDate);
 

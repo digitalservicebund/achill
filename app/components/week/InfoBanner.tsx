@@ -8,7 +8,7 @@ interface Props {
   event: TransformedCalendarEvent;
 }
 
-export function InfoBanner({ event }: Props) {
+export function InfoBanner({ event }: Readonly<Props>) {
   const symbol = getItemForEventType(event.type);
 
   let text = "";

@@ -5,7 +5,7 @@ interface Props {
   onSelectDate: (newDate: Date) => unknown;
 }
 
-export function WeekSelect({ selectedDate, onSelectDate }: Props) {
+export function WeekSelect({ selectedDate, onSelectDate }: Readonly<Props>) {
   function changeWeek(direction: -1 | 1) {
     onSelectDate(addDaysToDate(selectedDate, 7 * direction));
   }
