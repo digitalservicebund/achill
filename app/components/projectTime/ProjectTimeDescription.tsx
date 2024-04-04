@@ -111,16 +111,11 @@ export default function ProjectTimeDescription({
       setDescription(newDescription);
     } else {
       console.error("handleDescriptionChange", event);
-      // todo throw something
     }
   }
 
   function handleChipClick(phaseAndTask: string) {
     toggleDescriptionSegment(phaseAndTask);
-  }
-
-  function removeChip(phaseAndTask: string) {
-    removeDescriptionSegment(phaseAndTask);
   }
 
   return (
@@ -172,7 +167,8 @@ export default function ProjectTimeDescription({
           {phaseTasks && (
             <div className="flex h-auto flex-wrap border-b-2 border-solid border-b-[#CED4DA] bg-white p-2">
               {phaseTasks.map((task) => (
-                <div
+                <button
+                  type="button"
                   key={task.Id}
                   className={`m-2 flex cursor-pointer items-center rounded-full border py-1 px-3 text-sm transition-all duration-150 ease-in-out ${
                     descriptionSegments.includes(
@@ -189,17 +185,11 @@ export default function ProjectTimeDescription({
                   {descriptionSegments.includes(
                     [task.name, phase.name].join(" "),
                   ) && (
-                    <button
-                      className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-800"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        removeChip([task.name, phase.name].join(" "));
-                      }}
-                    >
+                    <span className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-800">
                       &#x2715;
-                    </button>
+                    </span>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           )}
