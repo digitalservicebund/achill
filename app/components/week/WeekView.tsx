@@ -1,13 +1,13 @@
+import { useFetchers } from "@remix-run/react";
 import moment from "moment";
-import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
 import { findEventsOfDate, findProjectTimesOfDate } from "~/routes/_index";
 import { getWeekDaysFor } from "~/utils/dateTimeUtils";
-import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 import { InfoBanner } from "./InfoBanner";
 import { WeekSelect } from "./WeekSelect";
 import { WeekTable } from "./WeekTable";
-import { useFetchers } from "@remix-run/react";
 
 function calcHoursOfDate(projectTimes: ProjectTime[], date: Date) {
   return findProjectTimesOfDate(projectTimes, date).reduce(

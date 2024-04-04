@@ -1,13 +1,13 @@
 import moment from "moment";
-import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getItemForEventType } from "~/utils/calendarEventUtils";
 import {
+  convertFloatTimeToHHMM,
   datesEqual,
   getWeekDaysFor,
   minutesToTime,
-  convertFloatTimeToHHMM,
 } from "~/utils/dateTimeUtils";
-import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
   timesAndEventsOfSelectedWeek: {

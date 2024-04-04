@@ -1,6 +1,6 @@
 import { useId } from "react";
-import { TrackyPhase } from "~/apis/tasks/TrackyPhase";
-import { TrackyTask } from "~/apis/tasks/TrackyTask";
+import type { TrackyPhase } from "~/apis/tasks/TrackyPhase";
+import type { TrackyTask } from "~/apis/tasks/TrackyTask";
 
 function descriptionToSegments(description: string): string[] {
   return description !== ""

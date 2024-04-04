@@ -1,8 +1,8 @@
 import {
-  ActionFunctionArgs,
-  TypedResponse,
   json,
   redirect,
+  type ActionFunctionArgs,
+  type TypedResponse,
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";

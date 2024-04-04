@@ -2,7 +2,7 @@ import {
   getDescriptionForEventType,
   getItemForEventType,
 } from "~/utils/calendarEventUtils";
-import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 
 interface Props {
   event: TransformedCalendarEvent;

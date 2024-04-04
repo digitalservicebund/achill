@@ -1,8 +1,8 @@
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
   json,
   redirect,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";

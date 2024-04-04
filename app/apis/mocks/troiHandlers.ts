@@ -1,6 +1,6 @@
 import md5 from "crypto-js/md5.js";
 import { HttpResponse, http } from "msw";
-import { ProjectTime } from "../troi/Troi.types";
+import type { ProjectTime } from "../troi/Troi.types";
 
 const projectTimes = require("./stubs/troi/billings_hours.json");
 
