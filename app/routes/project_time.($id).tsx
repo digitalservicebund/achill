@@ -72,9 +72,8 @@ interface Props {
   recurringTasks: TrackyTask[];
   phaseTasks: TrackyTask[];
   phases: TrackyPhase[];
-  onAddProjectTime?: (projectTime: ProjectTime) => void;
-  onUpdateProjectTime?: (projectTime: ProjectTime) => void;
-  onDeleteProjectTime?: (projectTimeId: number) => void;
+  setProjectTimes: React.Dispatch<React.SetStateAction<ProjectTime[]>>;
+  projectTimes: ProjectTime[];
 }
 export function ProjectTimeForm({
   date,
@@ -88,9 +87,8 @@ export function ProjectTimeForm({
   recurringTasks,
   phaseTasks,
   phases,
-  onAddProjectTime,
-  onUpdateProjectTime,
-  onDeleteProjectTime,
+  setProjectTimes,
+  projectTimes,
 }: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);
@@ -122,25 +120,29 @@ export function ProjectTimeForm({
 
       switch (fetcher.formData.get("_action")) {
         case "POST":
-          onAddProjectTime!(submittedProjectTime as ProjectTime);
+          setProjectTimes((prevProjectTimes) => [
+            ...prevProjectTimes,
+            submittedProjectTime as ProjectTime,
+          ]);
           break;
         case "PUT":
-          onUpdateProjectTime!(submittedProjectTime as ProjectTime);
+          setProjectTimes((prevProjectTimes) =>
+            prevProjectTimes.map((pt) =>
+              pt.id === submittedProjectTime.id
+                ? (submittedProjectTime as ProjectTime)
+                : pt,
+            ),
+          );
           setIsEdit(false);
           break;
         case "DELETE":
-          onDeleteProjectTime!(submittedProjectTime.id);
+          setProjectTimes((prevProjectTimes) =>
+            prevProjectTimes.filter((pt) => pt.id !== submittedProjectTime.id),
+          );
           break;
       }
     }
-  }, [
-    fetcher.data,
-    fetcher.formData,
-    fetcher.state,
-    onAddProjectTime,
-    onDeleteProjectTime,
-    onUpdateProjectTime,
-  ]);
+  }, [fetcher.data, fetcher.formData, fetcher.state, setProjectTimes]);
 
   function saveForm() {
     if (!formRef.current) return;

@@ -110,7 +110,9 @@ export default function TrackYourTime() {
   const [attendances, setAttendances] = useState<PersonioAttendance[]>(
     mergeAttendendancesForDays(loaderData.attendances),
   );
-  const [projectTimes, setProjectTimes] = useState(loaderData.projectTimes);
+  const [projectTimes, setProjectTimes] = useState<ProjectTime[]>(
+    loaderData.projectTimes,
+  );
 
   // set state to loader data after loading
   const [prevTimestamp, setPrevTimestamp] = useState(loaderData.timestamp);
