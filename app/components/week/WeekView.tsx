@@ -53,7 +53,6 @@ export function WeekView({
         <WeekSelect selectedDate={selectedDate} onSelectDate={onSelectDate} />
         <div
           data-testid="date"
-          tabIndex={0}
           className="text-base text-gray-800 focus:outline-none"
         >
           {selectedDate.toLocaleDateString("en-gb", {

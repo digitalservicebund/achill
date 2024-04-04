@@ -20,10 +20,7 @@ export function WeekSelect({ selectedDate, onSelectDate }: Readonly<Props>) {
       >
         <span className="material-symbols-outlined"> chevron_left </span>
       </button>
-      <div
-        tabIndex={0}
-        className="min-w-[9ch] px-2 text-center text-sm text-gray-600 focus:outline-none"
-      >
+      <div className="min-w-[9ch] px-2 text-center text-sm text-gray-600 focus:outline-none">
         Week {getWeekNumberFor(selectedDate)}
       </div>
       <button
