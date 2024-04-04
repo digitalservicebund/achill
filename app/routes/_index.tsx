@@ -1,4 +1,4 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { json, type HeadersFunction, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
@@ -29,6 +29,14 @@ import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
 const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
 const SET_UP_URL = "https://digitalservicebund.atlassian.net/wiki/x/T4BfJg";
+
+export const headers: HeadersFunction = () => ({
+  "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' https://rsms.me https://fonts.googleapis.com; font-src 'self' https://rsms.me https://fonts.gstatic.com; img-src 'self'; frame-ancestors 'self'; connect-src 'self' ws://localhost:3001",
+  "X-Frame-Options": "SAMEORIGIN",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=(), usb=()",
+});
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
