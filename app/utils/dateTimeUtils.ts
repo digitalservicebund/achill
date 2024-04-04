@@ -100,8 +100,8 @@ export function addDaysToDate(date: Date, days: number) {
 }
 
 export function getDatesBetween(startDate: Date, endDate: Date) {
-  var dateArray = [];
-  var currentDate = startDate;
+  const dateArray = [];
+  let currentDate = startDate;
   while (currentDate <= endDate) {
     dateArray.push(convertToUTCMidnight(currentDate));
     currentDate = addDaysToDate(currentDate, 1);
@@ -121,7 +121,7 @@ export function datesEqual(date1: Date, date2: Date) {
 export function getWeekDaysFor(date: Date) {
   // calc Monday of current week
   const dateDayNumber = date.getDay() || 7; // get current day number, converting Sunday to 7
-  var monday = new Date(date);
+  const monday = new Date(date);
   if (dateDayNumber !== 1) monday.setHours(-24 * (dateDayNumber - 1)); // only manipulate the date if it isn't Monday
 
   // assign Monday to Friday based on Monday
@@ -144,10 +144,10 @@ export function getDayNumberFor(date: Date) {
  * ISO-8601 week number
  */
 export function getWeekNumberFor(date: Date) {
-  var tdt: Date = new Date(date.valueOf());
-  var dayn = getDayNumberFor(date);
+  const tdt: Date = new Date(date.valueOf());
+  const dayn = getDayNumberFor(date);
   tdt.setDate(tdt.getDate() - dayn + 3);
-  var firstThursday = tdt.valueOf();
+  const firstThursday = tdt.valueOf();
   tdt.setMonth(0, 1);
   if (tdt.getDay() !== 4) {
     tdt.setMonth(0, 1 + ((4 - tdt.getDay() + 7) % 7));
