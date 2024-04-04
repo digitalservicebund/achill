@@ -2,13 +2,13 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import moment from "moment";
 import { useState } from "react";
-import { PersonioAttendance } from "~/apis/personio/Personio.types";
+import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import {
+  getPhasesPerCalculationPosition,
   loadPhases,
   loadPositionPhases,
   loadSubprojectPhases,
-  getPhasesPerCalculationPosition,
 } from "~/apis/tasks/TrackyPhase";
 import { loadTasks } from "~/apis/tasks/TrackyTask";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
@@ -24,10 +24,8 @@ import { WorkTimeForm } from "~/routes/work_time.($id)";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
-import {
-  transformCalendarEvent,
-  TransformedCalendarEvent,
-} from "~/utils/transformCalendarEvents";
+import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
 const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
 const SET_UP_URL = "https://digitalservicebund.atlassian.net/wiki/x/T4BfJg";
