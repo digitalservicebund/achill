@@ -80,7 +80,7 @@ export function WeekTable({
         <thead>
           <tr>
             {weekdays.map((weekday, index) => (
-              <th key={index}>
+              <th key={weekday + index}>
                 <div className="flex w-full justify-center">
                   <p className="text-center text-base font-medium text-gray-600">
                     {weekday}
