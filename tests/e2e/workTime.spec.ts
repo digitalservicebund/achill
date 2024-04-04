@@ -72,34 +72,39 @@ test.describe("work time form", () => {
     expectFormToBeEnabled();
   });
 
-  test("should function with less or equal to 6h work and no break", async ({
-    page,
-  }) => {
+  test("should function with <=6h work and no break", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", "00:00", "14:00");
     await expect(page.getByText("6:00")).toBeVisible();
+    await clickWorkTimeButton(page, "Delete");
   });
 
-  test("should show error with 6h - 9h work and break less than 30min", async ({
+  test("should show error with 6h - 9h work and break <30min", async ({
     page,
   }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", "00:15", "17:00");
-    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Break must be at least 30 minutes.",
+    );
   });
 
-  test("should show error with more than 9h work and break less than 45min", async ({
-    page,
-  }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", "00:30", "19:00");
-    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+  test("should show error with >9h work and break <45min", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", "00:30", "18:00");
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Break must be at least 45 minutes.",
+    );
   });
 
-  test("should show error with more than 10h work", async ({ page }) => {
+  test("should show error with >10h work", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", "01:00", "22:00");
-    await expect(page.getByText("&#x26A0; Work time too short")).toBeVisible();
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Work time must be less than 10 hours.",
+    );
   });
 
   test("should show error with break longer than work", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", "02:00", "09:00");
-    await expect(page.getByText("&#x26A0; Break time too short")).toBeVisible();
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Invalid work time.",
+    );
   });
 });

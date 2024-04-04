@@ -10,6 +10,14 @@ export type WorkTimeFormData = {
   date: string;
 };
 
+function calculateWorkTime(schema: WorkTimeFormData) {
+  return (
+    timeToMinutes(schema.endTime) -
+    timeToMinutes(schema.startTime) -
+    schema.breakTime
+  );
+}
+
 export const workTimeFormDataSchema = z
   .object({
     startTime: timeSchema,
@@ -17,9 +25,29 @@ export const workTimeFormDataSchema = z
     endTime: timeSchema,
     date: z.string().regex(YYYY_MM_DD_FORMAT),
   })
+  .refine((schema) => calculateWorkTime(schema) > 0, {
+    message: "Invalid work time.",
+    path: ["allTimes"],
+  })
   .refine(
     (schema) =>
-      schema.breakTime >=
-      timeToMinutes(schema.startTime) - timeToMinutes(schema.endTime),
-    { message: "Invalid work time.", path: ["allTimes"] },
-  ) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;
+      !(
+        calculateWorkTime(schema) > 360 &&
+        calculateWorkTime(schema) <= 540 &&
+        schema.breakTime < 30
+      ),
+    { message: "Break must be at least 30 minutes.", path: ["breakTime"] },
+  )
+  .refine(
+    (schema) =>
+      !(
+        calculateWorkTime(schema) > 540 &&
+        calculateWorkTime(schema) <= 600 &&
+        schema.breakTime < 45
+      ),
+    { message: "Break must be at least 45 minutes.", path: ["breakTime"] },
+  )
+  .refine((schema) => calculateWorkTime(schema) <= 600, {
+    message: "Work time must be less than 10 hours.",
+    path: ["allTimes"],
+  }) satisfies ZodSchema<WorkTimeFormData, ZodTypeDef, unknown>;

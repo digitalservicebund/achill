@@ -220,7 +220,7 @@ export function WorkTimeForm({
           onChange={(time) => setTime(time, setBreakTime)}
           label="Break"
           readOnly={!isEdit}
-          hasError={!!validationErrors.allTimes}
+          hasError={!!validationErrors.allTimes || !!validationErrors.breakTime}
         />
         <TimeInput
           name="endTime"
@@ -238,7 +238,7 @@ export function WorkTimeForm({
         hidden
       />
       {Object.entries(validationErrors).length > 0 && (
-        <ul className="font-bold text-red-600 absolute right-4">
+        <ul className="font-bold text-red-600 absolute -top-6 right-4">
           {Object.entries(validationErrors).map(([key, value]) => (
             <li key={key}>&#x26A0; {value}</li>
           ))}
