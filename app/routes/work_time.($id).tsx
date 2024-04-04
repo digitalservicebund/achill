@@ -34,11 +34,12 @@ export async function action({
   const id = params.id;
 
   try {
-    const { date, startTime, breakTime, endTime, _action } =
-      workTimeFormDataSchema.parse(Object.fromEntries(formData.entries()));
+    const { _action, ...formDataObj } = Object.fromEntries(formData.entries());
 
     switch (_action) {
-      case "POST":
+      case "POST": {
+        const { date, startTime, breakTime, endTime } =
+          workTimeFormDataSchema.parse(formDataObj);
         return await postAttendance(
           request,
           date,
@@ -46,11 +47,15 @@ export async function action({
           endTime,
           breakTime,
         );
-      case "PATCH":
+      }
+      case "PATCH": {
         if (!id) {
           throw new Response("Attendance ID is required.", { status: 400 });
         }
+        const { date, startTime, breakTime, endTime } =
+          workTimeFormDataSchema.parse(formDataObj);
         return await patchAttendance(id, date, startTime, endTime, breakTime);
+      }
       case "DELETE":
         if (!id) {
           throw new Response("Attendance ID is required.", { status: 400 });

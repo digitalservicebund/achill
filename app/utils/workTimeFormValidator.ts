@@ -8,7 +8,6 @@ export type WorkTimeFormData = {
   breakTime: number;
   endTime: Time;
   date: string;
-  _action: "POST" | "PATCH" | "DELETE";
 };
 
 export const workTimeFormDataSchema = z
@@ -17,7 +16,6 @@ export const workTimeFormDataSchema = z
     breakTime: timeSchema.transform((time) => timeToMinutes(time)),
     endTime: timeSchema,
     date: z.string().regex(YYYY_MM_DD_FORMAT),
-    _action: z.enum(["POST", "PATCH", "DELETE"]),
   })
   .refine(
     (schema) =>
