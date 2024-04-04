@@ -156,15 +156,15 @@ export function WorkTimeForm({
       switch (fetcher.formData.get("_action")) {
         case "POST":
           setIsEdit(false);
-          setAttendances([
-            ...attendances,
+          setAttendances((prevAttendances) => [
+            ...prevAttendances,
             submittedAttendance as PersonioAttendance,
           ]);
           break;
         case "PATCH":
           setIsEdit(false);
-          setAttendances(
-            attendances.map((attendance) =>
+          setAttendances((prevAttendances) =>
+            prevAttendances.map((attendance) =>
               attendance.id === submittedAttendance.id
                 ? (submittedAttendance as PersonioAttendance)
                 : attendance,
@@ -173,8 +173,8 @@ export function WorkTimeForm({
           break;
         case "DELETE":
           setIsEdit(true);
-          setAttendances(
-            attendances.filter(
+          setAttendances((prevAttendances) =>
+            prevAttendances.filter(
               (attendance) => attendance.id !== submittedAttendance.id,
             ),
           );
@@ -183,7 +183,7 @@ export function WorkTimeForm({
           break;
       }
     }
-  }, [fetcher.state]);
+  }, [fetcher.state, fetcher.data, fetcher.formData, setAttendances]);
 
   function setTime(time: string, setter: Dispatch<SetStateAction<string>>) {
     setter(time);
