@@ -73,7 +73,6 @@ interface Props {
   phaseTasks: TrackyTask[];
   phases: TrackyPhase[];
   setProjectTimes: React.Dispatch<React.SetStateAction<ProjectTime[]>>;
-  projectTimes: ProjectTime[];
 }
 export function ProjectTimeForm({
   date,
@@ -88,7 +87,6 @@ export function ProjectTimeForm({
   phaseTasks,
   phases,
   setProjectTimes,
-  projectTimes,
 }: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
   const formRef = useRef<HTMLFormElement>(null);

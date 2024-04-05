@@ -51,7 +51,6 @@ export function ProjectTimes({
           phaseTasks={phaseTasks}
           phases={phasesPerCalculationPosition[position.id]}
           setProjectTimes={setProjectTimes}
-          projectTimes={projectTimes}
         />
       ))
     ) : (
@@ -63,7 +62,6 @@ export function ProjectTimes({
         phaseTasks={phaseTasks}
         phases={phasesPerCalculationPosition[position.id]}
         setProjectTimes={setProjectTimes}
-        projectTimes={projectTimes}
       />
     ),
   );
