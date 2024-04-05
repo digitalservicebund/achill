@@ -65,19 +65,9 @@ export default function ProjectTimeDescription({
   }
 
   function onRecurringTaskChange(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.checked) {
-      addDescriptionSegment(event.target.value);
-    } else {
-      removeDescriptionSegment(event.target.value);
-    }
-  }
-
-  function toggleDescriptionSegment(segment: string) {
-    if (description.includes(segment)) {
-      removeDescriptionSegment(segment);
-    } else {
-      addDescriptionSegment(segment);
-    }
+    event.target.checked
+      ? addDescriptionSegment(event.target.value)
+      : removeDescriptionSegment(event.target.value);
   }
 
   function removeDuplicatedCommas(description: string) {
@@ -105,8 +95,10 @@ export default function ProjectTimeDescription({
         resetErrors();
       }
       let newDescription = event.target.value;
-      if (hasDuplicatedCommas(newDescription)) {
-        newDescription = removeDuplicatedCommas(newDescription);
+      if (phases.length > 0) {
+        if (hasDuplicatedCommas(newDescription)) {
+          newDescription = removeDuplicatedCommas(newDescription);
+        }
       }
       setDescription(newDescription);
     } else {
@@ -115,7 +107,9 @@ export default function ProjectTimeDescription({
   }
 
   function handleChipClick(phaseAndTask: string) {
-    toggleDescriptionSegment(phaseAndTask);
+    description.includes(phaseAndTask)
+      ? removeDescriptionSegment(phaseAndTask)
+      : addDescriptionSegment(phaseAndTask);
   }
 
   return (
