@@ -3,7 +3,6 @@ import {
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
-  type MetaFunction,
 } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
@@ -11,12 +10,6 @@ import { initializeTroiApi } from "~/apis/troi/TroiApiController";
 import Spinner from "~/components/common/Spinner";
 import { commitSession, destroySession, getSession } from "~/sessions.server";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Track your time" },
-    { name: "description", content: "Hello DigitalService!" },
-  ];
-};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
