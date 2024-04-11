@@ -37,7 +37,7 @@ if (sessionCookieSecret === undefined) {
 const sessionCookie = createCookie("__session", {
   maxAge: 30 * 24 * 60 * 60,
   secrets: [sessionCookieSecret],
-  sameSite: "lax",
+  sameSite: "strict",
   secure: true,
   httpOnly: true,
 });
