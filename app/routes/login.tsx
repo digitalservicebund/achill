@@ -10,7 +10,6 @@ import { initializeTroiApi } from "~/apis/troi/TroiApiController";
 import Spinner from "~/components/common/Spinner";
 import { commitSession, destroySession, getSession } from "~/sessions.server";
 
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
