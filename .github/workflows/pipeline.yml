@@ -85,7 +85,7 @@ jobs:
           path: tests/a11y/playwright-report
 
       - name: Send failure to Slack
-        uses: digitalservicebund/github-actions/notify-on-failure@a9479ef95842280372a310120ce42dc49c4735e1
+        uses: digitalservicebund/notify-on-failure-gha@15dd05b628141b7bac0ad26e08c1935cb3ba6bc8
         if: ${{ failure() }}
         with:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
