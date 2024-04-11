@@ -1,6 +1,10 @@
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css";
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { HeadersFunction, LinksFunction, MetaFunction } from "@remix-run/node";
+import type {
+  HeadersFunction,
+  LinksFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
