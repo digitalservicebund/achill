@@ -14,7 +14,7 @@ type Hours =
   | ("06" | "07" | "08" | "09" | "10" | "11")
   | ("12" | "13" | "14" | "15" | "16" | "17")
   | ("18" | "19" | "20" | "21" | "22" | "23");
-type FirstDigit = "1" | "2" | "3" | "4" | "5";
+type FirstDigit = "0" | "1" | "2" | "3" | "4" | "5";
 type SecondDigit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 type Minutes = `${FirstDigit}${SecondDigit}`;
 export type Time = `${Hours}:${Minutes}`;
