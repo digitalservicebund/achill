@@ -1,6 +1,6 @@
 import fontsStylesheet from "@digitalservice4germany/angie/fonts.css";
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction } from "@remix-run/node";
+import type { HeadersFunction, LinksFunction } from "@remix-run/node";
 import { type MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -13,6 +13,16 @@ import {
 import fontBold from "~/../public/fonts/BundesSansWeb-Bold.woff2";
 import fontRegular from "~/../public/fonts/BundesSansWeb-Regular.woff2";
 import stylesheet from "~/styles.css";
+
+export const headers: HeadersFunction = () => ({
+  "Content-Security-Policy":
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' https://rsms.me https://fonts.googleapis.com; font-src 'self' https://rsms.me https://fonts.gstatic.com; img-src 'self'; frame-ancestors 'self'; connect-src 'self' ws://localhost:3001",
+  "X-Frame-Options": "SAMEORIGIN",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy":
+    "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), fullscreen=(self), payment=(), usb=()",
+});
 
 export const meta: MetaFunction = () => {
   return [
