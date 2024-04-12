@@ -16,18 +16,18 @@ test.describe("project time actions", () => {
     await expect(projectLocator).toContainText("Meeting");
 
     // Edit project time
-    await page.getByRole("button", { name: "Edit" }).click();
-    await page.getByLabel("Hours").fill("5");
-    await page.getByText("Meeting").fill("Daily");
+    await projectLocator.getByRole("button", { name: "Edit" }).click();
+    await projectLocator.getByLabel("Hours").fill("5");
+    await projectLocator.getByText("Meeting").fill("Daily");
 
-    await page.getByRole("button", { name: "Update" }).click();
+    await projectLocator.getByRole("button", { name: "Update" }).click();
 
     await expect(page.getByRole("table")).toContainText("5:00");
     await expect(projectLocator).toContainText("5 Hour(s)");
     await expect(projectLocator).toContainText("Daily");
 
     // Delete project time
-    await page.getByRole("button", { name: "Delete" }).click();
+    await projectLocator.getByRole("button", { name: "Delete" }).click();
 
     await expect(page.getByRole("table")).not.toContainText("5:00");
     await expect(projectLocator).not.toContainText("5 Hour(s)");
@@ -39,19 +39,19 @@ test.describe("project time actions", () => {
     const projectLocator = page.locator("form").filter({ hasText: "cool" });
 
     // Add project time
-    await page.getByLabel("Hours").fill("4");
+    await projectLocator.getByLabel("Hours").fill("4");
     await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
-    await page.getByText("Meeting").press("Enter");
+    await projectLocator.getByText("Meeting").press("Enter");
 
     await expect(page.getByRole("table")).toContainText("4:00");
     await expect(projectLocator).toContainText("4 Hour(s)");
     await expect(projectLocator).toContainText("Meeting");
 
     // Edit project time
-    await page.getByRole("button", { name: "Edit" }).click();
-    await page.getByLabel("Hours").fill("5");
-    await page.getByText("Meeting").fill("Daily");
-    await page.getByText("Daily").press("Enter");
+    await projectLocator.getByRole("button", { name: "Edit" }).click();
+    await projectLocator.getByLabel("Hours").fill("5");
+    await projectLocator.getByText("Meeting").fill("Daily");
+    await projectLocator.getByText("Daily").press("Enter");
 
     await expect(page.getByRole("table")).toContainText("5:00");
     await expect(projectLocator).toContainText("5 Hour(s)");
