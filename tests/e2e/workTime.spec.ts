@@ -18,8 +18,8 @@ test.describe("work time form", () => {
     await clickWorkTimeButton(page, "Save");
   }
 
-  function clickWorkTimeButton(page: Page, buttonText: string) {
-    return page
+  async function clickWorkTimeButton(page: Page, buttonText: string) {
+    await page
       .locator("#work-time-form button")
       .filter({ hasText: buttonText })
       .click();
@@ -41,35 +41,35 @@ test.describe("work time form", () => {
   test("should be disabled after submitting, enabled after edit, disabled after cancel or update and enabled after deleting", async ({
     page,
   }) => {
-    function expectFormToBeDisabled() {
+    async function expectFormToBeDisabled() {
       for (const label of ["Start time", "Break", "End time"]) {
-        expect(page.getByLabel(label)).toBeDisabled();
+        await expect(page.getByLabel(label)).toBeDisabled();
       }
     }
 
-    function expectFormToBeEnabled() {
+    async function expectFormToBeEnabled() {
       for (const label of ["Start time", "Break", "End time"]) {
-        expect(page.getByLabel(label)).toBeEnabled();
+        await expect(page.getByLabel(label)).toBeEnabled();
       }
     }
 
     await fillWorkTimeFormAndSubmit(page, "08:00", 60, "17:00");
-    expectFormToBeDisabled();
+    await expectFormToBeDisabled();
 
     await clickWorkTimeButton(page, "Edit");
-    expectFormToBeEnabled();
+    await expectFormToBeEnabled();
 
     await clickWorkTimeButton(page, "Update");
-    expectFormToBeDisabled();
+    await expectFormToBeDisabled();
 
     await clickWorkTimeButton(page, "Edit");
-    expectFormToBeEnabled();
+    await expectFormToBeEnabled();
 
     await clickWorkTimeButton(page, "Cancel");
-    expectFormToBeDisabled();
+    await expectFormToBeDisabled();
 
     await clickWorkTimeButton(page, "Delete");
-    expectFormToBeEnabled();
+    await expectFormToBeEnabled();
   });
 
   test("should function with <=6h work and no break", async ({ page }) => {
