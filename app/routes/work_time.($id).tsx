@@ -19,7 +19,11 @@ import {
   postAttendance,
 } from "~/apis/personio/PersonioApiController";
 import { TimeInput } from "~/components/common/TimeInput";
-import { minutesToTime } from "~/utils/dateTimeUtils";
+import {
+  addMinutesToTime,
+  minutesToTime,
+  type Time,
+} from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
 
 type ActionResponse =
@@ -76,21 +80,19 @@ export async function action({
   }
 }
 
-const DEFAULT_START_TIME = "09:00";
-const DEFAULT_BREAK_TIME = "01:00";
+const DEFAULT_START_TIME: Time = "09:00";
+const DEFAULT_BREAK_TIME = 60;
 
 function getEndTime(workTime: number) {
   // calculate end time based on daily work time from personio
   const momentStartTime = moment(DEFAULT_START_TIME, "HH:mm");
-  const momentBreakTime = moment(DEFAULT_BREAK_TIME, "HH:mm");
   const momentWorkTime = moment(minutesToTime(workTime * 60), "HH:mm");
 
   return momentStartTime
-    .add(momentBreakTime.hours(), "hours")
-    .add(momentBreakTime.minutes(), "minutes")
+    .add(DEFAULT_BREAK_TIME, "minutes")
     .add(momentWorkTime.hours(), "hours")
     .add(momentWorkTime.minutes(), "minutes")
-    .format("HH:mm");
+    .format("HH:mm") as Time;
 }
 
 interface Props {
@@ -122,7 +124,7 @@ export function WorkTimeForm({
   );
   const [breakTime, setBreakTime] = useState(
     attendanceOfSelectedDate
-      ? minutesToTime(attendanceOfSelectedDate.breakTime)
+      ? attendanceOfSelectedDate.breakTime
       : DEFAULT_BREAK_TIME,
   );
   const [endTime, setEndTime] = useState(
@@ -190,7 +192,10 @@ export function WorkTimeForm({
     }
   }, [fetcher.state, fetcher.data, fetcher.formData, setAttendances]);
 
-  function setTime(time: string, setter: Dispatch<SetStateAction<string>>) {
+  function setTime<T extends string | number>(
+    time: T,
+    setter: Dispatch<SetStateAction<T>>,
+  ) {
     setter(time);
     setValidationErrors({});
   }
@@ -209,26 +214,34 @@ export function WorkTimeForm({
         <TimeInput
           name="startTime"
           time={startTime}
-          onChange={(time) => setTime(time, setStartTime)}
           label="Start time"
           readOnly={!isEdit}
           hasError={!!validationErrors.allTimes}
+          onAdd={() => setTime(addMinutesToTime(startTime, 15), setStartTime)}
+          onRemove={() =>
+            setTime(addMinutesToTime(startTime, -15), setStartTime)
+          }
+          onChange={(e) => setTime(e.target.value as Time, setStartTime)}
         />
         <TimeInput
           name="breakTime"
           time={breakTime}
-          onChange={(time) => setTime(time, setBreakTime)}
           label="Break"
           readOnly={!isEdit}
           hasError={!!validationErrors.allTimes || !!validationErrors.breakTime}
+          onAdd={() => setTime(breakTime + 15, setBreakTime)}
+          onRemove={() => setTime(breakTime - 15, setBreakTime)}
+          onChange={(e) => setTime(Number(e.target.value), setBreakTime)}
         />
         <TimeInput
           name="endTime"
           time={endTime}
-          onChange={(time) => setTime(time, setEndTime)}
           label="End time"
           readOnly={!isEdit}
           hasError={!!validationErrors.allTimes}
+          onAdd={() => setTime(addMinutesToTime(endTime, 15), setEndTime)}
+          onRemove={() => setTime(addMinutesToTime(endTime, -15), setEndTime)}
+          onChange={(e) => setTime(e.target.value as Time, setEndTime)}
         />
       </div>
       <input

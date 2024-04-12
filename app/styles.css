@@ -26,6 +26,7 @@
 
 @layer base {
   input[type="text"],
+  input[type="number"],
   input[type="time"],
   input[type="password"],
   textarea {
@@ -33,6 +34,7 @@
   }
 
   input[type="text"],
+  input[type="number"],
   input[type="time"] {
     @apply py-1 px-2 lg:px-3 lg:py-2;
   }

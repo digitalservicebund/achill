@@ -1,34 +1,33 @@
-import moment from "moment";
+import React from "react";
 
-type WorkingTimeInputProps = {
+type TimeInputProps = {
   name: string;
-  time: string;
-  onChange: (time: string) => void;
   label: string;
+  time: string | number;
   readOnly?: boolean;
   hasError?: boolean;
+  onAdd: () => void;
+  onRemove: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function TimeInput({
   name,
-  time,
-  onChange,
   label,
+  time,
   readOnly = false,
   hasError = false,
-}: Readonly<WorkingTimeInputProps>) {
-  function addMinutesToTime(minutes: number) {
-    return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm");
-  }
-
+  onAdd,
+  onRemove,
+  onChange,
+}: Readonly<TimeInputProps>) {
+  const isMinutes = typeof time === "number";
   return (
     <div className="flex items-end">
       <button
         type="button"
         className={`material-symbols-outlined change-time-btn${readOnly ? " invisible" : ""}`}
-        onClick={() => {
-          onChange(addMinutesToTime(-15));
-        }}
+        onClick={onRemove}
         disabled={readOnly}
       >
         Remove
@@ -36,24 +35,20 @@ export function TimeInput({
       <label htmlFor={name} className="flex flex-col">
         {label}
         <input
-          className={`read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 ${hasError ? " error" : ""}`}
+          className={`read-only:bg-gray-200 read-only:cursor-not-allowed read-only:border-gray-200 ${isMinutes ? " w-20" : ""}${hasError ? " error" : ""}`}
           id={name}
           name={name}
-          type="time"
+          type={isMinutes ? "number" : "time"}
           value={time}
-          step={900}
+          step={isMinutes ? 5 : 900}
           disabled={readOnly}
-          onChange={(e) => {
-            onChange(e.target.value);
-          }}
+          onChange={onChange}
         />
       </label>
       <button
         type="button"
         className={`material-symbols-outlined change-time-btn${readOnly ? " invisible" : ""}`}
-        onClick={() => {
-          onChange(addMinutesToTime(15));
-        }}
+        onClick={onAdd}
         disabled={readOnly}
       >
         Add

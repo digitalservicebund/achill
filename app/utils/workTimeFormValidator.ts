@@ -21,7 +21,13 @@ function calculateWorkTime(schema: WorkTimeFormData) {
 export const workTimeFormDataSchema = z
   .object({
     startTime: timeSchema,
-    breakTime: timeSchema.transform((time) => timeToMinutes(time)),
+    breakTime: z
+      .string()
+      .transform((time) => Number(time))
+      .refine((time) => time >= 0, {
+        message: "Break time can't be negative.",
+        path: ["breakTime"],
+      }),
     endTime: timeSchema,
     date: z.string().regex(YYYY_MM_DD_FORMAT),
   })

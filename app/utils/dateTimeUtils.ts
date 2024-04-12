@@ -40,6 +40,10 @@ export function minutesToTime(minutes: number) {
     .format("HH:mm") as Time;
 }
 
+export function addMinutesToTime(time: Time, minutes: number) {
+  return moment(time, "HH:mm").add(minutes, "minutes").format("HH:mm") as Time;
+}
+
 export function padLeadingZeros(num: string) {
   const s = "0" + num;
   const length = 2;
