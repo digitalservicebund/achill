@@ -27,15 +27,15 @@ test.describe("work time form", () => {
 
   test("should add, edit and delete work time", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", 60, "17:00");
-    await expect(page.getByText("8:00")).toBeVisible();
+    await expect(page.getByRole("table")).toContainText("8:00")
 
     await clickWorkTimeButton(page, "Edit");
     await page.getByLabel("Start time").fill("09:00");
     await clickWorkTimeButton(page, "Update");
-    await expect(page.getByText("7:00")).toBeVisible();
+    await expect(page.getByRole("table")).toContainText("7:00")
 
     await clickWorkTimeButton(page, "Delete");
-    await expect(page.getByText("7:00")).not.toBeVisible();
+    await expect(page.getByRole("table")).not.toContainText("7:00")
   });
 
   test("should be disabled after submitting, enabled after edit, disabled after cancel or update and enabled after deleting", async ({
@@ -74,7 +74,7 @@ test.describe("work time form", () => {
 
   test("should function with <=6h work and no break", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", 0, "14:00");
-    await expect(page.getByText("6:00")).toBeVisible();
+    await expect(page.getByRole("table")).toContainText("6:00")
     await clickWorkTimeButton(page, "Delete");
   });
 
