@@ -238,17 +238,17 @@ jobs:
     timeout-minutes: 10
     permissions:
       packages: read
-    environment: staging
+    environment: production
     steps:
       - name: Deploy new image
         uses: digitalservicebund/argocd-deploy@4fac1bb67c92ed168f6d9b22f8779ce241a9e412 # v1.0.0
         with:
-          environment: staging
+          environment: production
           version: ${{ github.sha }}
           deploying_repo: achill
           infra_repo: achill-infra
           deploy_key: ${{ secrets.DEPLOY_KEY }}
-          app: achill-staging
+          app: achill-production
           argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
           argocd_server: ${{ secrets.ARGOCD_SERVER }}
           argocd_sync_timeout: 300
