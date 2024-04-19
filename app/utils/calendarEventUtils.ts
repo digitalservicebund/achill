@@ -24,7 +24,7 @@ export function getDescriptionForEventType(type?: CalendarEventType) {
     case "Holiday":
       return "Public holiday, working impossible";
     case "Training":
-      return "Learning";
+      return "Learning, please still track working hours";
     case "PaidVacation":
       return "You are on paid vacation";
     case "UnpaidVacation":

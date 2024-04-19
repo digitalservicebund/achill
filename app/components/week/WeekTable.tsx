@@ -69,9 +69,11 @@ export function WeekTable({
   }
 
   function displayHours(index: number): string {
-    const eventOfDay = timesAndEventsOfSelectedWeek[index].events;
+    const eventOfDay = timesAndEventsOfSelectedWeek[index].events[0];
     // TODO: might not work if there are multiple events on the same day
-    return eventOfDay[0]?.duration === "AllDay" ? "" : "0";
+    return eventOfDay?.type !== "Training" && eventOfDay?.duration === "AllDay"
+      ? ""
+      : "0";
   }
 
   return (
