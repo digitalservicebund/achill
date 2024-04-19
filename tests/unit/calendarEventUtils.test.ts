@@ -17,7 +17,9 @@ test("getDescriptionForEventType should return correct descriptions", () => {
   expect(getDescriptionForEventType("Holiday")).toBe(
     "Public holiday, working impossible",
   );
-  expect(getDescriptionForEventType("Training")).toBe("Learning");
+  expect(getDescriptionForEventType("Training")).toBe(
+    "Learning, please still track working hours",
+  );
   expect(getDescriptionForEventType("PaidVacation")).toBe(
     "You are on paid vacation",
   );
