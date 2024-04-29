@@ -4,6 +4,8 @@ import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { ZodError } from "zod";
+import type { TrackyPhase } from "~/apis/tasks/TrackyPhase";
+import type { TrackyTask } from "~/apis/tasks/TrackyTask";
 import type { CalculationPosition, ProjectTime } from "~/apis/troi/Troi.types";
 import {
   addProjectTime,
@@ -67,6 +69,9 @@ interface Props {
         isBillable: boolean;
         isInvoiced: boolean;
       };
+  recurringTasks: TrackyTask[];
+  phaseTasks: TrackyTask[];
+  phases: TrackyPhase[];
   setProjectTimes: React.Dispatch<React.SetStateAction<ProjectTime[]>>;
 }
 export function ProjectTimeForm({
@@ -78,6 +83,9 @@ export function ProjectTimeForm({
     isBillable: calculationPosition.isBillable,
     isInvoiced: false,
   },
+  recurringTasks,
+  phaseTasks,
+  phases,
   setProjectTimes,
 }: Readonly<Props>) {
   const fetcher = useFetcher<typeof action>();
@@ -230,6 +238,9 @@ export function ProjectTimeForm({
           <ProjectTimeDescription
             description={description}
             setDescription={setDescription}
+            recurringTasks={recurringTasks}
+            phaseTasks={phaseTasks}
+            phases={phases}
             onKeyDown={onKeyDown}
             hasErrors={!!validationErrors.description}
             resetErrors={() => resetError("description")}

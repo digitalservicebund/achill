@@ -4,6 +4,13 @@ import moment from "moment";
 import { useState } from "react";
 import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
+import {
+  getPhasesPerCalculationPosition,
+  loadPhases,
+  loadPositionPhases,
+  loadSubprojectPhases,
+} from "~/apis/tasks/TrackyPhase";
+import { loadTasks } from "~/apis/tasks/TrackyTask";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
 import {
   getCalculationPositions,
@@ -35,10 +42,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     calculationPositions,
     projectTimes,
     attendances,
-    // tasks,
-    // phases,
-    // positionPhases,
-    // subprojectPhases,
+    tasks,
+    phases,
+    positionPhases,
+    subprojectPhases,
   ] = await Promise.all([
     // TROI API calls
     getCalendarEvents(session),
@@ -47,21 +54,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
     // PERSONIO API call
     getAttendances(personioId),
     // NOCODB API calls
-    // loadTasks(),
-    // loadPhases(),
-    // loadPositionPhases(),
-    // loadSubprojectPhases(),
+    loadTasks(),
+    loadPhases(),
+    loadPositionPhases(),
+    loadSubprojectPhases(),
   ]);
 
   console.timeLog("loader", "loaded data");
 
   // load phases for each calculation position in parallel
-  // const phasesPerCalculationPosition = getPhasesPerCalculationPosition(
-  //   phases,
-  //   positionPhases,
-  //   subprojectPhases,
-  //   calculationPositions,
-  // );
+  const phasesPerCalculationPosition = getPhasesPerCalculationPosition(
+    phases,
+    positionPhases,
+    subprojectPhases,
+    calculationPositions,
+  );
 
   console.timeEnd("loader");
 
@@ -71,8 +78,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     calculationPositions,
     calendarEvents,
     projectTimes,
-    // tasks,
-    // phasesPerCalculationPosition,
+    tasks,
+    phasesPerCalculationPosition,
     workingHours,
     attendances,
   });
@@ -175,6 +182,10 @@ export default function TrackYourTime() {
                 key={selectedDate.toDateString()}
                 selectedDate={selectedDate}
                 calculationPositions={loaderData.calculationPositions ?? []}
+                tasks={loaderData.tasks}
+                phasesPerCalculationPosition={
+                  loaderData.phasesPerCalculationPosition
+                }
                 projectTimes={projectTimes}
                 setProjectTimes={setProjectTimes}
               />
