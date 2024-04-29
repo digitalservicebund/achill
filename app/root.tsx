@@ -18,7 +18,7 @@ import fontRegular from "~/../public/fonts/BundesSansWeb-Regular.woff2";
 import stylesheet from "~/styles.css";
 
 export const headers: HeadersFunction = () => ({
-  "Content-Security-Policy":
+  "Content-Security-Policy-Report-Only":
     "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' https://rsms.me https://fonts.googleapis.com; font-src 'self' https://rsms.me https://fonts.gstatic.com; img-src 'self'; frame-ancestors 'self'; connect-src 'self' ws://localhost:3001",
   "X-Frame-Options": "SAMEORIGIN",
   "X-Content-Type-Options": "nosniff",
