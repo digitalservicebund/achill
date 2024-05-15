@@ -3,8 +3,6 @@ import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 
 const HH_MM_FORMAT_WITH_LEADING_0 = /^(0\d|1\d|2[0-3]):([0-5]\d)$/;
-export const YYYY_MM_DD_FORMAT =
-  /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2]\d|3[0-1])$/;
 
 export const START_DATE = addDaysToDate(new Date(), -366);
 export const END_DATE = addDaysToDate(new Date(), 366);

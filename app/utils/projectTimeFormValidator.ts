@@ -1,6 +1,6 @@
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
-import { YYYY_MM_DD_FORMAT, convertTimeStringToFloat } from "./dateTimeUtils";
+import { convertTimeStringToFloat } from "./dateTimeUtils";
 
 export type ProjectTimeSaveFormData = {
   calculationPositionId: number;
@@ -16,7 +16,7 @@ const timeInputFormat = /^((1?\d|2[0-3])(:[0-5]\d)?|((1?\d|2[0-3])[.,]\d+))$/;
 
 export const projectTimeSaveFormSchema = z.object({
   calculationPositionId: z.string().transform((id) => parseInt(id)),
-  date: z.string().regex(YYYY_MM_DD_FORMAT),
+  date: z.string().date(),
   hours: z
     .string()
     .regex(timeInputFormat, "Time is missing or in the wrong format.")

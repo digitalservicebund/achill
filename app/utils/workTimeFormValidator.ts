@@ -1,7 +1,7 @@
 import type { ZodSchema, ZodTypeDef } from "zod";
 import { z } from "zod";
 import type { Time } from "./dateTimeUtils";
-import { YYYY_MM_DD_FORMAT, timeSchema, timeToMinutes } from "./dateTimeUtils";
+import { timeSchema, timeToMinutes } from "./dateTimeUtils";
 
 export type WorkTimeFormData = {
   startTime: Time;
@@ -29,7 +29,7 @@ export const workTimeFormDataSchema = z
         path: ["breakTime"],
       }),
     endTime: timeSchema,
-    date: z.string().regex(YYYY_MM_DD_FORMAT),
+    date: z.string().date(),
   })
   .refine((schema) => calculateWorkTime(schema) > 0, {
     message: "Invalid work time.",
