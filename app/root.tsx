@@ -70,7 +70,11 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-blue-500">
-        <Outlet />
+        <div className="container mx-auto md:mt-8 w-full max-w-screen-lg text-sm text-gray-800 md:px-2">
+          <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
+            <Outlet />
+          </main>
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
