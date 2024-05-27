@@ -55,12 +55,7 @@ export function WeekView({
           data-testid="date"
           className="text-base text-gray-800 focus:outline-none"
         >
-          {selectedDate.toLocaleDateString("en-gb", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
+          {moment(selectedDate).format("dddd, MMMM Do YYYY")}
         </div>
       </div>
 
