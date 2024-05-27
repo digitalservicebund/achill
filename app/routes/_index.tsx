@@ -61,9 +61,11 @@ export function ErrorBoundary() {
   }
 
   return (
-    <div>
-      <Header />
-      {errorComponent}
+    <div className="container mx-auto md:mt-8 w-full max-w-screen-lg text-sm text-gray-800 md:px-2">
+      <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
+        <Header />
+        {errorComponent}
+      </main>
     </div>
   );
 }
@@ -166,71 +168,73 @@ export default function TrackYourTime() {
   const selectedDayEvents = findEventsOfDate(calendarEvents, selectedDate);
 
   return (
-    <>
-      <Header username={loaderData.username} />
-      <div>
-        <Section>
-          <a
-            className="angie-link"
-            href={HOW_TO_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Read about how to track your time in confluence
-          </a>
-        </Section>
-        <Section extraClasses="pt-2 z-10 w-full bg-white md:sticky md:top-0">
-          <WeekView
-            selectedDate={selectedDate}
-            projectTimes={projectTimes}
-            calendarEvents={calendarEvents}
-            onSelectDate={setSelectedDate}
-            attendances={attendances}
-            selectedDayEvents={selectedDayEvents}
-          />
-        </Section>
-
-        <Section title="Total working hours (Personio)">
-          <WorkTimeForm
-            key={selectedDate.toDateString()}
-            selectedDate={selectedDate}
-            workingHours={loaderData.workingHours}
-            attendances={attendances}
-            setAttendances={setAttendances}
-          />
-        </Section>
-
-        {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
-          <Section title="Project hours (Troi)">
-            <ProjectTimes
-              key={selectedDate.toDateString()}
-              selectedDate={selectedDate}
-              calculationPositions={loaderData.calculationPositions ?? []}
-              tasks={loaderData.tasks}
-              phasesPerCalculationPosition={
-                loaderData.phasesPerCalculationPosition
-              }
-              projectTimes={projectTimes}
-              setProjectTimes={setProjectTimes}
-            />
-          </Section>
-        )}
-
-        <Section>
-          <p className="text-xs text-gray-600">
-            Project not showing up?{" "}
+    <div className="container mx-auto md:mt-8 w-full max-w-screen-lg text-sm text-gray-800 md:px-2">
+      <main className="rounded-sm bg-white p-2 shadow-md sm:w-full md:px-8 md:py-6">
+        <Header username={loaderData.username} />
+        <div>
+          <Section>
             <a
               className="angie-link"
-              href={SET_UP_URL}
+              href={HOW_TO_URL}
               target="_blank"
               rel="noreferrer"
             >
-              Make sure it&apos;s available in Troi and marked as a
-              &quot;favorite&quot;.
+              Read about how to track your time in confluence
             </a>
-          </p>
-        </Section>
-      </div>
-    </>
+          </Section>
+          <Section extraClasses="pt-2 z-10 w-full bg-white md:sticky md:top-0">
+            <WeekView
+              selectedDate={selectedDate}
+              projectTimes={projectTimes}
+              calendarEvents={calendarEvents}
+              onSelectDate={setSelectedDate}
+              attendances={attendances}
+              selectedDayEvents={selectedDayEvents}
+            />
+          </Section>
+
+          <Section title="Total working hours (Personio)">
+            <WorkTimeForm
+              key={selectedDate.toDateString()}
+              selectedDate={selectedDate}
+              workingHours={loaderData.workingHours}
+              attendances={attendances}
+              setAttendances={setAttendances}
+            />
+          </Section>
+
+          {!selectedDayEvents?.some((event) => event.type == "Holiday") && (
+            <Section title="Project hours (Troi)">
+              <ProjectTimes
+                key={selectedDate.toDateString()}
+                selectedDate={selectedDate}
+                calculationPositions={loaderData.calculationPositions ?? []}
+                tasks={loaderData.tasks}
+                phasesPerCalculationPosition={
+                  loaderData.phasesPerCalculationPosition
+                }
+                projectTimes={projectTimes}
+                setProjectTimes={setProjectTimes}
+              />
+            </Section>
+          )}
+
+          <Section>
+            <p className="text-xs text-gray-600">
+              Project not showing up?{" "}
+              <a
+                className="angie-link"
+                href={SET_UP_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Make sure it&apos;s available in Troi and marked as a
+                &quot;favorite&quot;.
+              </a>
+            </p>
+          </Section>
+        </div>
+      </main>
+    </div>
   );
 }
