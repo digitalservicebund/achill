@@ -167,7 +167,7 @@ export default function TrackYourTime() {
 
   return (
     <>
-      {/* <Header username={loaderData.username} /> */}
+      <Header username={loaderData.username} />
       <div>
         <Section>
           <a
