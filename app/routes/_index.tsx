@@ -33,7 +33,8 @@ import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
 
 const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
-const SET_UP_URL = "https://digitalservicebund.atlassian.net/wiki/x/T4BfJg";
+const SET_UP_URL =
+  "https://digitalservicebund.atlassian.net/wiki/spaces/DIGITALSER/pages/359301512/Project+Hours+-+What+and+How+to+Book#Setting-up";
 
 export function ErrorBoundary() {
   const error = useRouteError();
