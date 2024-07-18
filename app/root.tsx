@@ -53,7 +53,13 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: fontsStylesheet },
   { rel: "stylesheet", href: stylesheet },
   { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
-  { rel: "icon", href: "/timetracking_blue.svg", type: "image/svg+xml" },
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+  {
+    rel: "icon",
+    href: "/favicon(dark).svg",
+    type: "image/svg+xml",
+    media: "(prefers-color-scheme: dark)",
+  },
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200",
