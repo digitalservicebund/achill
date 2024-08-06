@@ -40,7 +40,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",
     "@playwright/test": "^1.45.0",
-    "@remix-run/dev": "^2.10.0",
+    "@remix-run/dev": "^2.11.1",
     "@remix-run/eslint-config": "^2.11.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@types/crypto-js": "^4.2.1",
