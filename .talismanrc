@@ -2,7 +2,7 @@ fileignoreconfig:
   - filename: .github/workflows/scan.yml
     checksum: 708e705ca5e0ada5e38df453738f100da9940cc48eeb13bde46b7eb3ae6bc19b
   - filename: .github/workflows/pipeline.yml
-    checksum: b7e8c74d36ae5d921efd5a12c25558f2bc6eda4fd59b100d46d04f5af022d13e
+    checksum: d8a4ecbf34c7d2a65618de19c0f84a6ee48cb3673ca2594a4e6e2098b85ebb93
   - filename: app/routes/_index.tsx
     checksum: eafda6d6dc438813d713fbfc1aa7c0b3397bb9ebe909c9e03409d4e55e8310c9
   - filename: .env.example
