@@ -12,7 +12,7 @@ Bootstrap a [Remix](https://remix.run/docs) and TypeScript application with Cont
 
 ### Node.js
 
-We aim to use the current active [LTS version of nodejs](https://nodejs.dev/en/about/releases/), which is V20 at the time of writing.
+We aim to use the current active [LTS version of nodejs](https://nodejs.dev/en/about/releases/), which is V22 from October 2024.
 There is a `.node-version` file to simplify setup using [nodenv](https://github.com/nodenv/nodenv).
 
 ### Dependencies
