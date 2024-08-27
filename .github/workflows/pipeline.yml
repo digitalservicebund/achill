@@ -59,7 +59,7 @@ jobs:
           npx --yes playwright install --with-deps
 
       - name: Run E2E tests
-        run: npm run test:e2e
+        run: SESSION_COOKIE_SECRET=test-secret npm run test:e2e
 
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
