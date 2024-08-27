@@ -15,8 +15,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SESSION_COOKIE_SECRET: build session cookie secret
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
