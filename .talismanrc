@@ -10,7 +10,7 @@ fileignoreconfig:
   - filename: start.sh
     checksum: d76c4c0800d2aa78836b64ce524279ba962f9b85db1577f80936385483408a06
   - filename: README.md
-    checksum: a97f4c4e3820f1d0966f0beb56520fddf2fbc07a9fe4c90b3475275511485169
+    checksum: 563ae1128b3cb07ca4ff678a1fc206abf925da049b131f72d7350207168d38d0
   - filename: public/fonts/BundesSerifWeb-Italic.woff
     checksum: 2cad03dd85939c73e892cce6d994a89046677e94ceb11dd1cde5a23a3b35c392
   - filename: public/fonts/BundesSansWeb-BoldItalic.woff
