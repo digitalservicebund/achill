@@ -3,6 +3,11 @@ import { HttpResponse, delay, http } from "msw";
 import type { ProjectTime } from "../troi/Troi.types";
 
 const projectTimes = require("./stubs/troi/billings_hours.json");
+// Replace invoiced project time date with yesterday
+const yesterday = new Date(Date.now() - 7 * 86400000)
+  .toISOString()
+  .split("T")[0];
+projectTimes.find((pt: any) => pt.Remark === "Invoiced").Date = yesterday;
 
 export const handlers = [
   http.get(
@@ -30,15 +35,7 @@ export const handlers = [
   ),
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/billings/hours",
-    () => {
-      // Replace invoiced project time date with yesterday
-      projectTimes.find((pt: any) => pt.id === "13").Date = new Date(
-        Date.now() - 7 * 86400000,
-      )
-        .toISOString()
-        .split("T")[0];
-      return HttpResponse.json(projectTimes);
-    },
+    () => HttpResponse.json(projectTimes),
   ),
   http.post(
     "https://digitalservice.troi.software/api/v2/rest/billings/hours",
@@ -51,14 +48,16 @@ export const handlers = [
       };
 
       const id = projectTimes.length + 1;
-      const exampleProjectTime = projectTimes[0];
       projectTimes.push({
-        ...exampleProjectTime,
+        CalculationPosition: {
+          id: 4,
+        },
         id,
         Date: body.Date,
         Quantity: body.Quantity,
         Remark: body.Remark,
         IsBillable: body.IsBillable,
+        IsInvoiced: false,
       });
 
       await delay(50);
