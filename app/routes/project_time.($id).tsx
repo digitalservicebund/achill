@@ -108,9 +108,9 @@ export function ProjectTimeForm({
       const errors = fetcher.data.issues.reduce(
         (errors, issue) => ({
           ...errors,
-          [issue.path[0]]: issue.message,
+          [issue.path[0]]: errors[issue.path[0]] || issue.message,
         }),
-        {},
+        {} as Record<string, string>,
       );
       setValidationErrors(errors);
     } else if (fetcher.data.id && fetcher.formData) {
