@@ -21,7 +21,7 @@ We will use the loader function of the `index` route to fetch the user data in p
 
 We will centrally store the state of the app in the `index` route.
 
-We will fetch some more fixed user data (working hours, holidays, etc.) only once when the app is loaded.
+We will fetch the unchanging user data (working hours, holidays, etc.) only once when the app is loaded.
 
 The individual components will be responsible for communicating with the respective external API on user input with their own forms.
 
