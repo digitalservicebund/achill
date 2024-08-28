@@ -31,6 +31,12 @@ export const handlers = [
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/billings/hours",
     () => {
+      // Replace invoiced project time date with yesterday
+      projectTimes.find((pt: any) => pt.id === "13").Date = new Date(
+        Date.now() - 7 * 86400000,
+      )
+        .toISOString()
+        .split("T")[0];
       return HttpResponse.json(projectTimes);
     },
   ),

@@ -131,3 +131,16 @@ test.describe("project time validation", () => {
     await expect(projectLocator).toContainText("Description is required");
   });
 });
+
+test.describe("invoiced projects", () => {
+  test.beforeEach(async ({ page }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+  });
+
+  test("invoiced project times cannot be modified", async ({ page }) => {
+    // date of invoiced project time is replaced by one week ago in mock so we need to go back a week
+    await page.getByTestId("btn-previous-week").click();
+    const projectLocator = page.locator("form").filter({ hasText: "2nd" });
+    await expect(projectLocator.getByRole("button")).not.toBeVisible();
+  });
+});
