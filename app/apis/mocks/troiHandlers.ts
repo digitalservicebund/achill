@@ -2,12 +2,23 @@ import md5 from "crypto-js/md5.js";
 import { HttpResponse, delay, http } from "msw";
 import type { ProjectTime } from "../troi/Troi.types";
 
-const projectTimes = require("./stubs/troi/billings_hours.json");
-// Replace invoiced project time date with yesterday
-const yesterday = new Date(Date.now() - 7 * 86400000)
+const calendarEvents = require("./stubs/troi/calendarEvents.json");
+// Replace holiday with two weeks ago
+const holiday = calendarEvents.find(
+  (event: any) => event.Subject === "Holiday",
+);
+const holidayDate = new Date(Date.now() - 14 * 86400000)
   .toISOString()
   .split("T")[0];
-projectTimes.find((pt: any) => pt.Remark === "Invoiced").Date = yesterday;
+holiday.Start = `${holidayDate} 00:00:00`;
+holiday.End = `${holidayDate} 23:59:59`;
+
+const projectTimes = require("./stubs/troi/billings_hours.json");
+// Replace invoiced project time date with one week ago
+const oneWeekAgo = new Date(Date.now() - 7 * 86400000)
+  .toISOString()
+  .split("T")[0];
+projectTimes.find((pt: any) => pt.Remark === "Invoiced").Date = oneWeekAgo;
 
 export const handlers = [
   http.get(
@@ -31,7 +42,11 @@ export const handlers = [
   ),
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/calendarEvents",
-    () => HttpResponse.json(require("./stubs/troi/calendarEvents.json")),
+    () => {
+      // Replace holiday with two weeks ago
+
+      return HttpResponse.json(calendarEvents);
+    },
   ),
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/billings/hours",

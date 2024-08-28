@@ -27,5 +27,12 @@
     "Subject": "Bezahlter Urlaub",
     "Type": "P",
     "id": "P5"
+  },
+  {
+    "Start": "will be replaced by two weeks ago",
+    "End": "will be replaced by two weeks ago",
+    "Subject": "Holiday",
+    "Type": "H",
+    "id": "11"
   }
 ]

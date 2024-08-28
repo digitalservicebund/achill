@@ -141,3 +141,16 @@ test.describe("invoiced projects", () => {
     await expect(projectLocator.getByRole("button")).not.toBeVisible();
   });
 });
+
+test.describe("holidays", () => {
+  test("can't book on holidays", async ({ page }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+    // date of holiday is replaced by two weeks ago in mock so we need to go back
+    await page.getByTestId("btn-previous-week").click();
+    await page.getByTestId("btn-previous-week").click();
+    await expect(page.getByTestId("week-view")).toContainText("holiday");
+    await expect(
+      page.locator("form").filter({ hasText: "2nd" }),
+    ).not.toBeVisible();
+  });
+});
