@@ -86,7 +86,7 @@ export default defineConfig({
   webServer: {
     command: "MOCK_EXTERNAL_APIS=true npm run dev",
     url: baseURL,
-    reuseExistingServer: false,
+    reuseExistingServer: true,
     // stdout: "pipe",
   },
 });
