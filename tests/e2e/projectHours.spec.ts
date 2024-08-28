@@ -2,8 +2,11 @@ import { expect, test } from "@playwright/test";
 import LoginPage from "tests/e2e/LoginPage";
 
 test.describe("project time actions", () => {
-  test("should add, edit and delete project time", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+  });
+
+  test("should add, edit and delete project time", async ({ page }) => {
     const projectLocator = page.locator("form").filter({ hasText: "cool" });
 
     // Add project time
@@ -35,7 +38,6 @@ test.describe("project time actions", () => {
   });
 
   test("add and update with enter", async ({ page }) => {
-    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
     const projectLocator = page.locator("form").filter({ hasText: "cool" });
 
     // Add project time
