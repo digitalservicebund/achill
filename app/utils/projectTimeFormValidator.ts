@@ -19,7 +19,9 @@ export const projectTimeSaveFormSchema = z.object({
   date: z.string().date(),
   hours: z
     .string()
-    .regex(timeInputFormat, "Time is missing or in the wrong format.")
+    .trim()
+    .min(1, { message: "Time is required." })
+    .regex(timeInputFormat, "Time is in the wrong format.")
     .transform(convertTimeStringToFloat)
     .refine((hours) => hours <= 10, {
       message: "You can't book more than 10 hours.",
