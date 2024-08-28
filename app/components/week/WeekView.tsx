@@ -48,6 +48,7 @@ export function WeekView({
 
   return (
     <div
+      data-testid="week-view"
       className={`flex flex-wrap gap-8${isDisabled ? " opacity-50" : ""}`}
       {...{ inert: isDisabled ? "" : undefined }} // syntax needed until React 19 https://github.com/facebook/react/issues/17157
     >

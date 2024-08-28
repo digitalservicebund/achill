@@ -1,5 +1,5 @@
 import md5 from "crypto-js/md5.js";
-import { HttpResponse, http } from "msw";
+import { HttpResponse, delay, http } from "msw";
 import type { ProjectTime } from "../troi/Troi.types";
 
 const projectTimes = require("./stubs/troi/billings_hours.json");
@@ -54,6 +54,8 @@ export const handlers = [
         Remark: body.Remark,
         IsBillable: body.IsBillable,
       });
+
+      await delay(50);
       return HttpResponse.json({
         id: 1234,
       });
@@ -78,6 +80,7 @@ export const handlers = [
       projectTime.Quantity = body.Quantity;
       projectTime.Remark = body.Remark;
 
+      await delay(50);
       return HttpResponse.json({});
     },
   ),
@@ -93,6 +96,7 @@ export const handlers = [
       }
 
       projectTimes.splice(projectTimeIndex, 1);
+      await delay(50);
       return HttpResponse.json({});
     },
   ),

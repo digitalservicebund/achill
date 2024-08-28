@@ -59,4 +59,28 @@ test.describe("project time actions", () => {
     await expect(projectLocator).toContainText("5 Hour(s)");
     await expect(projectLocator).toContainText("Daily");
   });
+
+  test("form is disabled while saving", async ({ page }) => {
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+
+    // Add project time
+    await projectLocator.getByLabel("Hours").fill("4");
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await projectLocator.getByRole("button").click();
+    await expect(page.getByTestId("week-view")).toHaveAttribute("inert", "");
+    await expect(projectLocator).toHaveAttribute("inert", "");
+
+    // Edit project time
+    await projectLocator.getByRole("button", { name: "Edit" }).click();
+    await projectLocator.getByLabel("Hours").fill("5");
+    await projectLocator.getByText("Meeting").fill("Daily");
+    await projectLocator.getByRole("button", { name: "Update" }).click();
+    await expect(page.getByTestId("week-view")).toHaveAttribute("inert", "");
+    await expect(projectLocator).toHaveAttribute("inert", "");
+
+    // Delete project time
+    await projectLocator.getByRole("button", { name: "Delete" }).click();
+    await expect(page.getByTestId("week-view")).toHaveAttribute("inert", "");
+    await expect(projectLocator).toHaveAttribute("inert", "");
+  });
 });
