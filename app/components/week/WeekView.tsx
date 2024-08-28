@@ -44,11 +44,13 @@ export function WeekView({
       return attendances.find((attendance) => attendance.date === date);
     });
 
-  const anySubmitting = useFetchers().some((f) => f.state === "submitting");
+  const isDisabled = useFetchers().some((f) => f.state === "submitting");
 
   return (
-    <div className="relative flex flex-wrap gap-8">
-      {anySubmitting && <div className="disabled-overlay"></div>}
+    <div
+      className={`flex flex-wrap gap-8${isDisabled ? " opacity-50" : ""}`}
+      {...{ inert: isDisabled ? "" : undefined }} // syntax needed until React 19 https://github.com/facebook/react/issues/17157
+    >
       <div className="min-w-[30ch]">
         <WeekSelect selectedDate={selectedDate} onSelectDate={onSelectDate} />
         <div

@@ -172,17 +172,17 @@ export function ProjectTimeForm({
     setValidationErrors(rest);
   }
 
+  const isDisabled = fetcher.state === "submitting";
+
   return (
     <fetcher.Form
       ref={formRef}
       method="POST"
       action={`/project_time/${isCreate ? "" : projectTime.id}`}
       id="project-time-form"
-      className="relative w-full mb-5 rounded-lg bg-gray-100 p-4 shadow-lg"
+      className={`w-full mb-5 rounded-lg bg-gray-100 p-4 shadow-lg${isDisabled ? " opacity-50" : ""}`}
+      {...{ inert: isDisabled ? "" : undefined }} // syntax needed until React 19 https://github.com/facebook/react/issues/17157
     >
-      {fetcher.state === "submitting" && (
-        <div className="disabled-overlay"></div>
-      )}
       <h3 className="mb-4 text-base text-gray-900">
         {calculationPosition.name}
       </h3>

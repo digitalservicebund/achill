@@ -59,8 +59,4 @@
   textarea.error {
     @apply border border-b-2 border-red-500 focus:ring-red-500 focus:border-red-500;
   }
-
-  .disabled-overlay {
-    @apply absolute top-0 bottom-0 right-0 left-0 bg-white opacity-50 z-10;
-  }
 }
