@@ -161,6 +161,9 @@ function _getCalendarEventTypForEvent(
 }
 
 function _getCalendarEventDurationForEvent(event: CalendarEvent) {
+  // There seems to be a bug with Troi where half vacation days at the start/end of a multiday vacation
+  // do not have the correct start/endDate and are thus not displayed correctly in the calendar.
+
   if (event === undefined) {
     return undefined;
   }
