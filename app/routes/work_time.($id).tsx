@@ -207,7 +207,7 @@ export function WorkTimeForm({
       method="POST"
       action={`/work_time/${attendanceOfSelectedDate?.id ?? ""}`}
       id="work-time-form"
-      className={`flex justify-between rounded-lg bg-gray-100 p-4 shadow-lg${isDisabled ? " opacity-50" : ""}`}
+      className={`relative flex justify-between rounded-lg bg-gray-100 p-4 shadow-lg${isDisabled ? " opacity-50" : ""}`}
       {...{ inert: isDisabled ? "" : undefined }} // syntax needed until React 19 https://github.com/facebook/react/issues/17157
     >
       <div className="flex flex-col md:flex-row gap-3 md:gap-0 md:flex-grow justify-between self-start">
