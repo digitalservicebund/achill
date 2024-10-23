@@ -114,6 +114,8 @@ export async function initializePersonioApi(
   const url = new URL(PERSONIO_EMPLOYEES_URL);
   const mailAddress = `${username}@${DIGITALSERVICE_MAIL_DOMAIN}`;
   url.searchParams.set("email", mailAddress);
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("offset", "0");
 
   let employeeData = await fetchWithPersonioAuth(url);
 
