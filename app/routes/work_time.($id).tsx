@@ -86,7 +86,9 @@ const DEFAULT_BREAK_TIME = 60;
 function getEndTime(workTime: number) {
   // calculate end time based on daily work time from personio
   const momentStartTime = moment(DEFAULT_START_TIME, "HH:mm");
-  const momentWorkTime = moment(minutesToTime(workTime * 60), "HH:mm");
+  // e.g. 36h work week results in 7:12 hours -> round up/down to full fifteen minutes
+  const workTimeMinutes = Math.round((workTime * 60) / 15) * 15;
+  const momentWorkTime = moment(minutesToTime(workTimeMinutes), "HH:mm");
 
   return momentStartTime
     .add(DEFAULT_BREAK_TIME, "minutes")
