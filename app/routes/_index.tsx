@@ -1,4 +1,4 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useLoaderData,
@@ -113,7 +113,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   console.timeEnd("loader");
 
-  return json({
+  return {
     timestamp: Date.now(),
     username: session.get("username")!,
     calculationPositions,
@@ -123,7 +123,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     phasesPerCalculationPosition,
     workingHours,
     attendances,
-  });
+  };
 }
 
 export function findEventsOfDate(
