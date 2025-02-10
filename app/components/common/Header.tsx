@@ -1,6 +1,6 @@
 import { Form } from "@remix-run/react";
 
-export default function Header({ username }: { username?: string }) {
+export default function Header({ username }: Readonly<{ username?: string }>) {
   return (
     <nav className="flex h-16 justify-between items-center border-1 w-full border-b pb-1 text-left">
       <img src="favicon.svg" alt="Track-Your-Time logo" className="pr-4 py-1" />
