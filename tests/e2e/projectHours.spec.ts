@@ -66,9 +66,6 @@ test.describe("project time actions", () => {
   test("form is disabled while saving", async ({ page }) => {
     const projectLocator = page.locator("form").filter({ hasText: "cool" });
 
-    // Wait for the input to be visible
-    await projectLocator.getByLabel("Hours").waitFor({ state: "visible" });
-
     // Add project time
     await projectLocator.getByLabel("Hours").fill("4");
     await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
@@ -100,11 +97,6 @@ test.describe("project time validation", () => {
     page,
   }) => {
     const projectLocator = page.locator("form").filter({ hasText: "cool" });
-    // Wait for input to be visible
-    await projectLocator
-      .getByPlaceholder("Working the work…")
-      .waitFor({ state: "visible" });
-
     await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
     await projectLocator.getByRole("button").click();
     await expect(projectLocator).toContainText("Time is required");
