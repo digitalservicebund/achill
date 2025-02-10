@@ -1,5 +1,3 @@
-import fontsStylesheet from "@digitalservice4germany/angie/fonts.css";
-import { cssBundleHref } from "@remix-run/css-bundle";
 import type {
   HeadersFunction,
   LinksFunction,
@@ -13,8 +11,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import fontBold from "~/../public/fonts/BundesSansWeb-Bold.woff2";
-import fontRegular from "~/../public/fonts/BundesSansWeb-Regular.woff2";
 import stylesheet from "~/styles.css";
 
 export const headers: HeadersFunction = () => ({
@@ -36,21 +32,6 @@ export const meta: MetaFunction = () => {
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-  {
-    rel: "preload",
-    as: "font",
-    type: "font/woff2",
-    href: fontRegular,
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "preload",
-    as: "font",
-    type: "font/woff2",
-    href: fontBold,
-    crossOrigin: "anonymous",
-  },
-  { rel: "stylesheet", href: fontsStylesheet },
   { rel: "stylesheet", href: stylesheet },
   { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
