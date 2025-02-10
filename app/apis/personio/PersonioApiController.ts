@@ -164,30 +164,26 @@ export type PersonioApiAttendances = {
 export async function getAttendances(
   employeeId: number,
 ): Promise<PersonioAttendance[]> {
-  async function _getAttendances(offset: number = 0, limit: number = 200) {
+  // There is a limit of 200 attendances per API request so we loop ofer the pagniated data and combine the results
+  const LIMIT = 200;
+  let offset = 0;
+  let data: PersonioAttendancePeriod[] = [];
+  let hasMorePages = true;
+
+  while (hasMorePages) {
     const url = new URL(PERSONIO_ATTENDANCES_URL);
     url.searchParams.set("start_date", moment(START_DATE).format("YYYY-MM-DD"));
     url.searchParams.set("end_date", moment(END_DATE).format("YYYY-MM-DD"));
-    url.searchParams.append("employees", employeeId.toString());
+    url.searchParams.set("employees", employeeId.toString());
     url.searchParams.set("offset", offset.toString());
-    url.searchParams.set("limit", limit.toString());
+    url.searchParams.set("limit", LIMIT.toString());
 
-    return (await fetchWithPersonioAuth(url)) as PersonioApiAttendances;
-  }
+    const result = await fetchWithPersonioAuth(url);
+    data = [...data, ...result.data];
 
-  const result = await _getAttendances(0);
-  let data = result.data;
-
-  if (result.metadata.total_pages > 1) {
-    const result2 = await _getAttendances(200);
-
-    if (result.metadata.total_pages > 2) {
-      console.error(
-        "There are more than 400 personio attendances, please adjust the pagination logic :)",
-      );
-    }
-
-    data = [...data, ...result2.data];
+    hasMorePages =
+      result.metadata.current_page < result.metadata.total_pages - 1;
+    offset += LIMIT;
   }
 
   return data.map(
