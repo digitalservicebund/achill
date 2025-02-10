@@ -14,7 +14,7 @@ import {
   loadPositionPhases,
   loadSubprojectPhases,
 } from "~/apis/tasks/TrackyPhase";
-import { loadTasks } from "~/apis/tasks/TrackyTask";
+import { loadTasks } from "~/apis/tasks/TrackyTask.server";
 import type { ProjectTime } from "~/apis/troi/Troi.types";
 import {
   getCalculationPositions,
