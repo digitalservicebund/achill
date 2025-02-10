@@ -5,13 +5,12 @@ import type {
 } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import stylesheet from "~/styles.css";
+import stylesheet from "~/styles.css?url";
 
 export const headers: HeadersFunction = () => ({
   "Content-Security-Policy":
@@ -31,7 +30,6 @@ export const meta: MetaFunction = () => {
 };
 
 export const links: LinksFunction = () => [
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: stylesheet },
   { rel: "stylesheet", href: "https://rsms.me/inter/inter.css" },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
@@ -60,7 +58,6 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
