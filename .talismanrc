@@ -26,7 +26,7 @@ fileignoreconfig:
   - filename: app/apis/troi/TroiApiController.ts
     checksum: 1ee59d6fc975e26e9c0e47d2c83a9a88c2598a69d08a277f316debd7ef62fc66
   - filename: app/apis/personio/PersonioApiController.ts
-    checksum: dc9d0a030075b88729701e43927c774b29ad566f4372dfb46a875cfd5f53e832
+    checksum: 791e811b0f37126096473843dbf06cf043589e5e6aaca8ee5263942b6b0e2b2e
   - filename: doc/adr/0003-store-credentials-in-session.md
     checksum: 297876466b95ab5dd3a9a41126f9dbc4c4ad1d680f62470cccf2f41b9a2176bf
   - filename: app/routes/login.tsx
