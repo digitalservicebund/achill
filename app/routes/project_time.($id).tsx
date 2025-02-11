@@ -167,8 +167,9 @@ export function ProjectTimeForm({
   }
 
   function resetError(errorKey: string) {
-    const { [errorKey]: _, ...rest } = validationErrors;
-    setValidationErrors(rest);
+    const validationErrorsCopy = { ...validationErrors };
+    delete validationErrorsCopy[errorKey];
+    setValidationErrors(validationErrorsCopy);
   }
 
   const isDisabled = fetcher.state === "submitting";

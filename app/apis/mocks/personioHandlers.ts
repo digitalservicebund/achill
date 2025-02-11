@@ -1,5 +1,8 @@
 import { HttpResponse, http } from "msw";
 import type { PersonioAttendanceAttributes } from "../personio/PersonioApiController";
+import employees from "./stubs/personio/employees";
+import employee from "./stubs/personio/employee";
+import auth from "./stubs/personio/auth.json";
 
 const attendances = [
   {
@@ -17,13 +20,13 @@ const attendances = [
 
 export const handlers = [
   http.post("https://api.personio.de/v1/auth", () => {
-    return HttpResponse.json(require("./stubs/personio/auth.json"));
+    return HttpResponse.json(auth);
   }),
   http.get("https://api.personio.de/v1/company/employees", () => {
-    return HttpResponse.json(require("./stubs/personio/employees.json"));
+    return HttpResponse.json(employees);
   }),
   http.get("https://api.personio.de/v1/company/employees/:id", () => {
-    return HttpResponse.json(require("./stubs/personio/employee.json"));
+    return HttpResponse.json(employee);
   }),
   http.get("https://api.personio.de/v1/company/attendances", () => {
     return HttpResponse.json({

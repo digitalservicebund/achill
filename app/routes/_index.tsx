@@ -115,7 +115,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return {
     timestamp: Date.now(),
-    username: session.get("username")!,
+    username: session.get("username"),
     calculationPositions,
     calendarEvents,
     projectTimes,

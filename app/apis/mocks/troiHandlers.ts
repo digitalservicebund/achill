@@ -1,29 +1,31 @@
 import md5 from "crypto-js/md5.js";
 import { HttpResponse, delay, http } from "msw";
-import type { ProjectTime } from "../troi/Troi.types";
+import projectTimes from "./stubs/troi/billings_hours.json";
+import calculationPositions from "./stubs/troi/calculationPositions.json";
+import calendarEvents from "./stubs/troi/calendarEvents.json";
+import clients from "./stubs/troi/clients.json";
+import employees from "./stubs/troi/employees.json";
 
-const calendarEvents = require("./stubs/troi/calendarEvents.json");
 // Replace holiday with two weeks ago
-const holiday = calendarEvents.find(
-  (event: any) => event.Subject === "Holiday",
-);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const holiday = calendarEvents.find((event) => event.Subject === "Holiday")!;
 const holidayDate = new Date(Date.now() - 14 * 86400000)
   .toISOString()
   .split("T")[0];
 holiday.Start = `${holidayDate} 00:00:00`;
 holiday.End = `${holidayDate} 23:59:59`;
 
-const projectTimes = require("./stubs/troi/billings_hours.json");
 // Replace invoiced project time date with one week ago
 const oneWeekAgo = new Date(Date.now() - 7 * 86400000)
   .toISOString()
   .split("T")[0];
-projectTimes.find((pt: any) => pt.Remark === "Invoiced").Date = oneWeekAgo;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+projectTimes.find((pt) => pt.Remark === "Invoiced")!.Date = oneWeekAgo;
 
 export const handlers = [
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/calculationPositions",
-    () => HttpResponse.json(require("./stubs/troi/calculationPositions.json")),
+    () => HttpResponse.json(calculationPositions),
   ),
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/clients",
@@ -31,20 +33,18 @@ export const handlers = [
       const expectedAuthHeader =
         "Basic " + btoa(`max.mustermann:${md5("aSafePassword")}`);
       if (request.headers.get("authorization") === expectedAuthHeader) {
-        return HttpResponse.json(require("./stubs/troi/clients.json"));
+        return HttpResponse.json(clients);
       } else {
         return new HttpResponse(null, { status: 403 });
       }
     },
   ),
   http.get("https://digitalservice.troi.software/api/v2/rest/employees", () =>
-    HttpResponse.json(require("./stubs/troi/employees.json")),
+    HttpResponse.json(employees),
   ),
   http.get(
     "https://digitalservice.troi.software/api/v2/rest/calendarEvents",
     () => {
-      // Replace holiday with two weeks ago
-
       return HttpResponse.json(calendarEvents);
     },
   ),
@@ -89,9 +89,8 @@ export const handlers = [
         Quantity: number;
         Remark: string;
       };
-
       const projectTime = projectTimes.find(
-        (pt: ProjectTime) => pt.id === parseInt(id as string),
+        (pt) => pt.id === parseInt(id as string),
       );
       if (!projectTime) {
         return HttpResponse.json(null, { status: 404 });
@@ -109,7 +108,7 @@ export const handlers = [
     async ({ params }) => {
       const { id } = params;
       const projectTimeIndex = projectTimes.findIndex(
-        (pt: ProjectTime) => pt.id === parseInt(id as string),
+        (pt) => pt.id === parseInt(id as string),
       );
       if (projectTimeIndex === -1) {
         return HttpResponse.json(null, { status: 404 });
