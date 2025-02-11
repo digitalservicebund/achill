@@ -7,8 +7,9 @@ import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
 if (process.env.MOCK_EXTERNAL_APIS && process.env.NODE_ENV !== "production") {
-  const { server } = await import("./apis/mocks/node");
-  server.listen();
+  import("./apis/mocks/node").then(({ server }) => {
+    server.listen();
+  });
 }
 
 export const streamTimeout = 5000;
