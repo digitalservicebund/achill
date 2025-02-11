@@ -47,7 +47,14 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      return data(e, { status: 422 });
+      const issues = e.issues.reduce(
+        (acc, issue) => ({
+          ...acc,
+          [issue.path[0]]: acc[issue.path[0]] ?? issue.message,
+        }),
+        {} as Record<string, string>,
+      );
+      return data({ issues }, 422);
     }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Troi auth failed", e);
@@ -104,14 +111,7 @@ export function ProjectTimeForm({
   useEffect(() => {
     if (fetcher.state !== "loading" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
-      const errors = fetcher.data.issues.reduce(
-        (errors, issue) => ({
-          ...errors,
-          [issue.path[0]]: errors[issue.path[0]] || issue.message,
-        }),
-        {} as Record<string, string>,
-      );
-      setValidationErrors(errors);
+      setValidationErrors(fetcher.data.issues);
     } else if (fetcher.data.id && fetcher.formData) {
       const submittedProjectTime = fetcher.data;
 
