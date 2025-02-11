@@ -1,5 +1,5 @@
 import {
-  json,
+  data,
   redirect,
   type ActionFunctionArgs,
   type TypedResponse,
@@ -70,7 +70,7 @@ export async function action({
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      return json(e, { status: 422 });
+      return data(e, { status: 422 });
     }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Personio auth failed", e);

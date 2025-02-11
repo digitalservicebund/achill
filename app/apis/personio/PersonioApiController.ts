@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { data } from "@remix-run/node";
 import moment from "moment";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import type { Time } from "~/utils/dateTimeUtils";
@@ -223,7 +223,7 @@ export async function postAttendance(
   const session = await getSessionAndThrowIfInvalid(request);
   const employee = session.get("personioEmployee")?.personioId;
 
-  const data = (await fetchWithPersonioAuth(PERSONIO_ATTENDANCES_URL, {
+  const response = (await fetchWithPersonioAuth(PERSONIO_ATTENDANCES_URL, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -241,12 +241,19 @@ export async function postAttendance(
     }),
   })) as PersonioPostResponse;
 
-  if (!data.success) {
+  if (!response.success) {
     throw new Response("Failed to create attendance");
   }
 
-  return json(
-    { success: true, id: data.data.id[0], date, startTime, endTime, breakTime },
+  return data(
+    {
+      success: true,
+      id: response.data.id[0],
+      date,
+      startTime,
+      endTime,
+      breakTime,
+    },
     { status: 201 },
   );
 }
@@ -258,7 +265,7 @@ export async function patchAttendance(
   endTime: Time,
   breakTime: number,
 ) {
-  const data = await fetchWithPersonioAuth(
+  const response = await fetchWithPersonioAuth(
     `${PERSONIO_ATTENDANCES_URL}/${attendanceId}`,
     {
       method: "PATCH",
@@ -274,34 +281,31 @@ export async function patchAttendance(
     },
   );
 
-  if (!data.success) {
+  if (!response.success) {
     throw new Response("Failed to update attendance");
   }
 
-  return json(
-    {
-      success: true,
-      id: parseInt(attendanceId),
-      date,
-      startTime,
-      endTime,
-      breakTime,
-    },
-    { status: 200 },
-  );
+  return {
+    success: true,
+    id: parseInt(attendanceId),
+    date,
+    startTime,
+    endTime,
+    breakTime,
+  };
 }
 
 export async function deleteAttendance(attendanceId: string) {
-  const data = await fetchWithPersonioAuth(
+  const response = await fetchWithPersonioAuth(
     `${PERSONIO_ATTENDANCES_URL}/${attendanceId}`,
     {
       method: "DELETE",
     },
   );
 
-  if (!data.success) {
+  if (!response.success) {
     throw new Response("Failed to delete attendance");
   }
 
-  return json({ success: true, id: parseInt(attendanceId) }, { status: 200 });
+  return { success: true, id: parseInt(attendanceId) };
 }

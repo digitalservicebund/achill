@@ -1,5 +1,5 @@
 import {
-  json,
+  data,
   redirect,
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -17,7 +17,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/");
   }
 
-  return json(null);
+  return null;
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -25,7 +25,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const username = bodyParams.get("username")?.toString();
   const password = bodyParams.get("password")?.toString();
   if (!username || !password) {
-    return json(
+    return data(
       { message: "Please provide username and password." },
       { status: 400 },
     );
@@ -50,17 +50,17 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     await destroySession(session);
     if (error instanceof Error && error.message === "Invalid credentials") {
-      return json({
+      return {
         message: "Login failed! Please check your username & password.",
-      });
+      };
     } else if (
       error instanceof Error &&
       error.message === "Personio employee not found"
     ) {
-      return json({
+      return {
         message:
           "Personio employee not found, make sure that your Troi username matches your Digitalservice email address.",
-      });
+      };
     } else {
       throw error;
     }

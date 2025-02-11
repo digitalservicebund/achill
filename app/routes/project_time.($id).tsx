@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
@@ -48,7 +48,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      return json(e, { status: 422 });
+      return data(e, { status: 422 });
     }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Troi auth failed", e);
