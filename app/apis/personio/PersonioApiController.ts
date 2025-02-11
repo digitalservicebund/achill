@@ -1,4 +1,4 @@
-import { data } from "@remix-run/node";
+import { data } from "react-router";
 import moment from "moment";
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import type { Time } from "~/utils/dateTimeUtils";
@@ -117,7 +117,7 @@ export async function initializePersonioApi(
   url.searchParams.set("limit", "1");
   url.searchParams.set("offset", "0");
 
-  let employeeData = await fetchWithPersonioAuth(url);
+  const employeeData = await fetchWithPersonioAuth(url);
 
   if (!employeeData.success) {
     throw new Error("Personio employee not found");

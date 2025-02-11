@@ -66,15 +66,15 @@ export function minuteStringToInt(minutes: string): number {
 
 export function convertTimeToFloat(time: Time) {
   const [hours, minutes] = time.split(":");
-  let minuteFractions = parseInt(minutes) / 60;
+  const minuteFractions = parseInt(minutes) / 60;
   return parseInt(hours) + minuteFractions;
 }
 
 export function convertTimeStringToFloat(time: string) {
   if (time.includes(":")) {
-    let [hours, minutes] = time.split(":");
+    const [hours, minutes] = time.split(":");
 
-    let minuteFractions = minuteStringToInt(minutes) / 60;
+    const minuteFractions = minuteStringToInt(minutes) / 60;
 
     return Number(hours) + minuteFractions;
   } else if (time.includes(",")) {
@@ -127,7 +127,7 @@ export function getWeekDaysFor(date: Date) {
   if (dateDayNumber !== 1) monday.setHours(-24 * (dateDayNumber - 1)); // only manipulate the date if it isn't Monday
 
   // assign Monday to Friday based on Monday
-  let weekDates = [];
+  const weekDates = [];
   weekDates[0] = monday;
   for (let i = 1; i < 5; i++) {
     weekDates[i] = addDaysToDate(monday, i);

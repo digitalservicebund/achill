@@ -1,13 +1,7 @@
-import {
-  data,
-  redirect,
-  type ActionFunctionArgs,
-  type TypedResponse,
-} from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import { data, redirect, useFetcher } from "react-router";
 import { ZodError } from "zod";
 import {
   DAYS_OF_WEEK,
@@ -25,15 +19,9 @@ import {
   type Time,
 } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
+import type { Route } from "./+types/work_time.($id)";
 
-type ActionResponse =
-  | (PersonioAttendance & { success: boolean })
-  | { id: number; success: boolean }
-  | ZodError<any>;
-export async function action({
-  request,
-  params,
-}: ActionFunctionArgs): Promise<TypedResponse<ActionResponse>> {
+export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const id = params.id;
 

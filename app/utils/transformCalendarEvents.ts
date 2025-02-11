@@ -83,7 +83,7 @@ function _synthesiseMultiDayEvents(
 ) {
   const synthesisedEventsInApiFormat: CalendarEvent[] = [];
 
-  let datesBetween = getDatesBetween(
+  const datesBetween = getDatesBetween(
     new Date(
       Math.max(
         utcMidnightDateFromString(eventInApiFormat.startDate).getTime(),

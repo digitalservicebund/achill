@@ -2,14 +2,8 @@ import type {
   HeadersFunction,
   LinksFunction,
   MetaFunction,
-} from "@remix-run/node";
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+} from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import stylesheet from "~/styles.css?url";
 
 export const headers: HeadersFunction = () => ({

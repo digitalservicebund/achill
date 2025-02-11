@@ -1,4 +1,4 @@
-import { type Session } from "@remix-run/node";
+import { type Session } from "react-router";
 import md5 from "crypto-js/md5.js";
 import moment from "moment";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
@@ -114,7 +114,7 @@ type TroiCalculationPosition = {
 };
 export async function getCalculationPositions(session: Session) {
   const url = new URL(`${BASE_URL}/calculationPositions`);
-  url.searchParams.set("clientId", session.get("troiClientId")!);
+  url.searchParams.set("clientId", session.get("troiClientId"));
   url.searchParams.set("favoritesOnly", "true");
   url.searchParams.set("timeRecording", "true");
 

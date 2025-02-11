@@ -1,16 +1,17 @@
 import {
   data,
+  Form,
   redirect,
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-} from "@remix-run/node";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+  useActionData,
+  useNavigation,
+} from "react-router";
 import { initializePersonioApi } from "~/apis/personio/PersonioApiController";
 import { initializeTroiApi } from "~/apis/troi/TroiApiController";
 import Spinner from "~/components/common/Spinner";
 import { commitSession, destroySession, getSession } from "~/sessions.server";
+import type { Route } from "./+types/login";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
   if (session.has("username")) {
@@ -20,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return null;
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const bodyParams = await request.formData();
   const username = bodyParams.get("username")?.toString();
   const password = bodyParams.get("password")?.toString();

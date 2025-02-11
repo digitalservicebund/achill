@@ -1,11 +1,10 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import moment from "moment";
+import { useState } from "react";
 import {
   isRouteErrorResponse,
   useLoaderData,
   useRouteError,
-} from "@remix-run/react";
-import moment from "moment";
-import { useState } from "react";
+} from "react-router";
 import type { PersonioAttendance } from "~/apis/personio/Personio.types";
 import { getAttendances } from "~/apis/personio/PersonioApiController";
 import {
@@ -31,6 +30,7 @@ import { mergeAttendendancesForDays } from "~/utils/attendanceUtils";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
 import type { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
 import { transformCalendarEvent } from "~/utils/transformCalendarEvents";
+import type { Route } from "./+types/_index";
 
 const HOW_TO_URL = "https://digitalservicebund.atlassian.net/wiki/x/iIFqFQ";
 const SET_UP_URL =
@@ -71,7 +71,7 @@ export function ErrorBoundary() {
   );
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const { personioId, workingHours } = session.get("personioEmployee");
 
