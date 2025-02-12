@@ -20,11 +20,11 @@ async function clickWorkTimeButton(page: Page, buttonText: string) {
     .click();
 }
 
-test.describe("work time form validation", () => {
-  test.beforeEach(async ({ page }) => {
-    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
-  });
+test.beforeEach(async ({ page }) => {
+  await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+});
 
+test.describe("work time form validation", () => {
   test("should show error for negative break", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", -15, "12:00");
     await expect(page.locator("#work-time-form")).toContainText("negative");
@@ -69,10 +69,6 @@ test.describe("work time form validation", () => {
 });
 
 test.describe("work time form", () => {
-  test.beforeEach(async ({ page }) => {
-    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
-  });
-
   test("should add, edit and delete work time", async ({ page }) => {
     await fillWorkTimeFormAndSubmit(page, "08:00", 60, "17:00");
     await expect(page.getByRole("table")).toContainText("8:00");

@@ -145,7 +145,7 @@ export type PersonioAttendanceAttributes = {
   end_time: string;
   break: number;
 };
-type PersonioAttendancePeriod = {
+export type PersonioAttendancePeriod = {
   id: number;
   type: "AttendancePeriod";
   attributes: PersonioAttendanceAttributes;

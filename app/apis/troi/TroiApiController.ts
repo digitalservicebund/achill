@@ -128,7 +128,7 @@ export async function getCalculationPositions(session: Session) {
   );
 }
 
-type TroiProjectTime = {
+export type TroiProjectTime = {
   id: number;
   Date: string;
   Quantity: string;

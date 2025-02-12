@@ -4,7 +4,7 @@
       "id": 4
     },
     "Date": "2024-08-01",
-    "Quantity": 3,
+    "Quantity": "3",
     "Remark": "Meeting",
     "IsBillable": true,
     "IsInvoiced": false,
@@ -15,7 +15,7 @@
       "id": 4
     },
     "Date": "2024-08-02",
-    "Quantity": 4,
+    "Quantity": "4",
     "Remark": "Working the work…",
     "IsBillable": true,
     "IsInvoiced": false,
@@ -26,7 +26,7 @@
       "id": 7
     },
     "Date": "will be replaced by one week ago",
-    "Quantity": 5,
+    "Quantity": "5",
     "Remark": "Invoiced",
     "IsBillable": true,
     "IsInvoiced": true,
