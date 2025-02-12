@@ -6,6 +6,7 @@ dotenv.config();
 dotenv.config({ path: "../test.env" });
 
 export default defineConfig({
+  timeout: 10000,
   testDir: ".",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
