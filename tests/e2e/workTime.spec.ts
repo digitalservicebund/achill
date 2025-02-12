@@ -20,6 +20,54 @@ async function clickWorkTimeButton(page: Page, buttonText: string) {
     .click();
 }
 
+test.describe("work time form validation", () => {
+  test.beforeEach(async ({ page }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+  });
+
+  test("should show error for negative break", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", -15, "12:00");
+    await expect(page.locator("#work-time-form")).toContainText("negative");
+  });
+
+  test("should show error with 6h - 9h work and break <30min", async ({
+    page,
+  }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", 15, "17:00");
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Break must be at least 30 minutes.",
+    );
+  });
+
+  test("should show error with >9h work and break <45min", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", 30, "18:00");
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Break must be at least 45 minutes.",
+    );
+  });
+
+  test("should show error with >10h work", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", 60, "22:00");
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Work time must be less than 10 hours.",
+    );
+  });
+
+  test("should show error with break longer than work", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", 120, "09:00");
+    await expect(page.locator("#work-time-form")).toContainText(
+      "Invalid work time.",
+    );
+  });
+
+  test("should function with <=6h work and no break", async ({ page }) => {
+    await fillWorkTimeFormAndSubmit(page, "08:00", 0, "14:00");
+    await expect(page.getByRole("table")).toContainText("6:00");
+    await clickWorkTimeButton(page, "Delete");
+    await expect(page.getByLabel("Start time")).toBeEnabled();
+  });
+});
+
 test.describe("work time form", () => {
   test.beforeEach(async ({ page }) => {
     await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
@@ -70,53 +118,5 @@ test.describe("work time form", () => {
 
     await clickWorkTimeButton(page, "Delete");
     await expectFormToBeEnabled();
-  });
-});
-
-test.describe("work time form validation", () => {
-  test.beforeEach(async ({ page }) => {
-    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
-  });
-
-  test("should show error for negative break", async ({ page }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", -15, "12:00");
-    await expect(page.locator("#work-time-form")).toContainText("negative");
-  });
-
-  test("should show error with 6h - 9h work and break <30min", async ({
-    page,
-  }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", 15, "17:00");
-    await expect(page.locator("#work-time-form")).toContainText(
-      "Break must be at least 30 minutes.",
-    );
-  });
-
-  test("should show error with >9h work and break <45min", async ({ page }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", 30, "18:00");
-    await expect(page.locator("#work-time-form")).toContainText(
-      "Break must be at least 45 minutes.",
-    );
-  });
-
-  test("should show error with >10h work", async ({ page }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", 60, "22:00");
-    await expect(page.locator("#work-time-form")).toContainText(
-      "Work time must be less than 10 hours.",
-    );
-  });
-
-  test("should show error with break longer than work", async ({ page }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", 120, "09:00");
-    await expect(page.locator("#work-time-form")).toContainText(
-      "Invalid work time.",
-    );
-  });
-
-  test("should function with <=6h work and no break", async ({ page }) => {
-    await fillWorkTimeFormAndSubmit(page, "08:00", 0, "14:00");
-    await expect(page.getByRole("table")).toContainText("6:00");
-    await clickWorkTimeButton(page, "Delete");
-    await expect(page.getByLabel("Start time")).toBeEnabled();
   });
 });

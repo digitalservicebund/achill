@@ -1,6 +1,50 @@
 import { expect, test } from "@playwright/test";
 import LoginPage from "tests/e2e/LoginPage";
 
+test.describe("project time validation", () => {
+  test.beforeEach(async ({ page }) => {
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
+  });
+
+  test("shows error when adding project time without hours", async ({
+    page,
+  }) => {
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await projectLocator.getByRole("button").click();
+    await expect(projectLocator).toContainText("Time is required");
+  });
+
+  test("shows error when adding project time in wrong format", async ({
+    page,
+  }) => {
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+    await projectLocator.getByLabel("Hours").fill("invalid");
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await projectLocator.getByRole("button").click();
+    await expect(projectLocator).toContainText("wrong format");
+  });
+
+  test("shows error when adding project time with more than 10 hours", async ({
+    page,
+  }) => {
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+    await projectLocator.getByLabel("Hours").fill("11");
+    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
+    await projectLocator.getByRole("button").click();
+    await expect(projectLocator).toContainText("more than 10");
+  });
+
+  test("shows error when adding project time withour description", async ({
+    page,
+  }) => {
+    const projectLocator = page.locator("form").filter({ hasText: "cool" });
+    await projectLocator.getByLabel("Hours").fill("4");
+    await projectLocator.getByRole("button").click();
+    await expect(projectLocator).toContainText("Description is required");
+  });
+});
+
 test.describe("project time actions", () => {
   test.beforeEach(async ({ page }) => {
     await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
@@ -86,50 +130,6 @@ test.describe("project time actions", () => {
     await projectLocator.getByRole("button", { name: "Delete" }).click();
     await expect(page.getByTestId("week-view")).toHaveAttribute("inert", "");
     await expect(projectLocator).toHaveAttribute("inert", "");
-  });
-});
-
-test.describe("project time validation", () => {
-  test.beforeEach(async ({ page }) => {
-    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
-  });
-
-  test("shows error when adding project time without hours", async ({
-    page,
-  }) => {
-    const projectLocator = page.locator("form").filter({ hasText: "cool" });
-    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
-    await projectLocator.getByRole("button").click();
-    await expect(projectLocator).toContainText("Time is required");
-  });
-
-  test("shows error when adding project time in wrong format", async ({
-    page,
-  }) => {
-    const projectLocator = page.locator("form").filter({ hasText: "cool" });
-    await projectLocator.getByLabel("Hours").fill("invalid");
-    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
-    await projectLocator.getByRole("button").click();
-    await expect(projectLocator).toContainText("wrong format");
-  });
-
-  test("shows error when adding project time with more than 10 hours", async ({
-    page,
-  }) => {
-    const projectLocator = page.locator("form").filter({ hasText: "cool" });
-    await projectLocator.getByLabel("Hours").fill("11");
-    await projectLocator.getByPlaceholder("Working the work…").fill("Meeting");
-    await projectLocator.getByRole("button").click();
-    await expect(projectLocator).toContainText("more than 10");
-  });
-
-  test("shows error when adding project time withour description", async ({
-    page,
-  }) => {
-    const projectLocator = page.locator("form").filter({ hasText: "cool" });
-    await projectLocator.getByLabel("Hours").fill("4");
-    await projectLocator.getByRole("button").click();
-    await expect(projectLocator).toContainText("Description is required");
   });
 });
 
