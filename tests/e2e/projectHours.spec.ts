@@ -61,7 +61,7 @@ test.describe("project time actions", () => {
 
     // Delete project time as teardown
     await projectLocator.getByRole("button", { name: "Delete" }).click();
-    await expect(page.getByRole("table")).not.toContainText("5:00");
+    await expect(projectLocator).not.toContainText("5 Hour(s)");
   });
 
   test("form is disabled while saving", async ({ page }) => {
