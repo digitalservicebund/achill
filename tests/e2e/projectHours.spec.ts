@@ -75,6 +75,7 @@ test.describe("project time actions", () => {
 
     // Edit project time
     await projectLocator.getByRole("button", { name: "Edit" }).click();
+    await expect(projectLocator.getByLabel("Hours")).toBeVisible();
     await projectLocator.getByLabel("Hours").fill("5");
     await projectLocator.getByText("Meeting").fill("Daily");
     await projectLocator.getByRole("button", { name: "Update" }).click();
