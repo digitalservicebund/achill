@@ -1,10 +1,10 @@
-import type { Cookie, Session } from "@remix-run/node";
+import type { Cookie, Session } from "react-router";
 import {
   createCookie,
   createCookieSessionStorage,
   createMemorySessionStorage,
   redirect,
-} from "@remix-run/node";
+} from "react-router";
 import type { PersonioEmployee } from "./apis/personio/Personio.types";
 
 export type SessionData = {

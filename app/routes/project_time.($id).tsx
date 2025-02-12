@@ -1,8 +1,6 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
+import { data, redirect, useFetcher } from "react-router";
 import { ZodError } from "zod";
 import type { TrackyPhase } from "~/apis/tasks/TrackyPhase";
 import type { TrackyTask } from "~/apis/tasks/TrackyTask";
@@ -16,8 +14,9 @@ import ProjectTimeDescription from "~/components/projectTime/ProjectTimeDescript
 import { getSessionAndThrowIfInvalid } from "~/sessions.server";
 import { convertFloatTimeToHHMM } from "~/utils/dateTimeUtils";
 import { projectTimeSaveFormSchema } from "~/utils/projectTimeFormValidator";
+import type { Route } from "./+types/project_time.($id)";
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request, params }: Route.ActionArgs) {
   const session = await getSessionAndThrowIfInvalid(request);
   const formData = await request.formData();
   const { _action, ...formDataObj } = Object.fromEntries(formData.entries());
@@ -48,7 +47,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      return json(e, { status: 422 });
+      const issues = e.issues.reduce(
+        (acc, issue) => ({
+          ...acc,
+          [issue.path[0]]: acc[issue.path[0]] ?? issue.message,
+        }),
+        {} as Record<string, string>,
+      );
+      return data({ issues }, 422);
     }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Troi auth failed", e);
@@ -105,14 +111,7 @@ export function ProjectTimeForm({
   useEffect(() => {
     if (fetcher.state !== "loading" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
-      const errors = fetcher.data.issues.reduce(
-        (errors, issue) => ({
-          ...errors,
-          [issue.path[0]]: errors[issue.path[0]] || issue.message,
-        }),
-        {} as Record<string, string>,
-      );
-      setValidationErrors(errors);
+      setValidationErrors(fetcher.data.issues);
     } else if (fetcher.data.id && fetcher.formData) {
       const submittedProjectTime = fetcher.data;
 
@@ -168,8 +167,9 @@ export function ProjectTimeForm({
   }
 
   function resetError(errorKey: string) {
-    const { [errorKey]: _, ...rest } = validationErrors;
-    setValidationErrors(rest);
+    const validationErrorsCopy = { ...validationErrors };
+    delete validationErrorsCopy[errorKey];
+    setValidationErrors(validationErrorsCopy);
   }
 
   const isDisabled = fetcher.state === "submitting";

@@ -1,4 +1,4 @@
-import { json, type Session } from "@remix-run/node";
+import { type Session } from "react-router";
 import md5 from "crypto-js/md5.js";
 import moment from "moment";
 import { END_DATE, START_DATE } from "~/utils/dateTimeUtils";
@@ -114,7 +114,7 @@ type TroiCalculationPosition = {
 };
 export async function getCalculationPositions(session: Session) {
   const url = new URL(`${BASE_URL}/calculationPositions`);
-  url.searchParams.set("clientId", session.get("troiClientId")!);
+  url.searchParams.set("clientId", session.get("troiClientId"));
   url.searchParams.set("favoritesOnly", "true");
   url.searchParams.set("timeRecording", "true");
 
@@ -128,7 +128,7 @@ export async function getCalculationPositions(session: Session) {
   );
 }
 
-type TroiProjectTime = {
+export type TroiProjectTime = {
   id: number;
   Date: string;
   Quantity: string;
@@ -190,19 +190,16 @@ export async function addProjectTime(
     },
   );
 
-  return json(
-    {
-      success: true,
-      id: data.id,
-      date,
-      hours,
-      description,
-      calculationPositionId,
-      isBillable,
-      isInvoiced,
-    },
-    { status: 200 },
-  );
+  return {
+    success: true,
+    id: data.id,
+    date,
+    hours,
+    description,
+    calculationPositionId,
+    isBillable,
+    isInvoiced,
+  };
 }
 
 export async function updateProjectTime(
@@ -232,18 +229,15 @@ export async function updateProjectTime(
     }),
   });
 
-  return json(
-    {
-      id,
-      date,
-      hours,
-      description,
-      calculationPositionId,
-      isBillable,
-      isInvoiced,
-    },
-    { status: 200 },
-  );
+  return {
+    id,
+    date,
+    hours,
+    description,
+    calculationPositionId,
+    isBillable,
+    isInvoiced,
+  };
 }
 
 export async function deleteProjectTime(session: Session, id: number) {
@@ -251,5 +245,5 @@ export async function deleteProjectTime(session: Session, id: number) {
     method: "DELETE",
   });
 
-  return json({ id, test: "test" }, { status: 200 });
+  return { id, test: "test" };
 }

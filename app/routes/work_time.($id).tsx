@@ -1,13 +1,7 @@
-import {
-  json,
-  redirect,
-  type ActionFunctionArgs,
-  type TypedResponse,
-} from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
 import moment from "moment";
 import type { Dispatch, SetStateAction } from "react";
 import { useEffect, useState } from "react";
+import { data, redirect, useFetcher } from "react-router";
 import { ZodError } from "zod";
 import {
   DAYS_OF_WEEK,
@@ -25,15 +19,9 @@ import {
   type Time,
 } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
+import type { Route } from "./+types/work_time.($id)";
 
-type ActionResponse =
-  | (PersonioAttendance & { success: boolean })
-  | { id: number; success: boolean }
-  | ZodError<any>;
-export async function action({
-  request,
-  params,
-}: ActionFunctionArgs): Promise<TypedResponse<ActionResponse>> {
+export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const id = params.id;
 
@@ -70,7 +58,14 @@ export async function action({
     }
   } catch (e) {
     if (e instanceof ZodError) {
-      return json(e, { status: 422 });
+      const issues = e.issues.reduce(
+        (acc, issue) => ({
+          ...acc,
+          [issue.path[0]]: issue.message,
+        }),
+        {} as Record<string, string>,
+      );
+      return data({ issues }, 422);
     }
     if (e instanceof Error && e.message === "Invalid credentials") {
       console.error("Personio auth failed", e);
@@ -139,7 +134,7 @@ export function WorkTimeForm({
     Record<string, string>
   >({});
 
-  function setIsEditPreventSubmit(event: any, value: boolean) {
+  function setIsEditPreventSubmit(event: React.SyntheticEvent, value: boolean) {
     event.preventDefault();
     setIsEdit(value);
   }
@@ -147,14 +142,7 @@ export function WorkTimeForm({
   useEffect(() => {
     if (fetcher.state !== "loading" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
-      const errors = fetcher.data.issues.reduce(
-        (errors, issue) => ({
-          ...errors,
-          [issue.path[0]]: issue.message,
-        }),
-        {},
-      );
-      setValidationErrors(errors);
+      setValidationErrors(fetcher.data.issues);
     } else if (
       fetcher.state === "loading" &&
       fetcher.data?.success &&
@@ -203,6 +191,48 @@ export function WorkTimeForm({
   }
 
   const isDisabled = fetcher.state === "submitting";
+
+  function renderActionButtons() {
+    if (!attendanceOfSelectedDate) {
+      return (
+        <button name="_action" value="POST" className="tracky-btn">
+          Save
+        </button>
+      );
+    }
+
+    if (isEdit) {
+      return (
+        <>
+          <button
+            type="reset"
+            onClick={(e) => setIsEditPreventSubmit(e, false)}
+            className="tracky-btn danger"
+          >
+            Cancel
+          </button>
+          <button name="_action" value="PATCH" className="tracky-btn">
+            Update
+          </button>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <button name="_action" value="DELETE" className="tracky-btn danger">
+          Delete
+        </button>
+        <button
+          type="button"
+          onClick={(e) => setIsEditPreventSubmit(e, true)}
+          className="tracky-btn"
+        >
+          Edit
+        </button>
+      </>
+    );
+  }
 
   return (
     <fetcher.Form
@@ -260,43 +290,7 @@ export function WorkTimeForm({
         </ul>
       )}
       <div className="flex flex-col lg:flex-row gap-2 self-end justify-end items-end basis-40 lg:basis-60">
-        {attendanceOfSelectedDate ? (
-          isEdit ? (
-            <>
-              <button
-                type="reset"
-                onClick={(e) => setIsEditPreventSubmit(e, false)}
-                className="tracky-btn danger"
-              >
-                Cancel
-              </button>
-              <button name="_action" value="PATCH" className="tracky-btn">
-                Update
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                name="_action"
-                value="DELETE"
-                className="tracky-btn danger"
-              >
-                Delete
-              </button>
-              <button
-                type="button"
-                onClick={(e) => setIsEditPreventSubmit(e, true)}
-                className="tracky-btn"
-              >
-                Edit
-              </button>
-            </>
-          )
-        ) : (
-          <button name="_action" value="POST" className="tracky-btn">
-            Save
-          </button>
-        )}
+        {renderActionButtons()}
       </div>
     </fetcher.Form>
   );

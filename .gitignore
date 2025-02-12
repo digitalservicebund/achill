@@ -153,8 +153,9 @@ dist
 # Lefthook
 lefthook-local.yml
 
-# Talisman
-talisman_report
-
 # Session Data
 /sessions
+
+# React Router
+.react-router/
+

@@ -1,29 +1,80 @@
 import { HttpResponse, http } from "msw";
-import type { PersonioAttendanceAttributes } from "../personio/PersonioApiController";
+import type {
+  PersonioAttendanceAttributes,
+  PersonioAttendancePeriod,
+} from "../personio/PersonioApiController";
+import AUTH from "./stubs/personio/auth.json";
+import EMPLOYEE from "./stubs/personio/employee.json";
+import EMPLOYEES from "./stubs/personio/employees.json";
 
-const attendances = [
-  {
-    id: 0,
-    type: "AttendancePeriod",
-    attributes: {
-      employee: 19,
-      date: "2023-12-20",
-      start_time: "09:00",
-      end_time: "18:00",
-      break: 60,
-    },
-  },
-];
+export class AttendancesService {
+  private static instance: AttendancesService;
+  private attendances: PersonioAttendancePeriod[] = [];
+
+  private constructor() {
+    this.attendances = [];
+  }
+
+  public static getInstance(): AttendancesService {
+    if (!AttendancesService.instance) {
+      AttendancesService.instance = new AttendancesService();
+    }
+    return AttendancesService.instance;
+  }
+
+  getAttendances() {
+    return this.attendances;
+  }
+
+  getAttendance(id: number) {
+    return this.attendances.find((attendance) => attendance.id === id);
+  }
+
+  createAttendance(
+    attendance: PersonioAttendanceAttributes,
+  ): PersonioAttendancePeriod {
+    const newAttendance: PersonioAttendancePeriod = {
+      id: this.attendances.length + 1,
+      type: "AttendancePeriod",
+      attributes: attendance,
+    };
+    this.attendances.push(newAttendance);
+    return newAttendance;
+  }
+
+  updateAttendance(
+    id: number,
+    attendance: PersonioAttendanceAttributes,
+  ): PersonioAttendancePeriod | undefined {
+    const attendanceToUpdate = this.getAttendance(id);
+    if (attendanceToUpdate) {
+      attendanceToUpdate.attributes = attendance;
+    }
+    return attendanceToUpdate;
+  }
+
+  deleteAttendance(id: number) {
+    this.attendances = this.attendances.filter(
+      (attendance) => attendance.id !== id,
+    );
+  }
+
+  resetAttendances() {
+    this.attendances = [];
+  }
+}
+
+const attendanceService = AttendancesService.getInstance();
 
 export const handlers = [
   http.post("https://api.personio.de/v1/auth", () => {
-    return HttpResponse.json(require("./stubs/personio/auth.json"));
+    return HttpResponse.json(AUTH);
   }),
   http.get("https://api.personio.de/v1/company/employees", () => {
-    return HttpResponse.json(require("./stubs/personio/employees.json"));
+    return HttpResponse.json(EMPLOYEES);
   }),
   http.get("https://api.personio.de/v1/company/employees/:id", () => {
-    return HttpResponse.json(require("./stubs/personio/employee.json"));
+    return HttpResponse.json(EMPLOYEE);
   }),
   http.get("https://api.personio.de/v1/company/attendances", () => {
     return HttpResponse.json({
@@ -33,7 +84,7 @@ export const handlers = [
         current_page: 0,
         total_pages: 1,
       },
-      data: attendances,
+      data: attendanceService.getAttendances(),
       offset: "0",
       limit: "200",
     });
@@ -46,17 +97,14 @@ export const handlers = [
       };
       const attendanceAttributes: PersonioAttendanceAttributes =
         body.attendances[0];
-      attendances.push({
-        id: attendances.length + 1,
-        type: "AttendancePeriod",
-        attributes: attendanceAttributes,
-      });
+      const newAttendance =
+        attendanceService.createAttendance(attendanceAttributes);
       return HttpResponse.json(
         {
           success: true,
           data: {
             message: "Attendance created successfully.",
-            id: [0],
+            id: [newAttendance.id],
           },
         },
         { status: 200 },
@@ -69,11 +117,20 @@ export const handlers = [
       const { id } = params;
       const attendanceAttributes =
         (await request.json()) as PersonioAttendanceAttributes;
-      const attendanceToUpdate = attendances.find(
-        (att) => att.id === parseInt(id as string),
+      const attendanceToUpdate = attendanceService.updateAttendance(
+        parseInt(id as string),
+        attendanceAttributes,
       );
-      if (attendanceToUpdate) {
-        attendanceToUpdate.attributes = attendanceAttributes;
+      if (!attendanceToUpdate) {
+        return HttpResponse.json(
+          {
+            success: false,
+            data: {
+              message: "Attendance not found.",
+            },
+          },
+          { status: 404 },
+        );
       }
       return HttpResponse.json(
         {
@@ -90,12 +147,7 @@ export const handlers = [
     "https://api.personio.de/v1/company/attendances/:id",
     async ({ params }) => {
       const { id } = params;
-      const attendance = attendances.find(
-        (attendance) => attendance.id === parseInt(id as string),
-      );
-      if (attendance) {
-        attendances.splice(attendances.indexOf(attendance), 1);
-      }
+      attendanceService.deleteAttendance(parseInt(id as string));
       return HttpResponse.json(
         {
           success: true,
