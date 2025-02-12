@@ -1,13 +1,14 @@
-import { test, expect } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
+import axeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
+import LoginPage from "../e2e/LoginPage";
 
 test.describe("index", () => {
   test("should not have any automatically detectable accessibility issues", async ({
     page,
   }) => {
-    await page.goto("/");
+    await new LoginPage(page).logIn("max.mustermann", "aSafePassword");
 
-    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+    const accessibilityScanResults = await new axeBuilder({ page }).analyze();
 
     expect(accessibilityScanResults.violations).toEqual([]);
   });
