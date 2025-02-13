@@ -9,10 +9,11 @@ public/build
 !package-lock.json
 !package.json
 !README.md
-!remix.config.js
-!remix.env.d.ts
+!tsconfig.json
+!vite.config.ts
+!react-router.config.js
+!tailwind.config.js
+!postcss.config.js
 !SECURITY.md
 !security.txt
-!tailwind.config.js
-!tsconfig.json
 !start.sh
