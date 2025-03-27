@@ -30,7 +30,7 @@ export function WeekTable({
 
   function getDateClassNames(index: number, selectedDate: Date) {
     let dateClasses = "flex h-8 w-8 items-center justify-center rounded-full ";
-    let date = selectedWeek[index];
+    const date = selectedWeek[index];
 
     if (datesEqual(date, new Date())) {
       dateClasses += "outline-none ring-2 ring-black ring-offset-2 ";
