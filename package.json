@@ -60,7 +60,7 @@
     "ts-jest": "^29.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.7.2",
-    "vite": "^6.2.3",
+    "vite": "^6.2.4",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "engines": {
