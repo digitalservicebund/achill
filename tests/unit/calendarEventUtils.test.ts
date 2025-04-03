@@ -2,6 +2,7 @@ import {
   getDescriptionForEventType,
   getItemForEventType,
 } from "~/utils/calendarEventUtils";
+import type { CalendarEventType } from "~/utils/transformCalendarEvents";
 
 test("getItemForEventType should return correct icons", () => {
   expect(getItemForEventType("Holiday")).toBe("wb_sunny");
@@ -10,7 +11,9 @@ test("getItemForEventType should return correct icons", () => {
   expect(getItemForEventType("UnpaidVacation")).toBe("beach_access");
   expect(getItemForEventType("CompensatoryTimeOff")).toBe("beach_access");
   expect(getItemForEventType("Sick")).toBe("sick");
-  expect(getItemForEventType("NonExistentEventType" as any)).toBe("close");
+  expect(getItemForEventType("NonExistentEventType" as CalendarEventType)).toBe(
+    "close",
+  );
 });
 
 test("getDescriptionForEventType should return correct descriptions", () => {
@@ -30,7 +33,7 @@ test("getDescriptionForEventType should return correct descriptions", () => {
     "Looks like you had some over hours",
   );
   expect(getDescriptionForEventType("Sick")).toBe("Sick leave");
-  expect(getDescriptionForEventType("NonExistentEventType" as any)).toBe(
-    "Unknown",
-  );
+  expect(
+    getDescriptionForEventType("NonExistentEventType" as CalendarEventType),
+  ).toBe("Unknown");
 });
