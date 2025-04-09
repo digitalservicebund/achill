@@ -7,9 +7,9 @@ async function fillWorkTimeFormAndSubmit(
   breakTime: number,
   endTime: string,
 ) {
-  await page.getByLabel("Break").fill(breakTime.toString());
-  await page.getByLabel("Start time").fill(startTime);
-  await page.getByLabel("End time").fill(endTime);
+  await page.getByLabel("Break").fill(breakTime.toString(), { timeout: 50 });
+  await page.getByLabel("Start time").fill(startTime, { timeout: 50 });
+  await page.getByLabel("End time").fill(endTime, { timeout: 50 });
   await clickWorkTimeButton(page, "Save");
 }
 
