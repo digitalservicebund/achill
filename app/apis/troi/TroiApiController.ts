@@ -38,6 +38,7 @@ async function fetchWithTroiAuth<T>(
     console.error("Request failed", response);
     throw new Error("Request failed");
   }
+  console.log(response);
 
   return await response.json();
 }
@@ -91,17 +92,19 @@ export async function getCalendarEvents(session: Session) {
   url.searchParams.set("start", START_DATE_YYYYMMDD);
   url.searchParams.set("end", END_DATE_YYYYMMDD);
 
-  return (await fetchWithTroiAuth<TroiCalendarEvent[]>(session, url))
-    .map((event) => ({
-      id: event.id,
-      startDate: event.Start,
-      endDate: event.End,
-      subject: event.Subject,
-      type: event.Type as CalendarEventType,
-    }))
-    .sort((a: CalendarEvent, b: CalendarEvent) =>
-      a.startDate > b.startDate ? 1 : -1,
-    );
+  return (
+    (await fetchWithTroiAuth<TroiCalendarEvent[]>(session, url))
+      ?.map((event) => ({
+        id: event.id,
+        startDate: event.Start,
+        endDate: event.End,
+        subject: event.Subject,
+        type: event.Type as CalendarEventType,
+      }))
+      .sort((a: CalendarEvent, b: CalendarEvent) =>
+        a.startDate > b.startDate ? 1 : -1,
+      ) ?? []
+  );
 }
 
 type TroiCalculationPosition = {
