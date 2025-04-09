@@ -38,7 +38,7 @@ async function fetchWithTroiAuth<T>(
     console.error("Request failed", response);
     throw new Error("Request failed");
   }
-  console.log(response);
+  console.log(await response.json());
 
   return await response.json();
 }
