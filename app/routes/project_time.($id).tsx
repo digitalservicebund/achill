@@ -109,7 +109,7 @@ export function ProjectTimeForm({
   >({});
 
   useEffect(() => {
-    if (fetcher.state !== "loading" || !fetcher.data) return;
+    if (fetcher.state === "submitting" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
       setValidationErrors(fetcher.data.issues);
     } else if (fetcher.data.id && fetcher.formData) {

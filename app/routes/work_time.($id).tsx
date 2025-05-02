@@ -140,7 +140,7 @@ export function WorkTimeForm({
   }
 
   useEffect(() => {
-    if (fetcher.state !== "loading" || !fetcher.data) return;
+    if (fetcher.state === "submitting" || !fetcher.data) return;
     if ("issues" in fetcher.data) {
       setValidationErrors(fetcher.data.issues);
     } else if (
