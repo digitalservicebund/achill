@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@3b941278d52936497add0afdebbf5c6e6ee8bd5d # v0.1.13
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@3b941278d52936497add0afdebbf5c6e6ee8bd5d # v0.1.13
@@ -175,7 +175,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: validate github workflow files to have pinned versions
         uses: digitalservicebund/github-actions-linter@3b941278d52936497add0afdebbf5c6e6ee8bd5d # v0.1.13
