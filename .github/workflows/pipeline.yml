@@ -1,5 +1,8 @@
 name: Pipeline
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
