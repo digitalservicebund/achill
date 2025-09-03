@@ -234,24 +234,24 @@ jobs:
       - name: Attest the vulnerability scan
         run: cosign attest --yes --replace --predicate vulnerabilities.json --type vuln ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  deploy:
-    needs: [build-and-push-image]
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
-    timeout-minutes: 10
-    permissions:
-      packages: read
-    environment: production
-    steps:
-      - name: Deploy new image
-        uses: digitalservicebund/argocd-deploy@4fac1bb67c92ed168f6d9b22f8779ce241a9e412 # v1.0.0
-        with:
-          environment: production
-          version: ${{ github.sha }}
-          deploying_repo: achill
-          infra_repo: achill-infra
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
-          app: achill-production
-          argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
-          argocd_server: ${{ secrets.ARGOCD_SERVER }}
-          argocd_sync_timeout: 300
+  # deploy:
+  #   needs: [build-and-push-image]
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   timeout-minutes: 10
+  #   permissions:
+  #     packages: read
+  #   environment: production
+  #   steps:
+  #     - name: Deploy new image
+  #       uses: digitalservicebund/argocd-deploy@4fac1bb67c92ed168f6d9b22f8779ce241a9e412 # v1.0.0
+  #       with:
+  #         environment: production
+  #         version: ${{ github.sha }}
+  #         deploying_repo: achill
+  #         infra_repo: achill-infra
+  #         deploy_key: ${{ secrets.DEPLOY_KEY }}
+  #         app: achill-production
+  #         argocd_pipeline_password: ${{ secrets.ARGOCD_PIPELINE_PASSWORD }}
+  #         argocd_server: ${{ secrets.ARGOCD_SERVER }}
+  #         argocd_sync_timeout: 300
